@@ -1,0 +1,58 @@
+.habit-card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+}
+
+.habit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.habit-info {
+  max-width: 70%;
+}
+
+.habit-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.habit-description {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.habit-actions {
+  text-align: right;
+}
+
+.habit-streak {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.habit-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.habit-btn:hover {
+  background: #f0f0f0;
+}
+
+.habit-btn.completed {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}

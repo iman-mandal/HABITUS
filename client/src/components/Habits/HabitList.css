@@ -1,0 +1,6 @@
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;     /* Similar to Tailwind space-y-3 */
+  padding: 10px 0;
+}
