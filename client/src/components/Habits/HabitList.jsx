@@ -16,6 +16,7 @@ export default function HabitList() {
         try {
             const res = await api.get('/habit/');
             setHabits(res.data);
+            
         } catch (err) {
             setError(err.response?.data?.msg || err.message);
         } finally {

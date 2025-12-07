@@ -1,0 +1,29 @@
+.habit-calendar {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.habit-calendar h2 {
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.habit-list-for-date {
+  margin-top: 15px;
+}
+
+.habit-list-for-date ul {
+  list-style: none;
+  padding: 0;
+}
+
+.habit-list-for-date li {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #e3f2fd;
+}
