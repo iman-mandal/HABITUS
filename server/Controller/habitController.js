@@ -1,0 +1,69 @@
+const habitService = require('../Services/habitServices');
+
+exports.createHabit = async (req, res) => {
+  try {
+    const habit = await habitService.createHabit(
+      req.userId,
+      req.body.title
+    );
+    console.log('Your Habit is Sucessfully Created')
+    res.json({ message: 'Habit created', habit });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+exports.getHabits = async (req, res) => {
+  try {
+    const habits = await habitService.getHabits(req.userId);
+    console.log('Here is the Habit List')
+    res.json(habits);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+exports.updateHabit = async (req, res) => {
+  try {
+    const habit = await habitService.updateHabit(
+      req.userId,
+      req.params.id,
+      req.body
+    );
+    if (!habit) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+    console.log('Your Habit is Sucessfully Updated')
+    res.json(habit);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+exports.deleteHabit = async (req, res) => {
+  try {
+    await habitService.deleteHabit(req.userId, req.params.id);
+    res.json({ message: 'Habit deleted' });
+  } catch (err) {
+    console.log(err);
+    res.status(403).json({ message: err.message });
+  }
+};
+
+exports.toggleHabit = async (req, res) => {
+  try {
+    const habit = await habitService.toggleHabit(
+      req.userId,
+      req.params.id,
+      req.body.date
+    );
+    console.log('Congress, You Have completed the Habit')
+    res.json(habit);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
+};
