@@ -33,7 +33,7 @@ const Start = () => {
                 </div>
             </div>
             <div className='flex items-end justify-center mx-2'>
-                <Link className='flex items-center justify-center w-full font-medium bg-[#446dff] text-[#ffffff] py-3 rounded mt-5'
+                <Link className='flex shadow-2xl items-center justify-center w-full font-medium bg-[#446dff] text-[#ffffff] py-3 rounded mt-5'
                     to='/login'>
                     Let's Start
                 </Link>
