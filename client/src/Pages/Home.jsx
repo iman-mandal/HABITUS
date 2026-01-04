@@ -107,38 +107,47 @@ const Home = () => {
 
 
   return (
-    <div className='bg-[#ffffff]'>
-      {/* greating */}
-      <div className='flex px-5 w-screen flex-row pt-7 items-center justify-between'>
-        <h2 className=' flex items-center justify-center font-sans text-2xl text-[#353535] font-semibold'>
+    <div className="bg-[#ffffff] h-screen flex flex-col overflow-hidden">
+
+      {/* HEADER */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white px-5 pt-7 pb-4 flex items-center justify-between">
+        <h2 className="font-serif text-2xl text-[#353535] font-semibold">
           {greeting}, {user?.fullname?.firstname || 'User'}
         </h2>
-        <div className='flex text-right flex-col items-center justify-center'>
-          <p className='text-[14px] font-sans font-semibold'>{week},</p>
-          <p className='text-[14px] font-sans font-semibold'>{formattedDate}</p>
+
+        <div className="text-right">
+          <p className="text-[14px] font-semibold">{week},</p>
+          <p className="text-[14px] font-semibold">{formattedDate}</p>
         </div>
       </div>
-      {/* progress */}
-      <div className='mt-8'>
+
+      {/* PROGRESS */}
+      <div className=" fixed top-[90px] left-0 right-0 z-40 bg-white flex justify-center py-3">
         <ProgressRate percentage={percentage} />
       </div>
-      {/* habit lists mark */}
-      <div className='mt-7'>
+
+      {/* SCROLLABLE HABITS */}
+      <div
+        className="flex-1 mt-[290px] mb-[90px] overflow-y-auto no-scrollbar px-2"
+      >
         <Habits habits={habits} setHabits={setHabits} />
       </div>
-      <Link to='/add-habit'
-      className="fixed bottom-20 right-5 z-50
-                bg-[#49c5f1]
-                flex items-center justify-center
-                w-[56px] h-[56px]
-                rounded-full shadow-xl
-                active:scale-95 transition">
-        <i className="ri-add-large-line text-[26px] font-semibold text-white"></i>
+
+      {/* FLOATING ADD BUTTON */}
+      <Link
+        to="/add-habit"
+        className=" fixed bottom-24 right-5 z-50 bg-[#49c5f1] flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-xl active:scale-95 transition"
+      >
+        <i className="ri-add-large-line text-[26px] text-white"></i>
       </Link>
-      <div>
+
+      {/* NAVBAR */}
+      <div className="fixed bottom-0 left-0 right-0 z-40">
         <Navbar />
       </div>
+
     </div>
+
   )
 }
 
