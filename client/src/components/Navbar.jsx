@@ -9,6 +9,10 @@ const Navbar = () => {
       <i className="ri-home-8-line text-2xl"></i>
       <h4 className='text-center font-semibold font-serif text-[11px]'>Home</h4>
       </Link>
+      <Link className='flex flex-col items-center justify-center' to='/habit-list'>
+      <i className="ri-todo-line text-2xl"></i>
+      <h4 className='text-center font-semibold font-serif text-[11px]'>Profile</h4>
+      </Link>
       <Link className='flex flex-col items-center justify-center' to='/habit-analytics'>
       <i className="ri-line-chart-line text-2xl"></i>
       <h4 className='text-center font-semibold font-serif text-[11px]'>Analytics</h4>

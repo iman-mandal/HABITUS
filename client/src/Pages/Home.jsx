@@ -65,8 +65,49 @@ const Home = () => {
     }
   }, [FetchUser]);
 
+  const [habits, setHabits] = useState([]);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  // Fetch habits
+  const FetchHabits = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/habit`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setHabits(response.data);
+      }
+    } catch (err) {
+      console.error('Error fetching habits:', err);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    FetchHabits();
+  }, [FetchHabits]);
+
+  const completedToday = habits.filter((habit) =>
+    habit.history?.some(
+      (h) => h.date === today && h.completed
+    )
+  ).length;
+
+  const percentage =
+    habits.length === 0
+      ? 0
+      : Math.round((completedToday / habits.length) * 100);
+
+
   return (
-    <div className='bg-[#f1f1ff]'>
+    <div className='bg-[#ffffff]'>
       {/* greating */}
       <div className='flex px-5 w-screen flex-row pt-7 items-center justify-between'>
         <h2 className=' flex items-center justify-center font-sans text-2xl text-[#353535] font-semibold'>
@@ -79,12 +120,21 @@ const Home = () => {
       </div>
       {/* progress */}
       <div className='mt-8'>
-        <ProgressRate />
+        <ProgressRate percentage={percentage} />
       </div>
       {/* habit lists mark */}
       <div className='mt-7'>
-        <Habits />
+        <Habits habits={habits} setHabits={setHabits} />
       </div>
+      <Link to='/add-habit'
+      className="fixed bottom-20 right-5 z-50
+                bg-[#49c5f1]
+                flex items-center justify-center
+                w-[56px] h-[56px]
+                rounded-full shadow-xl
+                active:scale-95 transition">
+        <i className="ri-add-large-line text-[26px] font-semibold text-white"></i>
+      </Link>
       <div>
         <Navbar />
       </div>

@@ -62,6 +62,12 @@ const Profile = () => {
     }
   }, [navigate])
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   return (
     <div>
@@ -81,34 +87,34 @@ const Profile = () => {
               <i className="ri-user-fill text-[22px] text-[#8b8b8b]"></i>
               <h3 className='text-[16px] font-semibold font-serif'>Edit Profile</h3>
             </div>
-            <i className="ri-arrow-right-s-line text-[22px] text-[black]"></i>
+            <i className="ri-arrow-right-s-line font-semibold text-[22px] text-[black]"></i>
           </div>
           <div className='flex flex-row py-2.5 px-3 bg-[white] rounded-lg items-center justify-between  shadow-xl'>
             <div className='flex flex-row gap-4 items-center'>
               <i className="ri-notification-4-line text-[22px] text-[#8b8b8b]"></i>
               <h3 className='text-[16px] font-semibold font-serif'>Notification Settings</h3>
             </div>
-            <i className="ri-arrow-right-s-line text-[22px] text-[black]"></i>
+            <i className="ri-arrow-right-s-line font-semibold text-[22px] text-[black]"></i>
           </div>
           <div className='flex flex-row py-2.5 px-3 bg-[white] rounded-lg items-center justify-between  shadow-xl'>
             <div className='flex flex-row gap-4 items-center'>
               <i className="ri-contrast-2-line text-[22px] text-[#8b8b8b]"></i>
               <h3 className='text-[16px] font-semibold font-serif'>Theme</h3>
             </div>
-            <i className="ri-arrow-right-s-line text-[22px] text-[black]"></i>
+            <i className="ri-arrow-right-s-line font-semibold text-[22px] text-[black]"></i>
           </div>
           <div className='flex flex-row py-2.5 px-3 bg-[white] rounded-lg items-center justify-between  shadow-xl'>
             <div className='flex flex-row gap-4 items-center'>
               <i className="ri-error-warning-line text-[22px] text-[#8b8b8b]"></i>
               <h3 className='text-[16px] font-semibold font-serif'>Data Reset</h3>
             </div>
-            <i className="ri-arrow-right-s-line text-[22px] text-[black]"></i>
+            <i className="ri-arrow-right-s-line font-semibold text-[22px] text-[black]"></i>
           </div>
         </div>
         <div className='w-full mt-6 flex items-center justify-center'>
           <button
-          onClick={UserLogout}
-           className="w-screen mx-4 bg-black text-white py-3 rounded-lg font-semibold">Logout</button>
+            onClick={UserLogout}
+            className="w-screen mx-4 bg-black text-white py-3 rounded-lg font-semibold">Logout</button>
         </div>
       </div>
       <div>

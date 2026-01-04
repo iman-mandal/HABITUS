@@ -1,16 +1,66 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 
-const ProgressRate = () => {
+const ProgressRate = ({ percentage }) => {
+    const radius = 70;
+    const stroke = 10;
+    const normalizedRadius = radius - stroke / 2;
+    const circumference = normalizedRadius * 2 * Math.PI;
+
+    const [offset, setOffset] = useState(circumference);
+
+    useEffect(() => {
+        const progressOffset =
+            circumference - (percentage / 100) * circumference;
+        setOffset(progressOffset);
+    }, [percentage, circumference]);
+
     return (
-        <div className='flex flex-col gap-3 items-center justify-center'>
-            <div className='bg-[#4775ff] border-[3px] border-[#8fffec] flex justify-center items-center w-[160px] h-[160px] rounded-full'>
-                <div className='bg-[#eaeaea] border-[3px] border-[#8fffec] flex justify-center items-center w-[110px] h-[110px] rounded-full'>
-                    <h4 className='text-gray-500 text-2xl text-center font-semibold'>45%</h4>
-                </div>
-            </div>
-            <div><p className='text-center font-semibold text-[#808080]'>Today's progress</p></div>
-        </div>
-    )
-}
+        <div className="flex flex-col gap-3 items-center justify-center">
+            <svg height={radius * 2} width={radius * 2}>
 
-export default ProgressRate
+                {/* Background circle */}
+                <circle
+                    stroke="#e5e7eb"
+                    fill="transparent"
+                    strokeWidth={stroke}
+                    r={normalizedRadius}
+                    cx={radius}
+                    cy={radius}
+                />
+
+                <circle
+                    stroke="#4775ff"
+                    fill="transparent"
+                    strokeWidth={stroke}
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    r={normalizedRadius}
+                    cx={radius}
+                    cy={radius}
+                    style={{
+                        transition: 'stroke-dashoffset 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: '50% 50%',
+                    }}
+                />
+
+                <text
+                    x="50%"
+                    y="50%"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    className="fill-gray-600 text-2xl font-semibold"
+                >
+                    {percentage}%
+                </text>
+            </svg>
+
+            <p className="text-center font-semibold text-[#808080]">
+                Today's progress
+            </p>
+        </div>
+    );
+};
+
+export default ProgressRate;
