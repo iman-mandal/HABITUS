@@ -6,6 +6,7 @@ exports.createHabit = async (userId, title) => {
 };
 
 exports.getHabits = async (userId) => {
+  if (!userId) throw new Error('User not found');
   return await HabitModel.find({ user: userId });
 };
 
@@ -51,7 +52,7 @@ exports.toggleHabit = async (userId, habitId, date) => {
     if (
       i === 0 ||
       new Date(completedDates[i]) - new Date(completedDates[i - 1]) ===
-        24 * 60 * 60 * 1000
+      24 * 60 * 60 * 1000
     ) {
       current++;
     } else {

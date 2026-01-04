@@ -23,8 +23,8 @@ const App = () => {
         <Route path='/add-habit' element={<AddHabit />} />
         <Route path='/habit-details' element={<HabitDetails />} />
         <Route path='/habit-analytics' element={<Analytics />} />
-        <Route path='habit-calendar' element={<CalendarView />} />
-        <Route path='habit-list' element={<HabitList />} />
+        <Route path='/habit-calendar' element={<CalendarView />} />
+        <Route path='/habit-list' element={<HabitList />} />
       </Routes>
     </div>
   )

@@ -3,7 +3,7 @@ import React from 'react'
 const HabitList = () => {
   return (
     <div>
-      HabitList
+      HabitLists
     </div>
   )
 }

@@ -7,7 +7,7 @@ exports.createHabit = async (req, res) => {
       req.body.title
     );
     console.log('Your Habit is Sucessfully Created')
-    res.json({ message: 'Habit created', habit });
+    res.status(201).json({ message: 'Habit created', habit });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -18,7 +18,7 @@ exports.getHabits = async (req, res) => {
   try {
     const habits = await habitService.getHabits(req.userId);
     console.log('Here is the Habit List')
-    res.json(habits);
+    res.status(200).json(habits);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Internal Server Error' });

@@ -26,7 +26,7 @@ module.exports.registerUser = async (req, res, next) => {
         console.log("Your Registion is Sucessfully Completed")
         const token = user.genarateAuthToken();
         res.cookie('token', token);
-        res.status(200).json({ token: token, user: user });
+        res.status(201).json({ token: token, user: user });
 
     } catch (err) {
         console.log(err);
