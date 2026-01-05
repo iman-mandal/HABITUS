@@ -1,40 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import axios from 'axios'
+import { useHabits } from '../context/HabitContext'
 
 const HabitList = () => {
+  const { habits, setHabits } = useHabits()
   const filters = ['All', 'Daily', 'Weekly', 'Monthly'];
 
-  const [habits, setHabits] = useState([]);
   const [active, setActive] = useState('All');
   const [search, setSearch] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Fetch habits
-  const FetchHabits = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/habit`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setHabits(response.data);
-      }
-    } catch (err) {
-      console.error('Error fetching habits:', err);
-    }
-  }, []);
-
-
-  useEffect(() => {
-    FetchHabits();
-  }, [FetchHabits]);
 
   // fiter and search habits
   const filteredHabits = habits.filter((habit) => {
@@ -53,7 +30,7 @@ const HabitList = () => {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
 
-      {/* Header (optional) */}
+      {/* Header*/}
       <div className="py-4 text-center font-semibold text-lg">
         <div className='flex flex-col mx-5 border-b-2 border-[#949494]'>
           <h2 className='text-center text-[22px] font-serif font-semibold'>Your Rituals</h2>
@@ -80,10 +57,9 @@ const HabitList = () => {
         <div className="px-5 mt-4">
           <div
             className="relative flex items-center w-full h-[44px] rounded-2xl border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-[#a1a0a0] transition" >
-            {/* Search Icon */}
             <i className="ri-search-line absolute left-4 text-gray-400 text-lg"></i>
 
-            {/* Input */}
+            {/* Search Habits */}
             <input
               type="text"
               placeholder="Search"

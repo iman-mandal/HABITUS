@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react'
 import AppLogo from '../Assets/HabitTrackerLogo.png'
 import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
-import { UserDataContext } from '../Context/userContext.jsx';
 import axios from 'axios';
 
 const SignUp = () => {
@@ -13,9 +12,6 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
 
   const navigate = useNavigate();
-
-  const { user, setUser } = useContext(UserDataContext);
-
 
   const submitHandler = async (e) => {
     e.preventDefault();

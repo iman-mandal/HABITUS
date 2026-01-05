@@ -4,8 +4,11 @@ import Navbar from '../components/Navbar';
 import ProgressRate from '../components/ProgressRate';
 import Habits from '../components/Habits';
 import axios from 'axios';
+import { useHabits } from '../context/HabitContext'
+import { useUser } from '../context/UserContext';
 
 const Home = () => {
+  const { habits, setHabits } = useHabits()
 
   const date = new Date();
   const formattedDate = date.toLocaleDateString('en-IN', {
@@ -37,62 +40,10 @@ const Home = () => {
     greeting = 'Good Night';
   }
 
-  const [user, setUser] = useState(null);
-  const FetchUser = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/user/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setUser(response.data.user);
-        console.log(response.data.user)
-      }
-    } catch (err) {
-      console.error('Error fetching user:', err);
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      FetchUser();
-    }
-  }, [FetchUser]);
-
-  const [habits, setHabits] = useState([]);
+  const { user, setUser} = useUser();
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Fetch habits
-  const FetchHabits = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/habit`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setHabits(response.data);
-      }
-    } catch (err) {
-      console.error('Error fetching habits:', err);
-    }
-  }, []);
-
-
-  useEffect(() => {
-    FetchHabits();
-  }, [FetchHabits]);
 
   const completedToday = habits.filter((habit) =>
     habit.history?.some(

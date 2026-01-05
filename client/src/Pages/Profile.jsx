@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import 'remixicon/fonts/remixicon.css'
 import axios from 'axios'
-
+import { useUser } from '../context/UserContext.jsx'
 
 const Profile = () => {
 
-  const [user, setUser] = useState(null);
+  const {user, setUser} = useUser(null);
   const navigate = useNavigate();
   //fetched user profile
   const FetchUser = useCallback(async () => {
