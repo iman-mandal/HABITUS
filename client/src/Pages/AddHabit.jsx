@@ -52,11 +52,15 @@ const AddHabit = () => {
   };
   return (
     <div className='flex flex-col'>
-      <div className='flex justify-center mt-6 items-center'>
-        <h2 className='text-center text-[20px] font-semibold font-serif'>
+      <div className="relative flex mt-6 items-center justify-center">
+        <i
+          onClick={() => navigate('/home')}
+          className="ri-arrow-left-wide-line absolute left-5 text-[25px] font-thin cursor-pointer active:scale-95 transition"></i>
+        <h2 className="text-[20px] font-semibold font-serif">
           Add Habit
         </h2>
       </div>
+
       <div className="flex shadow-xl py-3 mx-5 rounded-lg bg-[#e4e4e4] flex-row mt-4 justify-center gap-0">
         <img className="h-[60px]" src={AppLogo} alt="app logo" />
         <div className="flex flex-col font-serif justify-center mt-2 -ml-4 items-start">
@@ -74,7 +78,7 @@ const AddHabit = () => {
           className="flex flex-col gap-3">
           <div className="gap-3 flex flex-col items-center justify-center">
             <input
-              className="w-full outline-none flex items-center border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full text-[16px] font-semibold font-serif outline-none flex items-center border border-gray-300 rounded-lg px-3 py-2"
               type="text"
               required
               value={title}
@@ -84,7 +88,7 @@ const AddHabit = () => {
               placeholder="Enter Habit Title"
             />
             <input
-              className="w-full h-[80px] resize-none outline-none border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-400 overflow-hidden"
+              className="w-full  text-[16px] font-semibold font-serif h-[80px] resize-none outline-none border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-400 overflow-hidden"
               type="text"
               required
               value={description}
@@ -174,9 +178,9 @@ const AddHabit = () => {
           <button
             type="submit"
             disabled={!frequency}
-            className={`py-3 rounded-lg font-semibold transition ${frequency
-                ? 'bg-black text-white hover:bg-gray-900'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            className={`py-3 rounded-lg mt-4 font-semibold transition ${frequency
+              ? 'bg-black text-white hover:bg-gray-900'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
           >
             Save Habit

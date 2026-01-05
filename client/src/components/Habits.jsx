@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import axios from 'axios';
 
 const Habits = ({habits, setHabits}) => {

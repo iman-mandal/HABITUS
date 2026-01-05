@@ -6,7 +6,6 @@ import Login from './Pages/Login'
 import SignUp from './Pages/SignUp'
 import Profile from './Pages/Profile'
 import AddHabit from './Pages/AddHabit'
-import HabitDetails from './Pages/HabitDetails'
 import Analytics from './Pages/Analytics'
 import CalendarView from './Pages/CalendarView'
 import HabitList from './Pages/HabitList'
@@ -21,7 +20,6 @@ const App = () => {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/add-habit' element={<AddHabit />} />
-        <Route path='/habit-details' element={<HabitDetails />} />
         <Route path='/habit-analytics' element={<Analytics />} />
         <Route path='/habit-calendar' element={<CalendarView />} />
         <Route path='/habit-list' element={<HabitList />} />

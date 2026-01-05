@@ -111,7 +111,7 @@ const Home = () => {
 
       {/* HEADER */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-white px-5 pt-7 pb-4 flex items-center justify-between">
-        <h2 className="font-serif text-2xl text-[#353535] font-semibold">
+        <h2 className="font-serif text-[22px] text-[#353535] font-semibold">
           {greeting}, {user?.fullname?.firstname || 'User'}
         </h2>
 
@@ -128,7 +128,7 @@ const Home = () => {
 
       {/* SCROLLABLE HABITS */}
       <div
-        className="flex-1 mt-[290px] mb-[90px] overflow-y-auto no-scrollbar px-2"
+        className="flex-1 mt-[290px] mb-[70px] overflow-y-auto no-scrollbar px-2"
       >
         <Habits habits={habits} setHabits={setHabits} />
       </div>

@@ -11,7 +11,7 @@ const Navbar = () => {
       </Link>
       <Link className='flex flex-col items-center justify-center' to='/habit-list'>
       <i className="ri-todo-line text-2xl"></i>
-      <h4 className='text-center font-semibold font-serif text-[11px]'>Profile</h4>
+      <h4 className='text-center font-semibold font-serif text-[11px]'>Habits</h4>
       </Link>
       <Link className='flex flex-col items-center justify-center' to='/habit-analytics'>
       <i className="ri-line-chart-line text-2xl"></i>
