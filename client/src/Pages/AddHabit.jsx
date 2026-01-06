@@ -21,11 +21,11 @@ const AddHabit = () => {
     e.preventDefault();
     try {
       const newHabit = {
-        title: title,
-        description: description,
-        frequency: frequency,
-        targetPerWeek: targetPerWeek
-      };
+        title,
+        description,
+        frequency,
+        targetPerWeek
+      }
 
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/habit/createHabit`,
@@ -37,7 +37,7 @@ const AddHabit = () => {
         }
       );
       if (response.status === 201) {
-        navigate('/home');
+        navigate(-1);
       }
 
 
@@ -46,15 +46,20 @@ const AddHabit = () => {
       setFrequency('')
       setTargetPerWeek(7)
 
+      if (!frequency) {
+        alert('Please select a frequency.')
+        return
+      }
     } catch (err) {
       console.error('Error creating habit:', err);
     }
   };
+
   return (
     <div className='flex flex-col'>
       <div className="relative flex mt-6 items-center justify-center">
         <i
-          onClick={() => navigate('/home')}
+          onClick={() => navigate(-1)}
           className="ri-arrow-left-wide-line absolute left-5 text-[25px] font-thin cursor-pointer active:scale-95 transition"></i>
         <h2 className="text-[20px] font-semibold font-serif">
           Add Habit
@@ -100,43 +105,25 @@ const AddHabit = () => {
           </div>
 
           <div className="flex flex-col gap-2 mt-2 rounded-lg border-[2px] border-gray-200 px-3 py-2">
-            <label className="font-semibold text-[18px] font-serif text-gray-700">Select Frequency</label>
+            <label className="font-semibold text-[18px] font-serif text-gray-700">
+              Select Frequency
+            </label>
             <div className="flex gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="daily"
-                  className="accent-[#000000] w-[15px] h-[15px]"
-                  checked={frequency === 'daily'}
-                  onChange={(e) => setFrequency(e.target.value)}
-                />
-                <span className='text-[15px] font-serif font-semibold'>Daily</span>
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="weekly"
-                  className="accent-[#000000] w-[15px] h-[15px]"
-                  checked={frequency === 'weekly'}
-                  onChange={(e) => setFrequency(e.target.value)}
-                />
-                <span className='text-[15px] font-serif font-semibold'>Weekly</span>
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="monthly"
-                  className="accent-[#000000] w-[15px] h-[15px]"
-                  checked={frequency === 'monthly'}
-                  onChange={(e) => setFrequency(e.target.value)}
-                />
-                <span className='text-[15px] font-serif font-semibold'>Monthly</span>
-              </label>
+              {['daily', 'weekly', 'monthly'].map((freq) => (
+                <label key={freq} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="frequency"
+                    value={freq}
+                    className="accent-black w-[15px] h-[15px]"
+                    checked={frequency === freq}
+                    onChange={(e) => setFrequency(e.target.value)}
+                  />
+                  <span className="text-[15px] font-serif font-semibold">
+                    {freq.charAt(0).toUpperCase() + freq.slice(1)}
+                  </span>
+                </label>
+              ))}
             </div>
           </div>
 

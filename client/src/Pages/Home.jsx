@@ -58,7 +58,7 @@ const Home = () => {
 
 
   return (
-    <div className="bg-[#ffffff] h-screen flex flex-col overflow-hidden">
+    <div className="bg-blue-50 h-screen flex flex-col overflow-hidden">
 
       {/* HEADER */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-white px-5 pt-7 pb-4 flex items-center justify-between">
@@ -73,7 +73,7 @@ const Home = () => {
       </div>
 
       {/* PROGRESS */}
-      <div className=" fixed top-[90px] left-0 right-0 z-40 bg-white flex justify-center py-3">
+      <div className=" fixed top-[90px] left-0 right-0 z-40 bg-blue-50 flex justify-center py-3">
         <ProgressRate percentage={percentage} />
       </div>
 

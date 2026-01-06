@@ -4,7 +4,7 @@ const HabitSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: { type: String, required : true },
     description: { type: String },
-    frequency: { type: String, enum: ['daily', 'weekly', 'monthly', 'custom'], default: 'daily' },
+    frequency: { type: String, enum: ['daily', 'weekly', 'monthly'] },
     targetPerWeek: { type: Number, default: 7 },
     startDate: { type: String, default: Date.now },
     history: [{

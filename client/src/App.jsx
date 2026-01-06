@@ -7,11 +7,10 @@ import SignUp from './Pages/SignUp'
 import Profile from './Pages/Profile'
 import AddHabit from './Pages/AddHabit'
 import Analytics from './Pages/Analytics'
-import CalendarView from './Pages/CalendarView'
 import HabitList from './Pages/HabitList'
-
 import { HabitProvider } from './context/HabitContext'
 import { UserProvider } from './context/UserContext.jsx'
+import HabitDetails from './Pages/HabitDetails.jsx'
 
 const App = () => {
   return (
@@ -23,9 +22,9 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/profile' element={<Profile />} />
+          <Route path='/habit-details/:id' element={<HabitDetails />} />
           <Route path='/add-habit' element={<AddHabit />} />
           <Route path='/habit-analytics' element={<Analytics />} />
-          <Route path='/habit-calendar' element={<CalendarView />} />
           <Route path='/habit-list' element={<HabitList />} />
         </Routes>
       </HabitProvider>

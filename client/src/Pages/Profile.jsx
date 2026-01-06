@@ -7,35 +7,9 @@ import { useUser } from '../context/UserContext.jsx'
 
 const Profile = () => {
 
-  const {user, setUser} = useUser(null);
+  const {user, setUser} = useUser();
   const navigate = useNavigate();
-  //fetched user profile
-  const FetchUser = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/user/profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          },
-        }
-      );
 
-      if (response.status === 200) {
-        setUser(response.data.user);
-        console.log(response.data.user)
-      }
-    } catch (err) {
-      console.error('Error fetching user:', err);
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      FetchUser();
-    }
-  }, [FetchUser]);
 
 
   const UserLogout = useCallback(async () => {

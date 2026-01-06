@@ -18,6 +18,7 @@ export const HabitProvider = ({ children }) => {
         }
       )
       setHabits(res.data)
+      console.log(res.data)
     } catch (err) {
       console.error('Failed to fetch habits', err)
     } finally {

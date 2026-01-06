@@ -1,16 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
-import axios from 'axios'
 import { useHabits } from '../context/HabitContext'
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const HabitList = () => {
-  const { habits, setHabits } = useHabits()
+  const { habits, setHabits } = useHabits();
   const filters = ['All', 'Daily', 'Weekly', 'Monthly'];
 
   const [active, setActive] = useState('All');
   const [search, setSearch] = useState('');
+  const [habitID, setHabitID] = useState('')
 
+  const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
 
   // fiter and search habits
@@ -28,7 +39,7 @@ const HabitList = () => {
 
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-blue-50 overflow-hidden">
 
       {/* Header*/}
       <div className="py-4 text-center font-semibold text-lg">
@@ -87,8 +98,11 @@ const HabitList = () => {
             return (
               <div
                 key={habit._id}
-                className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-gray-200 rounded-lg"
-              >
+                onClick={() => {
+                  setHabitID(habit._id)
+                  navigate(`/habit-details/${habit._id}`)
+                }}
+                className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-white rounded-lg">
                 <div>
                   <h2 className="font-semibold font-serif">
                     {habit.title}
@@ -102,6 +116,13 @@ const HabitList = () => {
           })
         )}
       </div>
+
+      <Link
+        to="/add-habit"
+        className=" fixed bottom-24 right-5 z-50 bg-[#49c5f1] flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-xl active:scale-95 transition"
+      >
+        <i className="ri-add-large-line text-[26px] text-white"></i>
+      </Link>
 
       {/* Fixed Bottom Navbar */}
       <div className="fixed bottom-0 left-0 right-0 z-40">

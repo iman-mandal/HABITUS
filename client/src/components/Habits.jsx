@@ -31,7 +31,7 @@ const Habits = ({habits, setHabits}) => {
 
    const today = new Date().toISOString().split('T')[0];
   return (
-    <div>
+    <div className='bg-blue-50'>
       {habits.length === 0 ? (
         <p className="text-center mt-4">No habits found</p>
       ) : (
@@ -43,11 +43,11 @@ const Habits = ({habits, setHabits}) => {
           return (
             <div
               key={habit._id}
-              className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-gray-200 rounded-lg"
+              className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-white rounded-lg"
             >
               <div>
-                <h2 className="font-semibold">{habit.title}</h2>
-                <p className="text-sm">Streak: {habit.streak}</p>
+                <h2 className="font-semibold font-serif">{habit.title}</h2>
+                <p className="text-sm font-thin">Streak: {habit.streak}</p>
               </div>
 
               <input
