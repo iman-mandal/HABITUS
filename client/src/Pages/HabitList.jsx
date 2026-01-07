@@ -103,11 +103,15 @@ const HabitList = () => {
                   navigate(`/habit-details/${habit._id}`)
                 }}
                 className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-white rounded-lg">
-                <div>
+                <div className='flex w-full flex-row justify-between'>
+                  <div className='flex flex-col'>
                   <h2 className="font-semibold font-serif">
                     {habit.title}
                   </h2>
-                  <p className="text-sm text-gray-600">
+                  <p>{habit.description}</p>
+                  </div>
+                  <p className="text-sm flex items-center text-gray-600">
+                    <i class="ri-fire-line text-2xl text-yellow-400"></i>
                     Streak: {habit.streak}
                   </p>
                 </div>

@@ -2,11 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useHabits } from '../context/HabitContext'
 import Navbar from '../components/Navbar'
 import CalendarView from '../components/CalendarView'
+import axios from 'axios'
+import { useState } from 'react'
 
 const HabitDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { habits, deleteHabit } = useHabits()
+  const { habits } = useHabits()
+  const [deleteConfirmTost, setDeleteConfirmTost] = useState(false)
 
   const habit = habits.find(h => h._id === id)
 
@@ -18,9 +21,23 @@ const HabitDetails = () => {
     )
   }
 
-  const DeleteHabit=as()=>{
+  const deleteHabit = async () => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/habit/${habit._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-  }
+      console.log('Habit deleted successfully:', response.data);
+    } catch (err) {
+      console.log('Delete failed:', err.response?.data || err.message);
+    }
+  };
+
 
   return (
     <div className="flex flex-col h-screen bg-blue-50">
@@ -40,13 +57,15 @@ const HabitDetails = () => {
       <div className="flex-1 mt-[64px] mb-[40px] overflow-y-auto px-4">
         {/* Habit Info */}
         <div className="mx-1 py-4 px-5 rounded-lg mt-5 bg-[white]">
-          <h2 className="text-xl font-serif font-semibold">
+          <h2 className="text-[25px] text-center font-serif font-semibold">
             {habit.title}
           </h2>
 
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-2 text-center">
             {habit.description || "No description provided"}
           </p>
+
+          <div className="w-40 h-1 rounded-full bg-gray-300 mx-auto my-2 transition-all duration-200 active:scale-x-90"></div>
 
           <div className="flex items-center justify-between gap-3 mt-4">
             <div className='flex flex-row gap-2 items-center justify-center'>
@@ -65,7 +84,11 @@ const HabitDetails = () => {
             </div>
           </div>
         </div>
-
+        <div className="mx-1 py-4 px-8 rounded-lg mt-5 bg-[white]">
+          <h2 className='text-[18px] text-center py-1 font-serif'>Habit Start : {new Date(Number(habit.startDate)).toLocaleDateString('en-IN')}</h2>
+          <h2 className='text-[18px] text-center py-1 font-serif'> Frequency : {habit.frequency.charAt(0).toUpperCase() + habit.frequency?.slice(1)}</h2>
+          <h2 className='text-[18px] text-center py-1 font-serif'> Target : {habit.targetPerWeek} Days / Week</h2>
+        </div>
         {/* Calendar */}
         <div className="mt-4">
           <CalendarView history={habit.history || []} />
@@ -82,6 +105,9 @@ const HabitDetails = () => {
           </button>
 
           <button
+            onClick={() => {
+              setDeleteConfirmTost(true)
+            }}
             className="flex items-center bg-white px-5 py-3 rounded-lg shadow-xl gap-2 text-red-500 font-medium active:scale-95"
           >
             <i className="ri-delete-bin-5-line text-lg"></i>
@@ -89,7 +115,40 @@ const HabitDetails = () => {
           </button>
         </div>
       </div>
+      {deleteConfirmTost && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white flex flex-col rounded-xl w-[90%] max-w-sm p-6">
+            <i className="ri-delete-bin-5-line text-[50px] text-center text-[#ff4d4d]"></i>
+            <h3 className="text-[20px] font-serif text-center font-semibold text-gray-800">
+              Delete Habit
+            </h3>
 
+            <p className="text-[15px] text-center text-gray-700 mt-2">
+              Are you sure want to delete this habit ?
+            </p>
+
+            <div className="flex justify-between gap-3 mt-6">
+              <button
+                onClick={() => setDeleteConfirmTost(false)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 active:scale-95"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setDeleteConfirmTost(false)
+                  deleteHabit()
+                  navigate(-1)
+                }}
+                className="px-4 py-2 rounded-lg bg-red-500 text-white active:scale-95"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Bottom Navbar */}
       <div>
         <Navbar />
