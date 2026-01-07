@@ -56,7 +56,7 @@ const AddHabit = () => {
   };
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col bg-blue-50 h-screen'>
       <div className="relative flex mt-6 items-center justify-center">
         <i
           onClick={() => navigate(-1)}
@@ -66,7 +66,7 @@ const AddHabit = () => {
         </h2>
       </div>
 
-      <div className="flex shadow-xl py-3 mx-5 rounded-lg bg-[#e4e4e4] flex-row mt-4 justify-center gap-0">
+      <div className="flex shadow-xl py-3 mx-5 rounded-lg bg-[#ffffff] flex-row mt-4 justify-center gap-0">
         <img className="h-[60px]" src={AppLogo} alt="app logo" />
         <div className="flex flex-col font-serif justify-center mt-2 -ml-4 items-start">
           <h2 className="text-[22px] font-bold">HABITUS</h2>

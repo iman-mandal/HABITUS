@@ -22,7 +22,7 @@ const Home = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (!token || token=='') {
       navigate('/login');
     }
   }, [navigate]);

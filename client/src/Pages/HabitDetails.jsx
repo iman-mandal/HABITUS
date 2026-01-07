@@ -64,7 +64,7 @@ const HabitDetails = () => {
           <p className="text-gray-600 mt-2 text-center">
             {habit.description || "No description provided"}
           </p>
-
+          {/* divition gray line  */}
           <div className="w-40 h-1 rounded-full bg-gray-300 mx-auto my-2 transition-all duration-200 active:scale-x-90"></div>
 
           <div className="flex items-center justify-between gap-3 mt-4">
@@ -98,6 +98,9 @@ const HabitDetails = () => {
 
         <div className="mb-[40px] w-full px-5 py-3 flex justify-between">
           <button
+            onClick={() => {
+              navigate(`/habit/update/${habit._id}`)
+            }}
             className="flex items-center bg-white px-5 py-3 rounded-lg shadow-xl gap-2 text-blue-600 font-medium active:scale-95"
           >
             <i className="ri-edit-2-line text-lg"></i>

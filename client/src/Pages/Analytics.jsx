@@ -5,6 +5,14 @@ import { useHabits } from '../context/HabitContext'
 
 
 const Analytics = () => {
+  
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+      }
+    }, [navigate]);
+  
   const { habits, setHabits } = useHabits()
   return (
     <div>

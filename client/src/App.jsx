@@ -11,6 +11,7 @@ import HabitList from './Pages/HabitList'
 import { HabitProvider } from './context/HabitContext'
 import { UserProvider } from './context/UserContext.jsx'
 import HabitDetails from './Pages/HabitDetails.jsx'
+import UpdateHabit from './Pages/UpdateHabit.jsx'
 
 const App = () => {
   return (
@@ -34,6 +35,12 @@ const App = () => {
         <HabitProvider>
           <HabitDetails />
         </HabitProvider>} />
+        <Route path='/habit/update/:id' element={
+        <UserProvider>
+          <HabitProvider>
+            <UpdateHabit />
+          </HabitProvider>
+        </UserProvider>} />
       <Route path='/add-habit' element={
         <HabitProvider>
           <AddHabit />

@@ -18,7 +18,7 @@ const HabitList = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (!token || token=='') {
       navigate('/login');
     }
   }, [navigate]);
@@ -111,7 +111,7 @@ const HabitList = () => {
                   <p>{habit.description}</p>
                   </div>
                   <p className="text-sm flex items-center text-gray-600">
-                    <i class="ri-fire-line text-2xl text-yellow-400"></i>
+                    <i className="ri-fire-line text-2xl text-yellow-400"></i>
                     Streak: {habit.streak}
                   </p>
                 </div>
