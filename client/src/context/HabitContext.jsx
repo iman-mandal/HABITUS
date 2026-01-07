@@ -8,17 +8,21 @@ export const HabitProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   const fetchHabits = useCallback(async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      console.warn('No token found, skipping habit fetch')
+      setLoading(false)
+      return
+    }
+
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/habit`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      )
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/habit`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       setHabits(res.data)
-      console.log(res.data)
+      console.log('Habits fetched:', res.data)
     } catch (err) {
       console.error('Failed to fetch habits', err)
     } finally {

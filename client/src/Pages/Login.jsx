@@ -3,13 +3,13 @@ import AppLogo from '../Assets/HabitTrackerLogo.png'
 import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useUser } from '../context/UserContext'
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-
+  const { setUser } = useUser()
 
   const submitHandler = async (e) => {
     e.preventDefault();

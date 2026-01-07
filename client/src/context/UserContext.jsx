@@ -12,7 +12,6 @@ export const useUser = () => {
   return context
 }
 
-// 3️⃣ UserProvider component
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null) // user object
   const [loading, setLoading] = useState(true)

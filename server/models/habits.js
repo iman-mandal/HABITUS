@@ -1,16 +1,34 @@
 const mongoose = require('mongoose');
 
 const HabitSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    title: { type: String, required : true },
-    description: { type: String },
-    frequency: { type: String, enum: ['daily', 'weekly', 'monthly'] },
-    targetPerWeek: { type: Number, default: 7 },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    frequency: {
+        type: String,
+        required: true,
+        enum: ['daily', 'weekly', 'monthly'],
+        default: 'daily'
+    },
+    targetPerWeek: {
+        type: Number,
+        default: 7
+    },
     startDate: { type: String, default: Date.now },
     history: [{
         date: { type: String },
         completed: { type: Boolean, default: false }
-    }], 
+    }],
     streak: { type: Number, default: 0 },
     longestStreak: { type: Number, default: 0 },
     active: { type: Boolean, default: true }

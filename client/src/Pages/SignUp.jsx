@@ -3,6 +3,8 @@ import AppLogo from '../Assets/HabitTrackerLogo.png'
 import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import { useUser } from '../context/UserContext'
+
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState('');
@@ -10,6 +12,7 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('')
+  const { setUser } = useUser()
 
   const navigate = useNavigate();
 
@@ -122,8 +125,8 @@ const SignUp = () => {
           <button
             type="submit"
             className={`py-3 rounded-lg font-semibold mt-2 ${password !== confirmPassword
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-black text-white'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-black text-white'
               }`}
             disabled={password !== confirmPassword}>
             Create Account

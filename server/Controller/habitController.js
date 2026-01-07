@@ -1,18 +1,29 @@
 const habitService = require('../Services/habitServices');
 
+
 exports.createHabit = async (req, res) => {
   try {
-    const habit = await habitService.createHabit(
-      req.userId,
-      req.body.title
-    );
-    console.log('Your Habit is Sucessfully Created')
+    const { title, description, frequency, targetPerWeek } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !frequency) {
+      return res.status(400).json({ message: 'Title, description, and frequency are required' });
+    }
+
+    const habit = await habitService.createHabit(req.userId, {
+      title,
+      description,
+      frequency,
+      targetPerWeek
+    });
+
     res.status(201).json({ message: 'Habit created', habit });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
+
 
 exports.getHabits = async (req, res) => {
   try {

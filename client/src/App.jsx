@@ -14,21 +14,41 @@ import HabitDetails from './Pages/HabitDetails.jsx'
 
 const App = () => {
   return (
-    <UserProvider>
-      <HabitProvider>
-        <Routes>
-          <Route path='/' element={<Start />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/habit-details/:id' element={<HabitDetails />} />
-          <Route path='/add-habit' element={<AddHabit />} />
-          <Route path='/habit-analytics' element={<Analytics />} />
-          <Route path='/habit-list' element={<HabitList />} />
-        </Routes>
-      </HabitProvider>
-    </UserProvider>
+
+    <Routes>
+      <Route path='/' element={<Start />} />
+      <Route path='/login' element={<Login />} />
+      <Route path='/signup' element={<SignUp />} />
+      <Route path='/home' element={
+        <UserProvider>
+          <HabitProvider>
+            <Home />
+          </HabitProvider>
+        </UserProvider>} />
+
+      <Route path='/profile' element={
+        <UserProvider>
+          <Profile />
+        </UserProvider>} />
+      <Route path='/habit-details/:id' element={
+        <HabitProvider>
+          <HabitDetails />
+        </HabitProvider>} />
+      <Route path='/add-habit' element={
+        <HabitProvider>
+          <AddHabit />
+        </HabitProvider>} />
+      <Route path='/habit-analytics' element={
+        <HabitProvider>
+          <Analytics />
+        </HabitProvider>} />
+
+      <Route path='/habit-list' element={
+        <HabitProvider>
+          <HabitList />
+        </HabitProvider>} />
+    </Routes>
+
   )
 }
 

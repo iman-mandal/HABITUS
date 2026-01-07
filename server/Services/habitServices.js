@@ -1,8 +1,16 @@
 const HabitModel = require('../models/habits');
 
-exports.createHabit = async (userId, title) => {
+
+exports.createHabit = async (userId, { title, description, frequency, targetPerWeek }) => {
   if (!userId) throw new Error('User not found');
-  return await HabitModel.create({ title, user: userId });
+
+  return await HabitModel.create({
+    user: userId,
+    title,
+    description,
+    frequency,
+    targetPerWeek
+  });
 };
 
 exports.getHabits = async (userId) => {

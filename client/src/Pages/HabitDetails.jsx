@@ -18,6 +18,10 @@ const HabitDetails = () => {
     )
   }
 
+  const DeleteHabit=as()=>{
+
+  }
+
   return (
     <div className="flex flex-col h-screen bg-blue-50">
 
@@ -44,11 +48,20 @@ const HabitDetails = () => {
             {habit.description || "No description provided"}
           </p>
 
-          <div className="flex items-center gap-3 mt-4">
-            <i className="ri-fire-line text-2xl text-yellow-400"></i>
-            <div>
-              <p className="text-xs text-gray-500">Streak</p>
-              <p className="font-semibold">{habit.streak} Days</p>
+          <div className="flex items-center justify-between gap-3 mt-4">
+            <div className='flex flex-row gap-2 items-center justify-center'>
+              <i className="ri-fire-line text-2xl text-yellow-400"></i>
+              <div className='flex flex-col'>
+                <p className="text-xs text-gray-500">Streak</p>
+                <p className="font-semibold">{habit.streak} Days</p>
+              </div>
+            </div>
+            <div className='flex flex-row gap-2 items-center justify-center'>
+              <i className="ri-target-line text-2xl"></i>
+              <div className='flex flex-col'>
+                <p className="text-xs text-gray-500">Longest Streak</p>
+                <p className="font-semibold">{habit.longestStreak} Days</p>
+              </div>
             </div>
           </div>
         </div>
