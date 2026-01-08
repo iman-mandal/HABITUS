@@ -61,6 +61,65 @@ module.exports.loginUser = async (req, res, next) => {
     }
 }
 
+//Update user
+module.exports.updateUserProfile = async (req, res) => {
+  try {
+    const { firstname, lastname } = req.body
+
+    if (!firstname || !lastname) {
+      return res.status(400).json({ message: "First & Last name required" })
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        fullname: { firstname, lastname }
+      },
+      { new: true }
+    )
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser
+    })
+
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Failed to update profile" })
+  }
+}
+
+//change password
+module.exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "All fields required" })
+    }
+
+    const user = await userModel.findById(req.user._id).select("+password")
+
+    const isMatch = await user.comparePassword(oldPassword)
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Old password is incorrect" })
+    }
+
+    const hashedPassword = await userModel.hashPassword(newPassword)
+
+    user.password = hashedPassword
+    await user.save()
+
+    res.status(200).json({ message: "Password updated successfully" })
+
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Password update failed" })
+  }
+}
+
+
 module.exports.getUserProfile = async (req, res, next) => {
     try {
         res.status(200).json({ user: req.user });

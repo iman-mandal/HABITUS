@@ -21,13 +21,16 @@ router.post('/login', [
     body('email').isEmail().withMessage('Invalid Email'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], userController.loginUser
-) 
+)
+
+router.put('/update-profile', authMiddleware.authUser, userController.updateUserProfile)
+router.put('/change-password', authMiddleware.authUser, userController.changePassword)
 
 //get user profile route
-router.get('/profile', authMiddleware.authUser,userController.getUserProfile );
+router.get('/profile', authMiddleware.authUser, userController.getUserProfile);
 
 // logout user route
-router.get('/logout',authMiddleware.authUser, userController.logoutUser);
+router.get('/logout', authMiddleware.authUser, userController.logoutUser);
 
 
 module.exports = router;

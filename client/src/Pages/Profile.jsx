@@ -55,7 +55,9 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className='flex flex-col mt-4 gap-3 mx-3'>
+        <div 
+        onClick={()=>{ navigate('/profile/edit')}}
+        className='flex flex-col mt-4 gap-3 mx-3'>
           <div className='flex flex-row py-2.5 px-3 bg-[white] rounded-lg items-center justify-between shadow-xl'>
             <div className='flex flex-row gap-4 items-center'>
               <i className="ri-user-fill text-[22px] text-[#8b8b8b]"></i>
