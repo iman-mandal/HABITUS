@@ -44,9 +44,9 @@ const Profile = () => {
   }, [navigate]);
 
   return (
-    <div>
+    <div className='bg-blue-50 h-screen'>
       <div>
-        <div className='flex flex-col mt-5 font-serif items-center justify-center'>
+        <div className='flex flex-col pt-5 font-serif items-center justify-center'>
           <h2 className='text-center text-[24px] font-semibold'>Profile & Settings</h2>
           <i className="ri-account-circle-line -mt-5 text-[130px]"></i>
           <div className='flex flex-col -mt-9'>
