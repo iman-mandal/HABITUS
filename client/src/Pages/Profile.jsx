@@ -11,8 +11,10 @@ const Profile = () => {
   const { user, setUser } = useUser()
   const navigate = useNavigate()
 
+  const [theme, setTheme] = useState('light')
   const [editProfilePanel, setEditProfilePanel] = useState(false)
-  const [logoutConfirmTost,setLogoutConfirmTost]= useState(false)
+  const [themePanel, setThemePanel] = useState(false)
+  const [logoutConfirmTost, setLogoutConfirmTost] = useState(false)
 
   const UserLogout = useCallback(async () => {
     try {
@@ -120,16 +122,56 @@ const Profile = () => {
         </motion.div>
 
         {/* THEME */}
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          className="flex py-2.5 px-3 bg-white rounded-lg items-center justify-between shadow-xl"
-        >
-          <div className="flex gap-4 items-center">
-            <i className="ri-contrast-2-line text-[22px] text-gray-400"></i>
-            <h3 className="text-[16px] font-semibold font-serif">Theme</h3>
+        <div className="bg-white rounded-lg shadow-xl">
+          <div
+            onClick={() => setThemePanel(!themePanel)}
+            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+          >
+            <div className="flex gap-4 items-center">
+              <i className="ri-contrast-2-line text-[22px] text-gray-400"></i>
+              <h3 className="text-[16px] font-semibold font-serif">Theme</h3>
+            </div>
+
+            <i
+              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${themePanel ? "rotate-90" : ""
+                }`}
+            ></i>
           </div>
-          <i className="ri-arrow-right-s-line text-[22px]"></i>
-        </motion.div>
+
+          <AnimatePresence>
+            {themePanel && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden px-4 pb-3"
+              >
+                <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
+
+                  <button
+                    onClick={() => setTheme("light")}
+                    className="flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100"
+                  >
+                    <i className="ri-sun-line"></i>
+                    Light
+                  </button>
+
+                  <button
+                    onClick={() => setTheme("dark")}
+                    className="flex items-center w-1/2 gap-2 px-3 py-2 rounded hover:bg-gray-100"
+                  >
+                    <i className="ri-moon-line"></i>
+                    Dark
+                  </button>
+
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+        </div>
+
 
         {/* DATA RESET */}
         <motion.div
@@ -150,7 +192,7 @@ const Profile = () => {
       <div className="w-full mt-6 flex items-center justify-center">
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={()=>{
+          onClick={() => {
             setLogoutConfirmTost(true)
           }}
           className="w-screen mx-4 bg-black text-white py-3 rounded-lg font-semibold"
@@ -158,7 +200,7 @@ const Profile = () => {
           Logout
         </motion.button>
       </div>
-       {logoutConfirmTost && (
+      {logoutConfirmTost && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white flex flex-col rounded-xl w-[80%] max-w-sm p-4">
             <i className="ri-logout-box-r-line text-[50px] text-center text-[#ff4d4d]"></i>
