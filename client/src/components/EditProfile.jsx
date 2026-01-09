@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const EditProfile = ({ user, setUser }) => {
+const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
 
     const navigate = useNavigate()
 
@@ -104,7 +104,7 @@ const EditProfile = ({ user, setUser }) => {
     }
 
     return (
-        <div className="bg-white flex flex-col">
+        <div className="bg-white flex flex-col rounded-lg">
 
             {/* CONTENT */}
             <div className="my-[20px] mx-3 flex flex-col gap-4">
@@ -166,7 +166,11 @@ const EditProfile = ({ user, setUser }) => {
                                 </div>
 
                                 <button
-                                    onClick={handleSaveName}
+                                    onClick={() => {
+                                        handleSaveName()
+                                        setEditProfilePanel(false)
+                                    }
+                                    }
                                     disabled={loading}
                                     className="bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition disabled:opacity-60"
                                 >
@@ -232,7 +236,10 @@ const EditProfile = ({ user, setUser }) => {
                                 </div>
 
                                 <button
-                                    onClick={handleChangePassword}
+                                    onClick={() => {
+                                        handleChangePassword()
+                                        setEditProfilePanel(false)
+                                    }}
                                     disabled={loading}
                                     className="bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition disabled:opacity-60"
                                 >

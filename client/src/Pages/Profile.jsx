@@ -12,6 +12,8 @@ const Profile = () => {
   const navigate = useNavigate()
 
   const [theme, setTheme] = useState('light')
+  const [notification, setNotification] = useState('on')
+  const [notificationPanel, setNotificationPanel] = useState(false)
   const [editProfilePanel, setEditProfilePanel] = useState(false)
   const [themePanel, setThemePanel] = useState(false)
   const [logoutConfirmTost, setLogoutConfirmTost] = useState(false)
@@ -101,26 +103,71 @@ const Profile = () => {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <EditProfile user={user} setUser={setUser} />
+                <EditProfile user={user} setUser={setUser} 
+                setEditProfilePanel={setEditProfilePanel} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {/* NOTIFICATION */}
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          className="flex py-2.5 px-3 bg-white rounded-lg items-center justify-between shadow-xl"
-        >
-          <div className="flex gap-4 items-center">
-            <i className="ri-notification-4-line text-[22px] text-gray-400"></i>
-            <h3 className="text-[16px] font-semibold font-serif">
-              Notification Settings
-            </h3>
+        <div className="bg-white rounded-lg shadow-xl">
+          <div
+            onClick={() => setNotificationPanel(!notificationPanel)}
+            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+          >
+            <div className="flex gap-4 items-center">
+              <i className="ri-notification-4-line text-[22px] text-gray-400"></i>
+              <h3 className="text-[16px] font-semibold font-serif">
+                Notification Settings
+              </h3>
+            </div>
+            <i
+              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${notificationPanel ? 'rotate-90' : ''
+                }`}
+            ></i>
           </div>
-          <i className="ri-arrow-right-s-line text-[22px]"></i>
-        </motion.div>
+          {notificationPanel && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden px-4 pb-3"
+            >
+              <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
 
+                <button
+                  onClick={() => {
+                    setNotification("on")
+                    setNotificationPanel(false)
+                  }
+                  }
+                  className={`flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100
+                      ${notification === "on" ? "bg-gray-300" : "hover:bg-gray-100"}
+                      `}
+                >
+                  <i className="ri-notification-4-line"></i>
+                  On
+                </button>
+
+                <button
+                  onClick={() => {
+                    setNotification("off")
+                    setNotificationPanel(false)
+                  }
+                  }
+                  className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${notification === "off" ? "bg-gray-300" : "hover:bg-gray-100"}`}
+
+                >
+                  <i className="ri-notification-off-line"></i>
+                  Off
+                </button>
+
+              </div>
+            </motion.div>
+          )}
+        </div>
         {/* THEME */}
         <div className="bg-white rounded-lg shadow-xl">
           <div
@@ -150,16 +197,27 @@ const Profile = () => {
                 <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
 
                   <button
-                    onClick={() => setTheme("light")}
-                    className="flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100"
+                    onClick={() => {
+                      setTheme("light")
+                      setThemePanel(false)
+                    }
+                    }
+                    className={`flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100
+                      ${theme === "light" ? "bg-gray-300" : "hover:bg-gray-100"}
+                      `}
                   >
                     <i className="ri-sun-line"></i>
                     Light
                   </button>
 
                   <button
-                    onClick={() => setTheme("dark")}
-                    className="flex items-center w-1/2 gap-2 px-3 py-2 rounded hover:bg-gray-100"
+                    onClick={() => {
+                      setTheme("dark")
+                      setThemePanel(false)
+                    }
+                    }
+                    className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${theme === "dark" ? "bg-gray-300" : "hover:bg-gray-100"}`}
+
                   >
                     <i className="ri-moon-line"></i>
                     Dark
