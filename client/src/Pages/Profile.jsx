@@ -17,6 +17,8 @@ const Profile = () => {
   const [editProfilePanel, setEditProfilePanel] = useState(false)
   const [themePanel, setThemePanel] = useState(false)
   const [logoutConfirmTost, setLogoutConfirmTost] = useState(false)
+  const [resetDataPanel, setResetDataPanel] = useState(false)
+
 
   const UserLogout = useCallback(async () => {
     try {
@@ -103,8 +105,8 @@ const Profile = () => {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <EditProfile user={user} setUser={setUser} 
-                setEditProfilePanel={setEditProfilePanel} />
+                <EditProfile user={user} setUser={setUser}
+                  setEditProfilePanel={setEditProfilePanel} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -180,7 +182,7 @@ const Profile = () => {
             </div>
 
             <i
-              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${themePanel ? "rotate-90" : ""
+              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${themePanel ? 'rotate-90' : ''
                 }`}
             ></i>
           </div>
@@ -230,20 +232,52 @@ const Profile = () => {
 
         </div>
 
-
         {/* DATA RESET */}
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          className="flex py-2.5 px-3 bg-white rounded-lg items-center justify-between shadow-xl"
-        >
-          <div className="flex gap-4 items-center">
-            <i className="ri-error-warning-line text-[22px] text-gray-400"></i>
-            <h3 className="text-[16px] font-semibold font-serif">
-              Data Reset
-            </h3>
+        <div className="bg-white rounded-lg shadow-xl">
+          <div
+            onClick={() => setResetDataPanel(!resetDataPanel)}
+            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+          >
+            <div className="flex gap-4 items-center">
+              <i className="ri-error-warning-line text-[22px] text-gray-400"></i>
+              <h3 className="text-[16px] font-semibold font-serif">
+                Data Reset
+              </h3>
+            </div>
+            <i
+              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${resetDataPanel ? "rotate-90" : ""
+                }`}
+            ></i>
           </div>
-          <i className="ri-arrow-right-s-line text-[22px]"></i>
-        </motion.div>
+
+          <AnimatePresence>
+            {resetDataPanel && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden px-4 pb-3"
+              >
+                <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
+
+                  <button
+                    onClick={() => {
+                      setTheme("light")
+                      setResetDataPanel(false)
+                      navigate('/home')
+                    }
+                    }
+                    className="flex w-[90%] font-semibold bg-[#ff6666] shadow-2xl font-serif text-[15px] justify-center items-center gap-2 px-3 py-2 rounded hover:bg-gray-100">
+                    <i className="ri-error-warning-line text-[18px] font-normal text-white"></i>
+                    Reset Habits
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* LOGOUT */}
@@ -258,43 +292,44 @@ const Profile = () => {
           Logout
         </motion.button>
       </div>
-      {logoutConfirmTost && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white flex flex-col rounded-xl w-[80%] max-w-sm p-4">
-            <i className="ri-logout-box-r-line text-[50px] text-center text-[#ff4d4d]"></i>
-            <h3 className="text-[20px] font-serif text-center font-semibold text-gray-800">
-              Logout Your Profile
-            </h3>
+      {
+        logoutConfirmTost && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white flex flex-col rounded-xl w-[80%] max-w-sm p-4">
+              <i className="ri-logout-box-r-line text-[50px] text-center text-[#ff4d4d]"></i>
+              <h3 className="text-[20px] font-serif text-center font-semibold text-gray-800">
+                Logout Your Profile
+              </h3>
 
-            <p className="text-[15px] text-center text-gray-700 mt-2">
-              You can always log back in at any time.
-            </p>
+              <p className="text-[15px] text-center text-gray-700 mt-2">
+                You can always log back in at any time.
+              </p>
 
-            <div className="flex justify-between gap-3 mt-6">
-              <button
-                onClick={() => setLogoutConfirmTost(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 active:scale-95"
-              >
-                Cancel
-              </button>
+              <div className="flex justify-between gap-3 mt-6">
+                <button
+                  onClick={() => setLogoutConfirmTost(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 active:scale-95"
+                >
+                  Cancel
+                </button>
 
-              <button
-                onClick={() => {
-                  setLogoutConfirmTost(false)
-                  UserLogout()
-                  navigate('/login')
-                }}
-                className="px-4 py-2 rounded-lg bg-red-500 text-white active:scale-95"
-              >
-                Logout
-              </button>
+                <button
+                  onClick={() => {
+                    setLogoutConfirmTost(false)
+                    UserLogout()
+                    navigate('/login')
+                  }}
+                  className="px-4 py-2 rounded-lg bg-red-500 text-white active:scale-95"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
+        )
+      }
       <Navbar />
-    </motion.div>
+    </motion.div >
   )
 }
 
