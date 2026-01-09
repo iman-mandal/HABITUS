@@ -104,19 +104,10 @@ const EditProfile = () => {
     }
 
     return (
-        <div className="bg-blue-50 min-h-screen flex flex-col">
-
-            {/* HEADER */}
-            <div className="fixed left-0 right-0 top-3 mx-4 bg-white shadow-xl rounded-lg py-3 flex items-center justify-center z-50">
-                <i
-                    onClick={() => navigate(-1)}
-                    className="ri-arrow-left-wide-line absolute left-5 text-[25px] cursor-pointer"
-                ></i>
-                <h2 className="text-[22px] font-semibold font-serif">Edit Profile</h2>
-            </div>
+        <div className="bg-white flex flex-col">
 
             {/* CONTENT */}
-            <div className="mt-[90px] mx-3 flex flex-col gap-4">
+            <div className="my-[20px] mx-3 flex flex-col gap-4">
 
                 {toast.show && (
                     <div

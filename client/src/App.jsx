@@ -12,7 +12,6 @@ import { HabitProvider } from './context/HabitContext'
 import { UserProvider } from './context/UserContext.jsx'
 import HabitDetails from './Pages/HabitDetails.jsx'
 import UpdateHabit from './Pages/UpdateHabit.jsx'
-import EditProfile from './Pages/EditProfile.jsx'
 
 const App = () => {
   return (
@@ -33,10 +32,6 @@ const App = () => {
           <Profile />
         </UserProvider>} />
 
-        <Route path='/profile/edit' element={
-        <UserProvider>
-          <EditProfile />
-        </UserProvider>} />
 
       <Route path='/habit-details/:id' element={
         <HabitProvider>
