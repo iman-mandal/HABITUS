@@ -73,12 +73,7 @@ const Home = () => {
       </div>
 
       {/* PROGRESS */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-blue-50"
-      >
+      
         <div className=" fixed top-[90px] left-0 right-0 z-40 bg-blue-50 flex justify-center py-3">
           <ProgressRate percentage={percentage} />
         </div>
@@ -89,7 +84,7 @@ const Home = () => {
         >
           <Habits habits={habits} setHabits={setHabits} />
         </div>
-      </motion.div>
+      
       {/* FLOATING ADD BUTTON */}
       <Link
         to="/add-habit"

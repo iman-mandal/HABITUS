@@ -50,12 +50,7 @@ const Profile = () => {
   }, [navigate])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="bg-blue-50"
-    >
+    <div>
       {/* PROFILE HEADER */}
       <div className="flex flex-col pt-5 font-serif items-center justify-center">
         <h2 className="text-center text-[24px] font-semibold">
@@ -72,123 +67,69 @@ const Profile = () => {
           </h5>
         </div>
       </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
+      >
+        {/* SETTINGS LIST */}
+        <div className="flex flex-col mt-4 gap-3 mx-3">
 
-      {/* SETTINGS LIST */}
-      <div className="flex flex-col mt-4 gap-3 mx-3">
-
-        {/* EDIT PROFILE */}
-        <div className="bg-white rounded-lg shadow-xl">
-          <div
-            onClick={() => setEditProfilePanel(!editProfilePanel)}
-            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
-          >
-            <div className="flex gap-4 items-center">
-              <i className="ri-user-fill text-[22px] text-gray-400"></i>
-              <h3 className="text-[16px] font-semibold font-serif">
-                Edit Profile
-              </h3>
-            </div>
-
-            <i
-              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${editProfilePanel ? 'rotate-90' : ''
-                }`}
-            ></i>
-          </div>
-
-          {/* ANIMATED PANEL */}
-          <AnimatePresence>
-            {editProfilePanel && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <EditProfile user={user} setUser={setUser}
-                  setEditProfilePanel={setEditProfilePanel} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* NOTIFICATION */}
-        <div className="bg-white rounded-lg shadow-xl">
-          <div
-            onClick={() => setNotificationPanel(!notificationPanel)}
-            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
-          >
-            <div className="flex gap-4 items-center">
-              <i className="ri-notification-4-line text-[22px] text-gray-400"></i>
-              <h3 className="text-[16px] font-semibold font-serif">
-                Notification Settings
-              </h3>
-            </div>
-            <i
-              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${notificationPanel ? 'rotate-90' : ''
-                }`}
-            ></i>
-          </div>
-          {notificationPanel && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden px-4 pb-3"
+          {/* EDIT PROFILE */}
+          <div className="bg-white rounded-lg shadow-xl">
+            <div
+              onClick={() => setEditProfilePanel(!editProfilePanel)}
+              className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
             >
-              <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
-
-                <button
-                  onClick={() => {
-                    setNotification("on")
-                    setNotificationPanel(false)
-                  }
-                  }
-                  className={`flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100
-                      ${notification === "on" ? "bg-gray-300" : "hover:bg-gray-100"}
-                      `}
-                >
-                  <i className="ri-notification-4-line"></i>
-                  On
-                </button>
-
-                <button
-                  onClick={() => {
-                    setNotification("off")
-                    setNotificationPanel(false)
-                  }
-                  }
-                  className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${notification === "off" ? "bg-gray-300" : "hover:bg-gray-100"}`}
-
-                >
-                  <i className="ri-notification-off-line"></i>
-                  Off
-                </button>
-
+              <div className="flex gap-4 items-center">
+                <i className="ri-user-fill text-[22px] text-gray-400"></i>
+                <h3 className="text-[16px] font-semibold font-serif">
+                  Edit Profile
+                </h3>
               </div>
-            </motion.div>
-          )}
-        </div>
-        {/* THEME */}
-        <div className="bg-white rounded-lg shadow-xl">
-          <div
-            onClick={() => setThemePanel(!themePanel)}
-            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
-          >
-            <div className="flex gap-4 items-center">
-              <i className="ri-contrast-2-line text-[22px] text-gray-400"></i>
-              <h3 className="text-[16px] font-semibold font-serif">Theme</h3>
+
+              <i
+                className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${editProfilePanel ? 'rotate-90' : ''
+                  }`}
+              ></i>
             </div>
 
-            <i
-              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${themePanel ? 'rotate-90' : ''
-                }`}
-            ></i>
+            {/* ANIMATED PANEL */}
+            <AnimatePresence>
+              {editProfilePanel && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <EditProfile user={user} setUser={setUser}
+                    setEditProfilePanel={setEditProfilePanel} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <AnimatePresence>
-            {themePanel && (
+          {/* NOTIFICATION */}
+          <div className="bg-white rounded-lg shadow-xl">
+            <div
+              onClick={() => setNotificationPanel(!notificationPanel)}
+              className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+            >
+              <div className="flex gap-4 items-center">
+                <i className="ri-notification-4-line text-[22px] text-gray-400"></i>
+                <h3 className="text-[16px] font-semibold font-serif">
+                  Notification Settings
+                </h3>
+              </div>
+              <i
+                className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${notificationPanel ? 'rotate-90' : ''
+                  }`}
+              ></i>
+            </div>
+            {notificationPanel && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
@@ -200,86 +141,145 @@ const Profile = () => {
 
                   <button
                     onClick={() => {
-                      setTheme("light")
-                      setThemePanel(false)
+                      setNotification("on")
+                      setNotificationPanel(false)
                     }
                     }
                     className={`flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100
-                      ${theme === "light" ? "bg-gray-300" : "hover:bg-gray-100"}
+                      ${notification === "on" ? "bg-gray-300" : "hover:bg-gray-100"}
                       `}
                   >
-                    <i className="ri-sun-line"></i>
-                    Light
+                    <i className="ri-notification-4-line"></i>
+                    On
                   </button>
 
                   <button
                     onClick={() => {
-                      setTheme("dark")
-                      setThemePanel(false)
+                      setNotification("off")
+                      setNotificationPanel(false)
                     }
                     }
-                    className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${theme === "dark" ? "bg-gray-300" : "hover:bg-gray-100"}`}
+                    className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${notification === "off" ? "bg-gray-300" : "hover:bg-gray-100"}`}
 
                   >
-                    <i className="ri-moon-line"></i>
-                    Dark
+                    <i className="ri-notification-off-line"></i>
+                    Off
                   </button>
 
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </div>
+          {/* THEME */}
+          <div className="bg-white rounded-lg shadow-xl">
+            <div
+              onClick={() => setThemePanel(!themePanel)}
+              className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+            >
+              <div className="flex gap-4 items-center">
+                <i className="ri-contrast-2-line text-[22px] text-gray-400"></i>
+                <h3 className="text-[16px] font-semibold font-serif">Theme</h3>
+              </div>
 
-        </div>
-
-        {/* DATA RESET */}
-        <div className="bg-white rounded-lg shadow-xl">
-          <div
-            onClick={() => setResetDataPanel(!resetDataPanel)}
-            className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
-          >
-            <div className="flex gap-4 items-center">
-              <i className="ri-error-warning-line text-[22px] text-gray-400"></i>
-              <h3 className="text-[16px] font-semibold font-serif">
-                Data Reset
-              </h3>
+              <i
+                className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${themePanel ? 'rotate-90' : ''
+                  }`}
+              ></i>
             </div>
-            <i
-              className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${resetDataPanel ? "rotate-90" : ""
-                }`}
-            ></i>
+
+            <AnimatePresence>
+              {themePanel && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden px-4 pb-3"
+                >
+                  <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
+
+                    <button
+                      onClick={() => {
+                        setTheme("light")
+                        setThemePanel(false)
+                      }
+                      }
+                      className={`flex w-1/2 items-center gap-2 px-3 py-2 rounded hover:bg-gray-100
+                      ${theme === "light" ? "bg-gray-300" : "hover:bg-gray-100"}
+                      `}
+                    >
+                      <i className="ri-sun-line"></i>
+                      Light
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setTheme("dark")
+                        setThemePanel(false)
+                      }
+                      }
+                      className={`flex items-center w-1/2 gap-2 px-3 py-2 rounded ${theme === "dark" ? "bg-gray-300" : "hover:bg-gray-100"}`}
+
+                    >
+                      <i className="ri-moon-line"></i>
+                      Dark
+                    </button>
+
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </div>
 
-          <AnimatePresence>
-            {resetDataPanel && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden px-4 pb-3"
-              >
-                <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
+          {/* DATA RESET */}
+          <div className="bg-white rounded-lg shadow-xl">
+            <div
+              onClick={() => setResetDataPanel(!resetDataPanel)}
+              className="flex py-2.5 px-3 items-center justify-between cursor-pointer"
+            >
+              <div className="flex gap-4 items-center">
+                <i className="ri-error-warning-line text-[22px] text-gray-400"></i>
+                <h3 className="text-[16px] font-semibold font-serif">
+                  Data Reset
+                </h3>
+              </div>
+              <i
+                className={`ri-arrow-right-s-line text-[22px] transition-transform duration-300 ${resetDataPanel ? "rotate-90" : ""
+                  }`}
+              ></i>
+            </div>
 
-                  <button
-                    onClick={() => {
-                      setTheme("light")
-                      setResetDataPanel(false)
-                      navigate('/home')
-                    }
-                    }
-                    className="flex w-[90%] font-semibold bg-[#ff6666] shadow-2xl font-serif text-[15px] justify-center items-center gap-2 px-3 py-2 rounded hover:bg-gray-100">
-                    <i className="ri-error-warning-line text-[18px] font-normal text-white"></i>
-                    Reset Habits
-                  </button>
-                </div>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {resetDataPanel && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden px-4 pb-3"
+                >
+                  <div className="flex w-[90%] mx-5 flex-row justify-between gap-3">
 
-          </AnimatePresence>
+                    <button
+                      onClick={() => {
+                        setTheme("light")
+                        setResetDataPanel(false)
+                        navigate('/home')
+                      }
+                      }
+                      className="flex w-[90%] font-semibold bg-[#ff6666] shadow-2xl font-serif text-[15px] justify-center items-center gap-2 px-3 py-2 rounded hover:bg-gray-100">
+                      <i className="ri-error-warning-line text-[18px] font-normal text-white"></i>
+                      Reset Habits
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
-
+      </motion.div >
       {/* LOGOUT */}
       <div className="w-full mt-6 flex items-center justify-center">
         <motion.button
@@ -329,7 +329,7 @@ const Profile = () => {
         )
       }
       <Navbar />
-    </motion.div >
+    </div>
   )
 }
 
