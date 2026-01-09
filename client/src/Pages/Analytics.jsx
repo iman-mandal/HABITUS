@@ -3,6 +3,8 @@ import Navbar from '../components/Navbar'
 import HabitAreaChatGraph from '../components/HabitAreaChatGraph'
 import { useHabits } from '../context/HabitContext'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+
 
 const Analytics = () => {
 
@@ -47,28 +49,33 @@ const Analytics = () => {
           </p>
         </div>
       </div>
-
-      {/* OVERALL AVERAGE */}
-      <div className="text-center my-4 flex flex-row justify-evenly">
-        <div className='bg-white flex flex-col shadow-lg px-3 rounded-lg py-2'>
-        <p className="text-[12px] font-serif font-semibold text-gray-700">Completation Rate</p>
-        <h2 className="text-xl font-bold text-green-600">
-          {calculateOverallAverage(habits)}%
-        </h2>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
+      >
+        {/* OVERALL AVERAGE */}
+        <div className="text-center my-4 flex flex-row justify-evenly">
+          <div className='bg-white flex flex-col shadow-lg px-3 rounded-lg py-2'>
+            <p className="text-[12px] font-serif font-semibold text-gray-700">Completation Rate</p>
+            <h2 className="text-xl font-bold text-green-600">
+              {calculateOverallAverage(habits)}%
+            </h2>
+          </div>
+          <div className='bg-white flex flex-col shadow-lg px-3 rounded-lg py-2'>
+            <p className="text-[12px] font-serif font-semibold text-gray-700">Total Habits</p>
+            <h2 className="text-xl font-bold text-green-600">
+              {totalHabits}
+            </h2>
+          </div>
         </div>
-        <div className='bg-white flex flex-col shadow-lg px-3 rounded-lg py-2'>
-        <p className="text-[12px] font-serif font-semibold text-gray-700">Total Habits</p>
-        <h2 className="text-xl font-bold text-green-600">
-          {totalHabits}
-        </h2>
+
+        {/* GRAPH */}
+        <div className="mx-3 mt-4">
+          <HabitAreaChatGraph habits={habits} setHabits={setHabits} />
         </div>
-      </div>
-
-      {/* GRAPH */}
-      <div className="mx-3 mt-4">
-        <HabitAreaChatGraph habits={habits} setHabits={setHabits} />
-      </div>
-
+      </motion.div>
       {/* NAVBAR */}
       <div className="fixed bottom-0 left-0 right-0 z-40">
         <Navbar />

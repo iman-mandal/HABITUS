@@ -10,7 +10,6 @@ export const HabitProvider = ({ children }) => {
   const fetchHabits = useCallback(async () => {
     const token = localStorage.getItem('token')
     if (!token) {
-      console.warn('No token found, skipping habit fetch')
       setLoading(false)
       return
     }

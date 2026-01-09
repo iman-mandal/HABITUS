@@ -4,6 +4,7 @@ import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useUser } from '../context/UserContext'
+import { motion } from 'framer-motion'
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +33,7 @@ const Login = () => {
 
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col bg-blue-50 h-screen'>
       <div className="flex flex-row mt-12 justify-center gap-0">
         <img className="h-[60px]" src={AppLogo} alt="app logo" />
         <div className="flex flex-col justify-center mt-2 -ml-4 items-start">
@@ -42,44 +43,50 @@ const Login = () => {
           </p>
         </div>
       </div>
-
-      <div className="mt-10 mx-5 bg-white shadow-2xl rounded-xl py-12 px-6">
-        <h2 className="font-serif font-semibold text-center text-[26px] mb-6">
-          Login
-        </h2>
-        <form
-          onSubmit={(e) => {
-            submitHandler(e)
-          }}
-          className="flex flex-col gap-4">
-          <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
-            <i className="ri-mail-line text-gray-500"></i>
-            <input
-              className="w-full outline-none"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => { setEmail(e.target.value) }}
-              placeholder="Enter your Email"
-            />
-          </div>
-          <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
-            <i className="ri-lock-line text-gray-500"></i>
-            <input
-              className="w-full outline-none"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => { setPassword(e.target.value) }}
-              placeholder="Enter your Password"
-            />
-            <i className="ri-eye-off-line text-gray-400 cursor-pointer"></i>
-          </div>
-          <button className="bg-black text-white py-3 rounded-lg font-semibold mt-3">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
+      >
+        <div className="mt-10 mx-5 bg-white shadow-2xl rounded-xl py-12 px-6">
+          <h2 className="font-serif font-semibold text-center text-[26px] mb-6">
             Login
-          </button>
-        </form>
-      </div>
+          </h2>
+          <form
+            onSubmit={(e) => {
+              submitHandler(e)
+            }}
+            className="flex flex-col gap-4">
+            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
+              <i className="ri-mail-line text-gray-500"></i>
+              <input
+                className="w-full outline-none"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => { setEmail(e.target.value) }}
+                placeholder="Enter your Email"
+              />
+            </div>
+            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
+              <i className="ri-lock-line text-gray-500"></i>
+              <input
+                className="w-full outline-none"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => { setPassword(e.target.value) }}
+                placeholder="Enter your Password"
+              />
+              <i className="ri-eye-off-line text-gray-400 cursor-pointer"></i>
+            </div>
+            <button className="bg-black text-white py-3 rounded-lg font-semibold mt-3">
+              Login
+            </button>
+          </form>
+        </div>
+      </motion.div>
 
       <div className='flex justify-center items-center mt-6'>
         <p className='text-center'>You don't have an Account?

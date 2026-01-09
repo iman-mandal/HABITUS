@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import { useHabits } from '../context/HabitContext'
 import { Link, useNavigate } from 'react-router-dom';
-
+import { motion } from 'framer-motion';
 
 const HabitList = () => {
   const { habits, setHabits } = useHabits();
@@ -18,7 +18,7 @@ const HabitList = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token || token=='') {
+    if (!token || token == '') {
       navigate('/login');
     }
   }, [navigate]);
@@ -84,43 +84,49 @@ const HabitList = () => {
       </div>
 
       {/* Scrollable habits */}
-      <div className="flex-1 mb-[70px] overflow-y-auto no-scrollbar px-2">
-        {filteredHabits.length === 0 ? (
-          <p className="text-center mt-6 text-gray-400 text-sm">
-            No habits found
-          </p>
-        ) : (
-          filteredHabits.map((habit) => {
-            const todayHistory = habit.history?.find(
-              (h) => h.date === today
-            )
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
+      >
+        <div className="flex-1 mb-[70px] overflow-y-auto no-scrollbar px-2">
+          {filteredHabits.length === 0 ? (
+            <p className="text-center mt-6 text-gray-400 text-sm">
+              No habits found
+            </p>
+          ) : (
+            filteredHabits.map((habit) => {
+              const todayHistory = habit.history?.find(
+                (h) => h.date === today
+              )
 
-            return (
-              <div
-                key={habit._id}
-                onClick={() => {
-                  setHabitID(habit._id)
-                  navigate(`/habit-details/${habit._id}`)
-                }}
-                className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-white rounded-lg">
-                <div className='flex w-full flex-row justify-between'>
-                  <div className='flex flex-col'>
-                  <h2 className="font-semibold font-serif">
-                    {habit.title}
-                  </h2>
-                  <p>{habit.description}</p>
+              return (
+                <div
+                  key={habit._id}
+                  onClick={() => {
+                    setHabitID(habit._id)
+                    navigate(`/habit-details/${habit._id}`)
+                  }}
+                  className="flex items-center my-2 mx-3 justify-between px-4 py-3 bg-white rounded-lg">
+                  <div className='flex w-full flex-row justify-between'>
+                    <div className='flex flex-col'>
+                      <h2 className="font-semibold font-serif">
+                        {habit.title}
+                      </h2>
+                      <p>{habit.description}</p>
+                    </div>
+                    <p className="text-sm flex items-center text-gray-600">
+                      <i className="ri-fire-line text-2xl text-yellow-400"></i>
+                      Streak: {habit.streak}
+                    </p>
                   </div>
-                  <p className="text-sm flex items-center text-gray-600">
-                    <i className="ri-fire-line text-2xl text-yellow-400"></i>
-                    Streak: {habit.streak}
-                  </p>
                 </div>
-              </div>
-            )
-          })
-        )}
-      </div>
-
+              )
+            })
+          )}
+        </div>
+      </motion.div>
       <Link
         to="/add-habit"
         className=" fixed bottom-24 right-5 z-50 bg-[#49c5f1] flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-xl active:scale-95 transition"

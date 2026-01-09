@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const EditProfile = () => {
-    const { user, setUser } = useUser()
+const EditProfile = ({ user, setUser }) => {
+
     const navigate = useNavigate()
 
     const [newFirstName, setNewFirstName] = useState('')
@@ -120,7 +120,8 @@ const EditProfile = () => {
 
 
                 {/* CHANGE NAME */}
-                <div className='flex flex-col py-3 px-3 bg-white rounded-lg shadow-xl'>
+                <div className='flex flex-col py-3 px-3 bg-white rounded-lg
+                 shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]'>
                     <div
                         onClick={() => setShowNamePanel(!showNamePanel)}
                         className='flex flex-row items-center justify-between cursor-pointer'
@@ -177,7 +178,8 @@ const EditProfile = () => {
                 </div>
 
                 {/* CHANGE PASSWORD */}
-                <div className='flex flex-col py-3 px-3 bg-white rounded-lg shadow-xl'>
+                <div className='flex flex-col py-3 px-3 bg-white rounded-lg 
+                shadow-[0px_4px_16px_rgba(17,17,26,0.1),_0px_8px_24px_rgba(17,17,26,0.1),_0px_16px_56px_rgba(17,17,26,0.1)]'>
                     <div
                         onClick={() => setShowPasswordPanel(!showPasswordPanel)}
                         className='flex flex-row items-center justify-between cursor-pointer'

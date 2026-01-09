@@ -12,6 +12,7 @@ const Profile = () => {
   const navigate = useNavigate()
 
   const [editProfilePanel, setEditProfilePanel] = useState(false)
+  const [logoutConfirmTost,setLogoutConfirmTost]= useState(false)
 
   const UserLogout = useCallback(async () => {
     try {
@@ -149,12 +150,48 @@ const Profile = () => {
       <div className="w-full mt-6 flex items-center justify-center">
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={UserLogout}
+          onClick={()=>{
+            setLogoutConfirmTost(true)
+          }}
           className="w-screen mx-4 bg-black text-white py-3 rounded-lg font-semibold"
         >
           Logout
         </motion.button>
       </div>
+       {logoutConfirmTost && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white flex flex-col rounded-xl w-[80%] max-w-sm p-4">
+            <i className="ri-logout-box-r-line text-[50px] text-center text-[#ff4d4d]"></i>
+            <h3 className="text-[20px] font-serif text-center font-semibold text-gray-800">
+              Logout Your Profile
+            </h3>
+
+            <p className="text-[15px] text-center text-gray-700 mt-2">
+              You can always log back in at any time.
+            </p>
+
+            <div className="flex justify-between gap-3 mt-6">
+              <button
+                onClick={() => setLogoutConfirmTost(false)}
+                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 active:scale-95"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  setLogoutConfirmTost(false)
+                  UserLogout()
+                  navigate('/login')
+                }}
+                className="px-4 py-2 rounded-lg bg-red-500 text-white active:scale-95"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Navbar />
     </motion.div>

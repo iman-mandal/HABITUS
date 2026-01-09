@@ -120,7 +120,7 @@ const HabitDetails = () => {
       </div>
       {deleteConfirmTost && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white flex flex-col rounded-xl w-[90%] max-w-sm p-6">
+          <div className="bg-white flex flex-col rounded-xl w-[80%] max-w-sm p-4">
             <i className="ri-delete-bin-5-line text-[50px] text-center text-[#ff4d4d]"></i>
             <h3 className="text-[20px] font-serif text-center font-semibold text-gray-800">
               Delete Habit

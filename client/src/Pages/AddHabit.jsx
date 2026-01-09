@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import AppLogo from '../Assets/HabitTrackerLogo.png'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion } from 'framer-motion';
+
 
 const AddHabit = () => {
   const [title, setTitle] = useState('');
@@ -75,105 +77,112 @@ const AddHabit = () => {
           </p>
         </div>
       </div>
-      <div className="mt-5 mx-5 bg-white shadow-2xl rounded-xl py-8 px-6">
-        <form
-          onSubmit={(e) => {
-            submitHandler(e)
-          }}
-          className="flex flex-col gap-3">
-          <div className="gap-3 flex flex-col items-center justify-center">
-            <input
-              className="w-full text-[16px] font-semibold font-serif outline-none flex items-center border border-gray-300 rounded-lg px-3 py-2"
-              type="text"
-              required
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value)
-              }}
-              placeholder="Enter Habit Title"
-            />
-            <input
-              className="w-full  text-[16px] font-semibold font-serif h-[80px] resize-none outline-none border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-400 overflow-hidden"
-              type="text"
-              required
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value)
-              }}
-              placeholder="Description"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 mt-2 rounded-lg border-[2px] border-gray-200 px-3 py-2">
-            <label className="font-semibold text-[18px] font-serif text-gray-700">
-              Select Frequency
-            </label>
-            <div className="flex gap-4">
-              {['daily', 'weekly', 'monthly'].map((freq) => (
-                <label key={freq} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="frequency"
-                    value={freq}
-                    className="accent-black w-[15px] h-[15px]"
-                    checked={frequency === freq}
-                    onChange={(e) => setFrequency(e.target.value)}
-                  />
-                  <span className="text-[15px] font-serif font-semibold">
-                    {freq.charAt(0).toUpperCase() + freq.slice(1)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 px-3 py-3 rounded-lg mt-3 border-[2px] border-gray-200 justify-between">
-            <label className="font-serif font-semibold text-[17px] text-gray-700 ">Target per week :</label>
-            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              {/* Decrease button */}
-              <button
-                type="button"
-                onClick={() =>
-                  setTargetPerWeek((prev) => Math.max(1, prev - 1))
-                }
-                className="px-2 py-1  text-lg font-bold"
-              >
-                -
-              </button>
-
-              {/* Display number */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
+      >
+        <div className="mt-5 mx-5 bg-white shadow-2xl rounded-xl py-8 px-6">
+          <form
+            onSubmit={(e) => {
+              submitHandler(e)
+            }}
+            className="flex flex-col gap-3">
+            <div className="gap-3 flex flex-col items-center justify-center">
               <input
-                type="number"
-                value={targetPerWeek}
-                readOnly
-                className="w-10 font-semibold font-serif text-center outline-none bg-white"
+                className="w-full text-[16px] font-semibold font-serif outline-none flex items-center border border-gray-300 rounded-lg px-3 py-2"
+                type="text"
+                required
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value)
+                }}
+                placeholder="Enter Habit Title"
               />
-
-              {/* Increase button */}
-              <button
-                type="button"
-                onClick={() =>
-                  setTargetPerWeek((prev) => Math.min(7, prev + 1))
-                }
-                className="px-2 py-1 text-lg font-bold"
-              >
-                +
-              </button>
+              <input
+                className="w-full  text-[16px] font-semibold font-serif h-[80px] resize-none outline-none border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-400 overflow-hidden"
+                type="text"
+                required
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value)
+                }}
+                placeholder="Description"
+              />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={!frequency}
-            className={`py-3 rounded-lg mt-4 font-semibold transition ${frequency
-              ? 'bg-black text-white hover:bg-gray-900'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-          >
-            Save Habit
-          </button>
-        </form>
-      </div>
+            <div className="flex flex-col gap-2 mt-2 rounded-lg border-[2px] border-gray-200 px-3 py-2">
+              <label className="font-semibold text-[18px] font-serif text-gray-700">
+                Select Frequency
+              </label>
+              <div className="flex gap-4">
+                {['daily', 'weekly', 'monthly'].map((freq) => (
+                  <label key={freq} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="frequency"
+                      value={freq}
+                      className="accent-black w-[15px] h-[15px]"
+                      checked={frequency === freq}
+                      onChange={(e) => setFrequency(e.target.value)}
+                    />
+                    <span className="text-[15px] font-serif font-semibold">
+                      {freq.charAt(0).toUpperCase() + freq.slice(1)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 px-3 py-3 rounded-lg mt-3 border-[2px] border-gray-200 justify-between">
+              <label className="font-serif font-semibold text-[17px] text-gray-700 ">Target per week :</label>
+              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                {/* Decrease button */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setTargetPerWeek((prev) => Math.max(1, prev - 1))
+                  }
+                  className="px-2 py-1  text-lg font-bold"
+                >
+                  -
+                </button>
+
+                {/* Display number */}
+                <input
+                  type="number"
+                  value={targetPerWeek}
+                  readOnly
+                  className="w-10 font-semibold font-serif text-center outline-none bg-white"
+                />
+
+                {/* Increase button */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setTargetPerWeek((prev) => Math.min(7, prev + 1))
+                  }
+                  className="px-2 py-1 text-lg font-bold"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={!frequency}
+              className={`py-3 rounded-lg mt-4 font-semibold transition ${frequency
+                ? 'bg-black text-white hover:bg-gray-900'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+            >
+              Save Habit
+            </button>
+          </form>
+        </div>
+      </motion.div>
     </div>
   )
 }

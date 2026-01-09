@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar';
 import ProgressRate from '../components/ProgressRate';
 import Habits from '../components/Habits';
-import axios from 'axios';
 import { useHabits } from '../context/HabitContext'
 import { useUser } from '../context/UserContext';
+import { motion } from 'framer-motion';
 
 const Home = () => {
   const { habits, setHabits } = useHabits()
@@ -22,7 +22,7 @@ const Home = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token || token=='') {
+    if (!token || token == '') {
       navigate('/login');
     }
   }, [navigate]);
@@ -40,7 +40,7 @@ const Home = () => {
     greeting = 'Good Night';
   }
 
-  const { user, setUser} = useUser();
+  const { user, setUser } = useUser();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -73,17 +73,23 @@ const Home = () => {
       </div>
 
       {/* PROGRESS */}
-      <div className=" fixed top-[90px] left-0 right-0 z-40 bg-blue-50 flex justify-center py-3">
-        <ProgressRate percentage={percentage} />
-      </div>
-
-      {/* SCROLLABLE HABITS */}
-      <div
-        className="flex-1 mt-[290px] mb-[70px] overflow-y-auto no-scrollbar px-2"
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-blue-50"
       >
-        <Habits habits={habits} setHabits={setHabits} />
-      </div>
+        <div className=" fixed top-[90px] left-0 right-0 z-40 bg-blue-50 flex justify-center py-3">
+          <ProgressRate percentage={percentage} />
+        </div>
 
+        {/* SCROLLABLE HABITS */}
+        <div
+          className="flex-1 mt-[290px] mb-[70px] overflow-y-auto no-scrollbar px-2"
+        >
+          <Habits habits={habits} setHabits={setHabits} />
+        </div>
+      </motion.div>
       {/* FLOATING ADD BUTTON */}
       <Link
         to="/add-habit"
