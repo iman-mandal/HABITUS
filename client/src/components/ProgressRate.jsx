@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const ProgressRate = ({ percentage }) => {
     const radius = 70;
-    const stroke = 10;
+    const stroke = 12;
     const normalizedRadius = radius - stroke / 2;
     const circumference = normalizedRadius * 2 * Math.PI;
 
@@ -55,10 +55,6 @@ const ProgressRate = ({ percentage }) => {
                     {percentage}%
                 </text>
             </svg>
-
-            <p className="text-center font-semibold text-[#808080]">
-                Today's progress
-            </p>
         </div>
     );
 };
