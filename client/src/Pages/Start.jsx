@@ -1,7 +1,16 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import AppLogo from '../Assets/HabitTrackerLogo.png'
+
 const Start = () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/home');
+        }
+    }, [navigate]);
+
     return (
         <div className="min-h-screen flex flex-col justify-between px-4 py-8">
             <div className='flex flex-col items-center justify-center'>

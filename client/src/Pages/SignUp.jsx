@@ -1,11 +1,10 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import AppLogo from '../Assets/HabitTrackerLogo.png'
 import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import { useUser } from '../context/UserContext'
 import { motion } from 'framer-motion';
-
 
 
 const SignUp = () => {
@@ -17,6 +16,13 @@ const SignUp = () => {
   const { setUser } = useUser()
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

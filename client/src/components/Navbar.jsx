@@ -4,7 +4,9 @@ import 'remixicon/fonts/remixicon.css'
 
 const Navbar = () => {
   return (
-    <div className='fixed rounded-lg w-full bg-white bottom-0 flex items-center justify-evenly py-2 shadow-[0_-4px_8px_rgba(0,0,0,0.12)]'>
+    <div className='fixed rounded-lg w-full 
+    bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#fef8ff] via-[#f5ffff] to-[#f5fff8] 
+    bottom-0 flex items-center justify-evenly py-2 shadow-[0_-4px_8px_rgba(0,0,0,0.12)]'>
       <Link className='flex flex-col items-center justify-center' to='/home'>
         <i className="ri-home-8-line text-2xl"></i>
         <h4 className='text-center font-semibold font-serif text-[11px]'>Home</h4>
