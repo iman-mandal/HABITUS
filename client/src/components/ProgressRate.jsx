@@ -17,10 +17,10 @@ const ProgressRate = ({ percentage }) => {
     return (
         <div className="flex flex-col gap-3 items-center justify-center">
             <svg height={radius * 2} width={radius * 2}>
-
+        <div className='bg-[#34ff67]'></div>
                 {/* Background circle */}
                 <circle
-                    stroke="#e5e7eb"
+                    stroke="#ceeaff"
                     fill="transparent"
                     strokeWidth={stroke}
                     r={normalizedRadius}
@@ -29,7 +29,7 @@ const ProgressRate = ({ percentage }) => {
                 />
 
                 <circle
-                    stroke="#4775ff"
+                    stroke="#34ff67"
                     fill="transparent"
                     strokeWidth={stroke}
                     strokeLinecap="round"

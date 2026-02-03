@@ -6,6 +6,8 @@ import Habits from '../components/Habits';
 import { useHabits } from '../context/HabitContext'
 import { useUser } from '../context/UserContext';
 import { motion } from 'framer-motion';
+import { PieChart } from '@mui/x-charts/PieChart'
+
 
 const Home = () => {
   const { habits, setHabits } = useHabits()
@@ -57,24 +59,6 @@ const Home = () => {
       : Math.round((completedToday / habits.length) * 100);
 
 
-  const calculateOverallProgress = (habits) => {
-    if (!habits || habits.length === 0) return 0;
-
-    let completed = 0;
-    let total = 0;
-
-    habits.forEach(habit => {
-      habit.history?.forEach(h => {
-        total++;
-        if (h.completed) completed++;
-      });
-    });
-
-    if (total === 0) return 0;
-
-    return Math.round((completed / total) * 100);
-  };
-
   // last 30 days progress
   const calculateLast30DaysProgress = (habits) => {
     if (!habits || habits.length === 0) return 0;
@@ -102,94 +86,136 @@ const Home = () => {
     return Math.round((completed / total) * 100);
   };
 
+  const getOverallPieData = (habits) => {
+    if (!habits || habits.length === 0) return [];
 
-    return (
-      <div className="bg-blue-50 h-screen flex flex-col overflow-hidden">
+    // Total completed count across all habits
+    const totalCompleted = habits.reduce((acc, habit) => {
+      const completed = habit.history?.filter(h => h.completed).length || 0;
+      return acc + completed;
+    }, 0);
 
-        {/* HEADER */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white px-5 pt-7 pb-4 flex items-center justify-between">
-          <h2 className="font-serif text-[22px] text-[#353535] font-semibold">
-            {greeting}, {user?.fullname?.firstname || 'User'}
-          </h2>
+    return habits.map((habit, index) => {
+      const completed = habit.history?.filter(h => h.completed).length || 0;
 
-          <div className="text-right">
-            <p className="text-[14px] font-semibold">{week},</p>
-            <p className="text-[14px] font-semibold">{formattedDate}</p>
-          </div>
+      // Calculate percentage out of 100
+      const percentageOfTotal = totalCompleted === 0 ? 0 : (completed / totalCompleted) * 100;
+
+      return {
+        id: index,
+        label: habit.title,
+        value: Math.round(percentageOfTotal), // <-- this is ratio out of 100
+        completed,
+        color: ['#4775ff', '#ffa500', '#ff4d4f', '#4caf50'][index % 4], // optional colors
+      };
+    });
+  };
+
+
+  return (
+    <div className="bg-blue-50 h-screen flex flex-col overflow-hidden">
+
+      {/* HEADER */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white px-5 pt-7 pb-4 flex items-center justify-between">
+        <h2 className="font-serif text-[22px] text-[#353535] font-semibold">
+          {greeting}, {user?.fullname?.firstname || 'User'}
+        </h2>
+
+        <div className="text-right">
+          <p className="text-[14px] font-semibold">{week},</p>
+          <p className="text-[14px] font-semibold">{formattedDate}</p>
         </div>
+      </div>
 
-        {/* PROGRESS */}
+      {/* PROGRESS */}
 
-        <div className=" fixed flex-row top-[90px] left-0 right-0 z-40 bg-blue-50 flex justify-evenly py-3">
-          <div className='flex flex-row justify-between p-3 rounded-lg bg-[#7ef4ff]'>
-            <div className='items-center justify-center'>
-              <div className="w-full px-5 mt-2 items-center justify-center">
-                {/* Text */}
-                <div className="flex justify-between mb-1">
-                  <p className="text-[20px] font-serif font-semibold text-gray-700">
-                    {completedToday} / {habits.length} Habits Completed
-                  </p>
-                </div>
+      <div className=" fixed flex-row top-[80px] left-0 right-0 z-40 bg-blue-50 flex justify-evenly py-3">
+        <div className='flex flex-row justify-between h-[160px] items-center py-1 px-5 rounded-xl bg-[#7d9fff97]'>
+          <div className='items-center h-full justify-center'>
+            <p className="relative flex w-[140px] top-0 items-start font-serif border-b-2 border-[#878787] text-[16px] font-semibold text-black">
+              Today's progress
+            </p>
 
-                {/* Progress bar */}
-                <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 0.6, ease: "easeInOut" }}
-                    className="h-full bg-[#b2ff65] rounded-full"
-                  />
-                </div>
+            <div className="w-full px-5 mt-5 items-center justify-center">
+              {/* Text */}
+              <div className="flex justify-between mb-1">
+                <p className="text-[20px] font-serif font-semibold text-black">
+                  {completedToday} / {habits.length} Habits Completed
+                </p>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${percentage}%` }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className="h-full bg-[#b2ff65] rounded-full"
+                />
               </div>
             </div>
-            <div className='flex flex-col '>
-              <ProgressRate percentage={percentage} />
-
-              <p className="text-center font-semibold text-[#808080]">
-                Today's progress
-              </p>
-            </div>
           </div>
-          <div>
-            <ProgressRate percentage={calculateLast30DaysProgress(habits)} />
+          <div className='flex flex-col '>
+            <ProgressRate percentage={percentage} />
 
-            <p className="text-center font-semibold text-[#808080]">
-              Last 30 day's progress
-            </p>
           </div>
-          <div>
-            <ProgressRate percentage={calculateOverallProgress(habits)} />
-
-            <p className="text-center font-semibold text-[#808080]">
-              Overall progress
-            </p>
-          </div>
-
         </div>
-
-        {/* SCROLLABLE HABITS */}
-        <div
-          className="flex-1 mt-[290px] mb-[70px] overflow-y-auto no-scrollbar px-2"
-        >
-          <Habits habits={habits} setHabits={setHabits} />
+        <div className=' bg-white px-5 py-2 flex flex-col rounded-xl'>
+          <p className="text-centerfont-semibold mb-2 font-serif text-[#232323] border-b-2 border-gray-300">
+            Last 30 day's progress
+          </p>
+          <ProgressRate percentage={calculateLast30DaysProgress(habits)} />
         </div>
-
-        {/* FLOATING ADD BUTTON */}
-        <Link
-          to="/add-habit"
-          className=" fixed bottom-24 right-5 z-50 bg-[#49c5f1] flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-xl active:scale-95 transition"
-        >
-          <i className="ri-add-large-line text-[26px] text-white"></i>
-        </Link>
-
-        {/* NAVBAR */}
-        <div className="fixed bottom-0 left-0 right-0 z-40">
-          <Navbar />
+        <div>
+          <div className="bg-white px-4 py-1 rounded-xl shadow flex flex-col items-center">
+            <p className="font-serif border-b-2 border-gray-300 font-semibold mb-2">
+              Overall Progress
+            </p>
+            <PieChart
+              series={[
+                {
+                  data: getOverallPieData(habits),
+                  highlightScope: { fade: 'global', highlight: 'item' },
+                  faded: { innerRadius: 50, additionalRadius: -50, color: 'gray' },
+                  formatter: ({ value }) => `${value}%`,
+                },
+              ]}
+              height={145}
+              width={145}
+              sx={{
+                '& .MuiChartsLegend-root': {
+                  display: 'none', 
+                },
+              }}
+            />
+          </div>
         </div>
 
       </div>
 
-    )
-  }
+      {/* SCROLLABLE HABITS */}
+      <div
+        className="flex-1 mt-[290px] mb-[70px] overflow-y-auto no-scrollbar px-2"
+      >
+        <Habits habits={habits} setHabits={setHabits} />
+      </div>
 
-  export default Home
+      {/* FLOATING ADD BUTTON */}
+      <Link
+        to="/add-habit"
+        className=" fixed bottom-24 right-5 z-50 bg-[#49c5f1] flex items-center justify-center w-[56px] h-[56px] rounded-full shadow-xl active:scale-95 transition"
+      >
+        <i className="ri-add-large-line text-[26px] text-white"></i>
+      </Link>
+
+      {/* NAVBAR */}
+      <div className="fixed bottom-0 left-0 right-0 z-40">
+        <Navbar />
+      </div>
+
+    </div>
+
+  )
+}
+
+export default Home
