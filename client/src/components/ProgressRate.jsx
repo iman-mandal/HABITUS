@@ -17,7 +17,6 @@ const ProgressRate = ({ percentage }) => {
     return (
         <div className="flex flex-col gap-3 items-center justify-center">
             <svg height={radius * 2} width={radius * 2}>
-        <div className='bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#ebfffb] via-[#7efaff] to-[#13abc4]'></div>
                 {/* Background circle */}
                 <circle
                     stroke="#ceeaff"

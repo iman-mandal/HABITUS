@@ -25,7 +25,7 @@ const CalendarView = ({ history = [] }) => {
 
   return (
     <div className="p-4">
-      <div className="max-w-sm mx-auto bg-white rounded-2xl shadow-xl p-4">
+      <div className="max-w-sm mx-auto bg-white rounded-xl shadow-xl p-4">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -45,7 +45,7 @@ const CalendarView = ({ history = [] }) => {
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-2 text-sm">
+        <div className="grid grid-cols-7 gap-3 text-sm">
 
           {/* Empty slots before month starts */}
           {[...Array(firstDayIndex)].map((_, i) => (
