@@ -17,9 +17,9 @@ const ProgressRate = ({ percentage }) => {
     return (
         <div className="flex flex-col gap-3 items-center justify-center">
             <svg height={radius * 2} width={radius * 2}>
-                {/* Background circle */}
+                {/* Background circle - using your colors */}
                 <circle
-                    stroke="#ceeaff"
+                    stroke="#2E3944" // Dark blue-gray for background
                     fill="transparent"
                     strokeWidth={stroke}
                     r={normalizedRadius}
@@ -27,8 +27,9 @@ const ProgressRate = ({ percentage }) => {
                     cy={radius}
                 />
 
+                {/* Progress circle - using your gradient colors */}
                 <circle
-                    stroke="#4F46E5"
+                    stroke="url(#progressGradient)" // Using gradient
                     fill="transparent"
                     strokeWidth={stroke}
                     strokeLinecap="round"
@@ -44,12 +45,22 @@ const ProgressRate = ({ percentage }) => {
                     }}
                 />
 
+                {/* Gradient definition */}
+                <defs>
+                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#124E66" />
+                        <stop offset="50%" stopColor="#748D92" />
+                        <stop offset="100%" stopColor="#D3D9D4" />
+                    </linearGradient>
+                </defs>
+
+                {/* Percentage text */}
                 <text
                     x="50%"
                     y="50%"
                     dominantBaseline="middle"
                     textAnchor="middle"
-                    className="fill-gray-600 text-2xl font-semibold"
+                    className="fill-[#D3D9D4] text-2xl font-semibold font-['Montserrat']"
                 >
                     {percentage}%
                 </text>

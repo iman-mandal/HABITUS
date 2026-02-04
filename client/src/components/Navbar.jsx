@@ -7,15 +7,15 @@ const Navbar = () => {
   const location = useLocation()
   const [activeTab, setActiveTab] = useState('/home')
 
-  // Nature-themed color palette
+  // Updated color palette with your colors
   const navColors = {
-    activeBg: 'from-[#4A7C3F] to-[#2D5A27]',
-    activeIcon: 'text-white',
-    activeText: 'text-white',
-    inactiveIcon: 'text-[#5D6D55]',
-    inactiveText: 'text-[#7A7A7A]',
-    background: 'from-[#F5E8C7] to-[#E8F5E9]',
-    border: 'border-t border-[#E0E6D6]',
+    activeBg: 'from-[#124E66] to-[#748D92]',
+    activeIcon: 'text-[#D3D9D4]',
+    activeText: 'text-[#D3D9D4]',
+    inactiveIcon: 'text-[#748D92]',
+    inactiveText: 'text-[#748D92]',
+    background: 'from-[#212A31] to-[#2E3944]',
+    border: 'border-t border-[#748D92]/30',
   }
 
   // Navigation items with nature-themed icons
@@ -67,9 +67,9 @@ const Navbar = () => {
       <div className={`absolute inset-0 bg-gradient-to-b ${navColors.background} backdrop-blur-sm`}>
         {/* Subtle leaf pattern overlay */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-2 left-4 w-6 h-6 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27]"></div>
-          <div className="absolute top-4 right-8 w-4 h-4 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347]"></div>
-          <div className="absolute bottom-6 left-10 w-5 h-5 rounded-full bg-gradient-to-r from-[#87CEEB] to-[#3498DB]"></div>
+          <div className="absolute top-2 left-4 w-6 h-6 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92]"></div>
+          <div className="absolute top-4 right-8 w-4 h-4 rounded-full bg-gradient-to-r from-[#212A31] to-[#2E3944]"></div>
+          <div className="absolute bottom-6 left-10 w-5 h-5 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66]"></div>
         </div>
       </div>
 
@@ -95,34 +95,27 @@ const Navbar = () => {
                 {isActive && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className="absolute -top-4 w-16 h-1 bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] rounded-b-full"
+                    className="absolute -top-4 w-16 h-1 bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-b-full"
                     initial={false}
                   />
                 )}
 
                 {/* Icon container with gradient background when active */}
                 <div className={`relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center mb-1 transition-all duration-300 ${isActive
-                    ? `bg-gradient-to-r ${navColors.activeBg} shadow-lg scale-110`
-                    : 'bg-white/60 backdrop-blur-sm border border-white/40 shadow-md hover:scale-105'
+                  ? `bg-gradient-to-r ${navColors.activeBg} shadow-lg scale-110 border border-[#748D92]/30`
+                  : 'bg-gradient-to-br from-[#2E3944]/60 to-[#212A31]/60 backdrop-blur-sm border border-[#748D92]/20 shadow-md hover:scale-105 hover:border-[#748D92]/40'
                   }`}>
                   {/* Glow effect for active items */}
                   {isActive && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] rounded-2xl blur-md opacity-30"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-2xl blur-md opacity-20"></div>
                   )}
 
                   {/* Icon */}
-                  <i className={`text-2xl transition-all duration-300 ${isActive ? navColors.activeIcon : navColors.inactiveIcon
+                  <i className={`text-xl transition-all duration-300 ${isActive ? navColors.activeIcon : navColors.inactiveIcon
                     }`}>
                     {isActive ? item.activeIcon : item.icon}
                   </i>
 
-                  {/* Notification dot (example for habits) */}
-                  {item.path === '/habit-list' && !isActive && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C] border-2 border-white"></div>
-                  )}
-
-                  
-                  
                 </div>
 
                 {/* Label */}
@@ -131,16 +124,6 @@ const Navbar = () => {
                   {item.label}
                 </span>
 
-                {/* Description for active item */}
-                {isActive && (
-                  <motion.span
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="font-['Source_Sans_Pro'] text-[8px] text-white/80 mt-0.5"
-                  >
-                    {item.description}
-                  </motion.span>
-                )}
               </Link>
             </motion.div>
           )
@@ -157,9 +140,9 @@ const Navbar = () => {
           whileTap={{ scale: 0.9 }}
           className="relative"
         >
-          <div className="absolute -inset-4 bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] rounded-full opacity-20 blur-md"></div>
-          <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#6B8E23] flex items-center justify-center shadow-xl border-4 border-white">
-            <i className="ri-add-large-line text-2xl text-white"></i>
+          <div className="absolute -inset-4 bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-full opacity-20 blur-md"></div>
+          <div className="relative w-16 h-16 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center shadow-xl border-4 border-[#212A31]">
+            <i className="ri-add-large-line text-2xl text-[#D3D9D4]"></i>
             {/* Floating leaves animation */}
             <motion.div
               animate={{
@@ -173,7 +156,7 @@ const Navbar = () => {
               }}
               className="absolute -top-2 -right-2"
             >
-              <i className="ri-leaf-fill text-lg text-[#FFD166]"></i>
+              <i className="ri-leaf-fill text-lg text-[#D3D9D4]"></i>
             </motion.div>
           </div>
         </motion.div>

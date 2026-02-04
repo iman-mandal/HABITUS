@@ -15,18 +15,13 @@ const Home = () => {
   const [minHabit, setMinHabit] = useState('')
   const [motivation, setMotivation] = useState('');
 
-  // Nature-themed color palette for pie chart
+  // Updated color palette for pie chart with your colors
   const natureColors = [
-    '#2D5A27', // Deep Forest Green
-    '#4A7C3F', // Moss Green
-    '#6B8E23', // Olive
-    '#D4A76A', // Clay
-    '#FFD166', // Sunbeam
-    '#87CEEB', // Sky Blue
-    '#4CAF50', // Growth Green
-    '#E67E22', // Autumn
-    '#9B59B6', // Lavender
-    '#3498DB', // Water Blue
+    '#124E66', // Dark teal blue
+    '#748D92', // Muted slate blue
+    '#2E3944', // Dark blue-gray
+    '#D3D9D4', // Off-white
+    '#212A31', // Deep blue-black
   ];
 
   // Tips & motivation sentence generator api
@@ -69,20 +64,27 @@ const Home = () => {
     }
   }, [navigate]);
 
-  // Greeting based on time
+  // Greeting based on time with accurate ranges
   const hour = date.getHours();
   let greeting = 'Good Morning 🌅';
-  let greetingColor = 'from-[#FFD166] to-[#FFB347]';
+  let greetingColor = 'from-[#124E66] to-[#748D92]';
 
-  if (hour >= 12 && hour < 17) {
+  if (hour >= 4 && hour < 12) {
+    // Morning (4 AM - 11:59 AM)
+    greeting = 'Good Morning 🌅';
+    greetingColor = 'from-[#124E66] to-[#748D92]';
+  } else if (hour >= 12 && hour < 17) {
+    // Afternoon (12 PM - 4:59 PM)
     greeting = 'Good Afternoon 🌞';
-    greetingColor = 'from-[#FFB347] to-[#FF8E42]';
+    greetingColor = 'from-[#748D92] to-[#2E3944]';
   } else if (hour >= 17 && hour < 21) {
+    // Evening (5 PM - 8:59 PM)
     greeting = 'Good Evening 🌇';
-    greetingColor = 'from-[#6B8E23] to-[#2D5A27]';
-  } else if (hour >= 21 || hour < 4) {
+    greetingColor = 'from-[#2E3944] to-[#212A31]';
+  } else {
+    // Night (9 PM - 3:59 AM)
     greeting = 'Good Night 🌙';
-    greetingColor = 'from-[#1A5276] to-[#2D5A27]';
+    greetingColor = 'from-[#212A31] to-[#124E66]';
   }
 
   const { user, setUser } = useUser();
@@ -149,7 +151,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-[#F5E8C7] via-[#E8F5E9] to-[#D4EDDA]">
+    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-[#212A31] via-[#2E3944] to-[#124E66]">
 
       {/* ================= HEADER ================= */}
       <div className={`fixed top-0 left-0 right-0 z-40 bg-gradient-to-r ${greetingColor} px-6 pt-4 pb-3 flex justify-between items-center shadow-lg`}>
@@ -161,7 +163,7 @@ const Home = () => {
             <h2 className="font-['Merriweather'] text-[24px] font-bold text-white">
               {greeting}
             </h2>
-            <p className="font-['Source_Sans_Pro'] text-white/90 text-sm mt-1">
+            <p className="font-['Source_Sans_Pro'] text-white/90 text-lg mt-1">
               {user?.fullname?.firstname || 'Nature Lover'}
             </p>
           </div>
@@ -187,13 +189,13 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="col-span-2 bg-white rounded-2xl p-5 border border-[#E0E6D6] shadow-lg"
+              className="col-span-2 bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-5 border border-[#748D92]/30 shadow-lg"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#2D5A27] to-[#4A7C3F] flex items-center justify-center">
-                  <i className="ri-sun-fill text-xl text-white"></i>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                  <i className="ri-sun-fill text-xl text-[#D3D9D4]"></i>
                 </div>
-                <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#2D5A27]">
+                <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#D3D9D4]">
                   Today's Progress
                 </h3>
               </div>
@@ -201,18 +203,18 @@ const Home = () => {
               <div className="flex items-center justify-between gap-6">
                 <div className="flex-1">
                   <div className="mb-4">
-                    <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm mb-2">
+                    <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm mb-2">
                       {completedToday} out of {habits.length} habits completed
                     </p>
-                    <div className="h-3 bg-gradient-to-r from-[#F0F8E8] to-[#E8F5E9] rounded-full overflow-hidden">
+                    <div className="h-3 bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${percentage}%` }}
                         transition={{ duration: 0.9, type: "spring" }}
-                        className="h-full bg-gradient-to-r from-[#4CAF50] via-[#6B8E23] to-[#2D5A27] rounded-full"
+                        className="h-full bg-gradient-to-r from-[#124E66] via-[#748D92] to-[#D3D9D4] rounded-full"
                       />
                     </div>
-                    <p className="font-['Montserrat'] font-bold text-[#2D5A27] text-right mt-2">
+                    <p className="font-['Montserrat'] font-bold text-[#D3D9D4] text-right mt-2">
                       {percentage}%
                     </p>
                   </div>
@@ -226,19 +228,21 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-[#E8F5E9] to-[#D4EDDA] rounded-2xl p-5 border border-[#E0E6D6] shadow-lg flex flex-col items-center justify-center"
+              className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-5 border border-[#748D92]/30 shadow-lg flex flex-col items-center justify-center"
             >
-              <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#6B8E23] flex items-center justify-center mb-3">
-                <i className="ri-calendar-2-fill text-2xl text-white"></i>
+              <div className='flex flex-row items-center justify-between gap-3'>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center mb-3">
+                  <i className="ri-calendar-2-fill text-[20px] text-[#D3D9D4]"></i>
+                </div>
+                <h3 className="font-['Merriweather'] text-[16px] font-semibold text-[#D3D9D4] mb-2">
+                  Last 30 Days
+                </h3>
               </div>
-              <h3 className="font-['Merriweather'] text-[16px] font-semibold text-[#2D5A27] mb-2">
-                Last 30 Days
-              </h3>
               <ProgressRate
                 percentage={calculateLast30DaysProgress(habits)}
                 size="md"
               />
-              <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm mt-2 text-center">
+              <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm mt-2 text-center">
                 Monthly consistency
               </p>
             </motion.div>
@@ -252,38 +256,37 @@ const Home = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-[#E8F5E9] to-[#F5E8C7] rounded-2xl p-5 border border-[#E0E6D6] shadow-lg"
+                className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-5 border border-[#748D92]/30 shadow-lg"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] flex items-center justify-center">
-                    <i className="ri-trophy-fill text-xl text-white"></i>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                    <i className="ri-trophy-fill text-xl text-[#D3D9D4]"></i>
                   </div>
                   <div>
-                    <h3 className="font-['Merriweather'] text-[16px] font-bold text-[#2D5A27]">
+                    <h3 className="font-['Merriweather'] text-[16px] font-bold text-[#D3D9D4]">
                       Your Best Habit
                     </h3>
-                    <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                    <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                       Keep up the great work!
                     </p>
                   </div>
                 </div>
 
                 <div className="mb-3">
-                  <p className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] mb-1">
+                  <p className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] mb-1">
                     {maxHabit.name}
                   </p>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
+                    <span className="font-['Montserrat'] font-bold text-[#D3D9D4]">
                       {maxHabit.percentage}%
                     </span>
-                   
                   </div>
-                  <div className="h-2 bg-white/50 rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#212A31] rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${maxHabit.percentage}%` }}
                       transition={{ duration: 1, type: "spring" }}
-                      className="h-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] rounded-full"
+                      className="h-full bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-full"
                     />
                   </div>
                 </div>
@@ -296,38 +299,37 @@ const Home = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-[#F5E8C7] to-[#FFE8E8] rounded-2xl p-5 border border-[#E0E6D6] shadow-lg"
+                className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-5 border border-[#748D92]/30 shadow-lg"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#87CEEB] to-[#3498DB] flex items-center justify-center">
-                    <i className="ri-refresh-fill text-xl text-white"></i>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8B0000] to-[#B22222] flex items-center justify-center">
+                    <i className="ri-refresh-fill text-xl text-[#D3D9D4]"></i>
                   </div>
                   <div>
-                    <h3 className="font-['Merriweather'] text-[16px] font-bold text-[#2D5A27]">
+                    <h3 className="font-['Merriweather'] text-[16px] font-bold text-[#D3D9D4]">
                       Needs Focus
                     </h3>
-                    <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                    <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                       Small steps lead to big changes
                     </p>
                   </div>
                 </div>
 
                 <div className="mb-3">
-                  <p className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] mb-1">
+                  <p className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] mb-1">
                     {minHabit.name}
                   </p>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
+                    <span className="font-['Montserrat'] font-bold text-[#D3D9D4]">
                       {minHabit.percentage}%
                     </span>
-                    
                   </div>
-                  <div className="h-2 bg-white/50 rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#212A31] rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${minHabit.percentage}%` }}
                       transition={{ duration: 1, type: "spring" }}
-                      className="h-full bg-gradient-to-r from-[#87CEEB] to-[#3498DB] rounded-full"
+                      className="h-full bg-gradient-to-r from-[#8B0000] to-[#B22222] rounded-full"
                     />
                   </div>
                 </div>
@@ -338,10 +340,10 @@ const Home = () => {
           {/* HABITS LIST */}
           <div className="mb-[90px]">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#2D5A27] to-[#4A7C3F] flex items-center justify-center">
-                <i className="ri-list-check-2 text-xl text-white"></i>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                <i className="ri-list-check-2 text-xl text-[#D3D9D4]"></i>
               </div>
-              <h2 className="font-['Merriweather'] text-[22px] font-bold text-[#2D5A27]">
+              <h2 className="font-['Merriweather'] text-[22px] font-bold text-[#D3D9D4]">
                 Your Habits
               </h2>
             </div>
@@ -361,58 +363,86 @@ const Home = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl p-6 border border-[#E0E6D6] shadow-lg"
+            className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-6 border border-[#748D92]/30 shadow-lg"
           >
-            <div className="flex items-center gap-1 mb-5">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#6B8E23] to-[#4A7C3F] flex items-center justify-center">
-                <i className="ri-pie-chart-2-fill text-xl text-white"></i>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                <i className="ri-pie-chart-2-fill text-xl text-[#D3D9D4]"></i>
               </div>
-              <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#2D5A27]">
-                Habit Distribution
-              </h3>
+              <div>
+                <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#D3D9D4]">
+                  Habit Distribution
+                </h3>
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs mt-1">
+                  By completion status
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <PieChart
-                series={[
-                  {
-                    data: getOverallPieData(habits),
-                    highlightScope: { fade: 'global', highlight: 'item' },
-                    faded: { innerRadius: 50, additionalRadius: -50, color: 'gray' },
-                    formatter: ({ value }) => `${value}%`,
-                    innerRadius: 40,
-                    outerRadius: 100,
-                    paddingAngle: 2,
-                    cornerRadius: 5,
-                  },
-                ]}
-                height={280}
-                width={320}
-                sx={{
-                  '& .MuiChartsLegend-root': {
-                    fontSize: '12px',
-                    fontFamily: '"Source Sans Pro", sans-serif',
-                    fontWeight: 500,
-                    padding: 1,
-                  },
-                  '& .MuiPieArc-root': {
-                    stroke: '#FFFFFF',
-                    strokeWidth: 2,
-                  },
-                }}
-              />
+            {habits.length > 0 ? (
+              <div className="relative min-h-[260px] flex flex-col items-center">
+                {/* Pie Chart - REMOVED LEGEND */}
+                <div className="h-[220px] w-full -mt-2">
+                  <PieChart
+                    series={[
+                      {
+                        data: getOverallPieData(habits),
+                        highlightScope: { fade: 'global', highlight: 'item' },
+                        faded: { innerRadius: 50, additionalRadius: -50, color: 'gray' },
+                        formatter: ({ value }) => `${value}%`,
+                      },
+                    ]}
+                    height={250}
+                    width={250}
+                    sx={{
+                      '& .MuiChartsLegend-root': {
+                        display: 'none',
+                        
+                      },
+                      '& .MuiChartsLegend-label': {
+                        fontSize: '16px',
+                      },
+                    }}
+                  />
 
-              {habits.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#E8F5E9] to-[#F5E8C7] flex items-center justify-center mb-3">
-                    <i className="ri-leaf-line text-3xl text-[#6B8E23]"></i>
-                  </div>
-                  <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-center">
-                    Start adding habits to see your progress chart!
-                  </p>
+
                 </div>
-              )}
-            </div>
+
+                {/* Custom Compact Legend */}
+                <div className="mt-10 w-full">
+                  <div className="grid grid-cols-2 gap-2">
+                    {getOverallPieData(habits).map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 p-2 rounded-lg bg-[#212A31] border border-[#748D92]/20 hover:border-[#748D92]/40 transition"
+                      >
+                        <div
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="font-['Source_Sans_Pro'] text-xs text-[#D3D9D4] truncate block">
+                            {item.label}
+                          </span>
+                          <span className="font-['Source_Sans_Pro'] text-xs text-[#748D92]">
+                            {item.value}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#2E3944] to-[#212A31] flex items-center justify-center mb-4">
+                  <i className="ri-leaf-line text-3xl text-[#748D92]"></i>
+                </div>
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-center">
+                  Start adding habits to see your progress chart!
+                </p>
+              </div>
+            )}
           </motion.div>
 
           {/* MOTIVATION CARD */}
@@ -420,31 +450,34 @@ const Home = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-[#F5E8C7] to-[#E8F5E9] rounded-2xl p-6 border border-[#E0E6D6] shadow-lg"
+            className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-6 border border-[#748D92]/30 shadow-lg"
           >
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#D4A76A] to-[#B9935A] flex items-center justify-center">
-                <i className="ri-lightbulb-flash-fill text-xl text-white"></i>
-              </div>
-              <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#2D5A27]">
-                Daily Wisdom
-              </h3>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <i className="ri-double-quotes-l text-3xl text-[#6B8E23] opacity-50"></i>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                <i className="ri-lightbulb-flash-fill text-xl text-[#D3D9D4]"></i>
               </div>
               <div>
-                <p className="font-['Merriweather'] italic text-[17px] text-[#2D5A27] leading-relaxed">
-                  "{motivation || 'The best time to plant a tree was 20 years ago. The second best time is now.'}"
+                <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#D3D9D4]">
+                  Daily Wisdom
+                </h3>
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs mt-1">
+                  Stay inspired on your journey
                 </p>
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[#E0E6D6]">
-                  <i className="ri-seedling-line text-[#4A7C3F]"></i>
-                  <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
-                    Nature-inspired motivation
-                  </p>
-                </div>
+              </div>
+            </div>
+
+            <div className="relative p-4 rounded-lg bg-gradient-to-r from-[#212A31] to-[#2E3944] border border-[#748D92]/20">
+              <div className="absolute -top-2 -left-2">
+                <i className="ri-double-quotes-l text-xl text-[#748D92] opacity-50"></i>
+              </div>
+              <p className="font-['Merriweather'] italic text-[16px] text-[#D3D9D4] leading-relaxed pl-4">
+                "{motivation || 'The best time to plant a tree was 20 years ago. The second best time is now.'}"
+              </p>
+              <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#748D92]/20">
+                <i className="ri-seedling-line text-[#124E66]"></i>
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
+                  Nature-inspired motivation
+                </p>
               </div>
             </div>
           </motion.div>
@@ -454,51 +487,77 @@ const Home = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl p-6 border border-[#E0E6D6] shadow-lg"
+            className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl p-6 border border-[#748D92]/30 shadow-lg"
           >
-            <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#2D5A27] mb-5">
-              Your Growth
-            </h3>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                <i className="ri-bar-chart-fill text-xl text-[#D3D9D4]"></i>
+              </div>
+              <div>
+                <h3 className="font-['Merriweather'] text-[18px] font-bold text-[#D3D9D4]">
+                  Your Growth
+                </h3>
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs mt-1">
+                  Track your progress
+                </p>
+              </div>
+            </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8]">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#212A31] to-[#2E3944] border border-[#748D92]/20">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#4CAF50] to-[#2D5A27] flex items-center justify-center">
-                    <i className="ri-check-double-line text-sm text-white"></i>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                    <i className="ri-check-double-line text-sm text-[#D3D9D4]"></i>
                   </div>
-                  <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">Total Completed</span>
+                  <div>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm block">Total Completed</span>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92]/60 text-xs">All habits combined</span>
+                  </div>
                 </div>
-                <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
-                  {habits.reduce((acc, habit) => acc + (habit.history?.filter(h => h.completed).length || 0), 0)}
-                </span>
+                <div className="text-right">
+                  <span className="font-['Montserrat'] font-bold text-lg text-[#D3D9D4] block">
+                    {habits.reduce((acc, habit) => acc + (habit.history?.filter(h => h.completed).length || 0), 0)}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8]">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#212A31] to-[#2E3944] border border-[#748D92]/20">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] flex items-center justify-center">
-                    <i className="ri-fire-fill text-sm text-white"></i>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                    <i className="ri-fire-fill text-sm text-[#D3D9D4]"></i>
                   </div>
-                  <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">Active Streaks</span>
+                  <div>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm block">Active Streaks</span>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92]/60 text-xs">Streaks over 3 days</span>
+                  </div>
                 </div>
-                <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
-                  {habits.filter(h => h.streak > 3).length}
-                </span>
+                <div className="text-right">
+                  <span className="font-['Montserrat'] font-bold text-lg text-[#D3D9D4] block">
+                    {habits.filter(h => h.streak > 3).length}
+                  </span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8]">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#212A31] to-[#2E3944] border border-[#748D92]/20">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#87CEEB] to-[#3498DB] flex items-center justify-center">
-                    <i className="ri-leaf-fill text-sm text-white"></i>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
+                    <i className="ri-leaf-fill text-sm text-[#D3D9D4]"></i>
                   </div>
-                  <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">Growing Habits</span>
+                  <div>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm block">Growing Habits</span>
+                    <span className="font-['Source_Sans_Pro'] text-[#748D92]/60 text-xs">Starting streaks</span>
+                  </div>
                 </div>
-                <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
-                  {habits.filter(h => h.streak > 0 && h.streak <= 3).length}
-                </span>
+                <div className="text-right">
+                  <span className="font-['Montserrat'] font-bold text-lg text-[#D3D9D4] block">
+                    {habits.filter(h => h.streak > 0 && h.streak <= 3).length}
+                  </span>
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
+
       </div>
 
 

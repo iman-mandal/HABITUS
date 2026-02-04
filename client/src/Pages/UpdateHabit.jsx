@@ -19,14 +19,14 @@ const UpdateHabit = () => {
 
     const navigate = useNavigate()
 
-    // Habit categories with icons
+    // Habit categories with icons (dark theme colors)
     const categories = [
-        { id: 'health', label: 'Health & Fitness', icon: '💪', color: 'from-[#4CAF50] to-[#2D5A27]' },
-        { id: 'mind', label: 'Mind & Wellness', icon: '🧠', color: 'from-[#87CEEB] to-[#3498DB]' },
-        { id: 'learning', label: 'Learning', icon: '📚', color: 'from-[#9B59B6] to-[#8E44AD]' },
-        { id: 'productivity', label: 'Productivity', icon: '⚡', color: 'from-[#FFD166] to-[#FFB347]' },
+        { id: 'health', label: 'Health & Fitness', icon: '💪', color: 'from-[#124E66] to-[#2E3944]' },
+        { id: 'mind', label: 'Mind & Wellness', icon: '🧠', color: 'from-[#748D92] to-[#124E66]' },
+        { id: 'learning', label: 'Learning', icon: '📚', color: 'from-[#D3D9D4] to-[#748D92]' },
+        { id: 'productivity', label: 'Productivity', icon: '⚡', color: 'from-[#2E3944] to-[#124E66]' },
         { id: 'social', label: 'Social & Relationships', icon: '👥', color: 'from-[#FF6B6B] to-[#E74C3C]' },
-        { id: 'other', label: 'Other', icon: '🌿', color: 'from-[#6B8E23] to-[#4A7C3F]' },
+        { id: 'other', label: 'Other', icon: '🌿', color: 'from-[#124E66] to-[#212A31]' },
     ]
 
     // Frequency options
@@ -104,13 +104,13 @@ const UpdateHabit = () => {
         }
     }
 
-    // Nature-themed background gradient
-    const backgroundGradient = "bg-gradient-to-br from-[#F5E8C7] via-[#E8F5E9] to-[#D4EDDA]"
+    // Dark theme background gradient
+    const backgroundGradient = "bg-gradient-to-br from-[#212A31] via-[#2E3944] to-[#124E66]"
 
     // Get category color
     const getCategoryColor = () => {
         const selectedCat = categories.find(c => c.id === category)
-        return selectedCat ? selectedCat.color : 'from-[#6B8E23] to-[#4A7C3F]'
+        return selectedCat ? selectedCat.color : 'from-[#124E66] to-[#212A31]'
     }
 
     // Get category icon
@@ -123,13 +123,13 @@ const UpdateHabit = () => {
         return (
             <div className={`min-h-screen ${backgroundGradient} flex items-center justify-center`}>
                 <div className="text-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] flex items-center justify-center mx-auto mb-4">
-                        <span className="text-4xl">🔍</span>
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#212A31] to-[#2E3944] flex items-center justify-center mx-auto mb-4">
+                        <span className="text-4xl text-[#748D92]">🔍</span>
                     </div>
-                    <h2 className="font-['Merriweather'] text-[#2D5A27] text-xl mb-2">Habit not found</h2>
+                    <h2 className="font-['Merriweather'] text-[#D3D9D4] text-xl mb-2">Habit not found</h2>
                     <button
                         onClick={() => navigate(-1)}
-                        className="px-6 py-3 bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] text-white font-['Source_Sans_Pro'] font-semibold rounded-xl hover:shadow-lg transition"
+                        className="px-6 py-3 bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4] font-['Source_Sans_Pro'] font-semibold rounded-xl hover:shadow-lg hover:shadow-[#124E66]/20 transition"
                     >
                         Go Back
                     </button>
@@ -142,8 +142,8 @@ const UpdateHabit = () => {
         <div className={`min-h-screen ${backgroundGradient}`}>
             {/* Decorative elements */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-10 right-10 w-40 h-40 rounded-full bg-gradient-to-r from-[#FFD166]/20 to-[#FFB347]/10 blur-3xl"></div>
-                <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full bg-gradient-to-r from-[#4A7C3F]/10 to-[#2D5A27]/10 blur-3xl"></div>
+                <div className="absolute top-10 right-10 w-40 h-40 rounded-full bg-gradient-to-r from-[#748D92]/20 to-[#124E66]/20 blur-3xl"></div>
+                <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full bg-gradient-to-r from-[#D3D9D4]/10 to-[#748D92]/10 blur-3xl"></div>
             </div>
 
             <div className="relative z-10">
@@ -151,36 +151,36 @@ const UpdateHabit = () => {
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-r from-[#2D5A27] to-[#4A7C3F] px-6 pt-8 pb-6"
+                    className="bg-gradient-to-r from-[#124E66] to-[#2E3944] px-6 pt-8 pb-6"
                 >
                     <div className="flex items-center gap-4 mb-6">
                         <button
                             onClick={() => navigate(-1)}
-                            className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:scale-105 transition"
+                            className="w-12 h-12 rounded-full bg-[#748D92]/20 backdrop-blur-sm flex items-center justify-center hover:scale-105 hover:bg-[#748D92]/30 transition"
                         >
-                            <span className="text-white text-2xl">←</span>
+                            <span className="text-[#D3D9D4] text-2xl">←</span>
                         </button>
                         <div>
-                            <h1 className="font-['Merriweather'] text-[24px] font-bold text-white">
+                            <h1 className="font-['Merriweather'] text-[24px] font-bold text-[#D3D9D4]">
                                 Edit Habit
                             </h1>
-                            <p className="font-['Source_Sans_Pro'] text-white/80 text-sm">
+                            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                                 Nurture and refine your growth
                             </p>
                         </div>
                     </div>
 
                     {/* Habit Preview */}
-                    <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="bg-[#748D92]/20 backdrop-blur-sm rounded-2xl p-4 border border-[#748D92]/30">
                         <div className="flex items-center gap-3">
                             <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${getCategoryColor()} flex items-center justify-center`}>
                                 <span className="text-3xl">{getCategoryIcon()}</span>
                             </div>
                             <div className="flex-1">
-                                <h2 className="font-['Merriweather'] font-bold text-white text-lg">
+                                <h2 className="font-['Merriweather'] font-bold text-[#D3D9D4] text-lg">
                                     {habit.title}
                                 </h2>
-                                <p className="font-['Source_Sans_Pro'] text-white/80 text-sm line-clamp-2">
+                                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm line-clamp-2">
                                     Current streak: {habit.streak || 0} days
                                 </p>
                             </div>
@@ -195,7 +195,7 @@ const UpdateHabit = () => {
                     transition={{ delay: 0.1 }}
                     className="px-6 py-8"
                 >
-                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/40 shadow-2xl py-8 px-6">
+                    <div className="bg-[#2E3944]/90 backdrop-blur-sm rounded-3xl border border-[#748D92]/20 shadow-2xl py-8 px-6">
                         {/* Messages */}
                         <AnimatePresence>
                             {error && (
@@ -203,13 +203,13 @@ const UpdateHabit = () => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="mb-6 p-4 bg-gradient-to-r from-[#FFE8E8] to-[#FFC9C9] rounded-xl border border-[#FF6B6B]/30"
+                                    className="mb-6 p-4 bg-gradient-to-r from-[#FF6B6B]/10 to-[#E74C3C]/10 rounded-xl border border-[#FF6B6B]/30"
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C] flex items-center justify-center">
                                             <span className="text-white text-lg">!</span>
                                         </div>
-                                        <p className="font-['Source_Sans_Pro'] text-[#E74C3C] font-medium">
+                                        <p className="font-['Source_Sans_Pro'] text-[#FF6B6B] font-medium">
                                             {error}
                                         </p>
                                     </div>
@@ -221,13 +221,13 @@ const UpdateHabit = () => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="mb-6 p-4 bg-gradient-to-r from-[#E8F5E9] to-[#D4EDDA] rounded-xl border border-[#4CAF50]/30"
+                                    className="mb-6 p-4 bg-gradient-to-r from-[#748D92]/10 to-[#124E66]/10 rounded-xl border border-[#748D92]/30"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#4CAF50] to-[#2D5A27] flex items-center justify-center">
-                                            <span className="text-white text-lg">✓</span>
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center">
+                                            <span className="text-[#D3D9D4] text-lg">✓</span>
                                         </div>
-                                        <p className="font-['Source_Sans_Pro'] text-[#2D5A27] font-medium">
+                                        <p className="font-['Source_Sans_Pro'] text-[#D3D9D4] font-medium">
                                             {success}
                                         </p>
                                     </div>
@@ -238,7 +238,7 @@ const UpdateHabit = () => {
                         <form onSubmit={submitHandler} className="space-y-6">
                             {/* Description Input */}
                             <div className="space-y-2">
-                                <label className="font-['Merriweather'] font-semibold text-[#2D5A27] text-lg">
+                                <label className="font-['Merriweather'] font-semibold text-[#D3D9D4] text-lg">
                                     Why this habit?
                                 </label>
                                 <div className="relative">
@@ -247,29 +247,29 @@ const UpdateHabit = () => {
                                         onChange={(e) => setDescription(e.target.value)}
                                         placeholder="Update why this habit is important to you..."
                                         rows="3"
-                                        className="w-full px-5 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27] resize-none placeholder:text-[#7A7A7A]"
+                                        className="w-full px-5 py-4 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] resize-none placeholder:text-[#748D92]"
                                     />
                                 </div>
                             </div>
 
                             {/* Category Selection */}
                             <div className="space-y-2">
-                                <label className="font-['Merriweather'] font-semibold text-[#2D5A27] text-lg">
+                                <label className="font-['Merriweather'] font-semibold text-[#D3D9D4] text-lg">
                                     Category
                                 </label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-3 gap-3">
                                     {categories.map((cat) => (
                                         <button
                                             key={cat.id}
                                             type="button"
                                             onClick={() => setCategory(cat.id)}
                                             className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 ${category === cat.id
-                                                    ? `bg-gradient-to-r ${cat.color} border-white scale-105 shadow-lg`
-                                                    : 'bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border-[#E0E6D6] hover:border-[#4A7C3F]'
+                                                ? `bg-gradient-to-r ${cat.color} border-[#748D92] scale-105 shadow-lg`
+                                                : 'bg-[#212A31] border-[#2E3944] hover:border-[#124E66]'
                                                 }`}
                                         >
                                             <span className="text-2xl mb-2">{cat.icon}</span>
-                                            <span className={`font-['Source_Sans_Pro'] font-semibold text-sm text-center ${category === cat.id ? 'text-white' : 'text-[#2D5A27]'
+                                            <span className={`font-['Source_Sans_Pro'] font-semibold text-sm text-center ${category === cat.id ? 'text-[#D3D9D4]' : 'text-[#748D92]'
                                                 }`}>
                                                 {cat.label}
                                             </span>
@@ -280,7 +280,7 @@ const UpdateHabit = () => {
 
                             {/* Frequency Selection */}
                             <div className="space-y-2">
-                                <label className="font-['Merriweather'] font-semibold text-[#2D5A27] text-lg">
+                                <label className="font-['Merriweather'] font-semibold text-[#D3D9D4] text-lg">
                                     Frequency
                                 </label>
                                 <div className="grid grid-cols-3 gap-3">
@@ -290,19 +290,19 @@ const UpdateHabit = () => {
                                             type="button"
                                             onClick={() => setFrequency(option.value)}
                                             className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 ${frequency === option.value
-                                                    ? 'bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] border-white scale-105 shadow-lg'
-                                                    : 'bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border-[#E0E6D6] hover:border-[#4A7C3F]'
+                                                ? 'bg-gradient-to-r from-[#124E66] to-[#212A31] border-[#748D92] scale-105 shadow-lg'
+                                                : 'bg-[#212A31] border-[#2E3944] hover:border-[#124E66]'
                                                 }`}
                                         >
-                                            <span className={`text-2xl mb-2 ${frequency === option.value ? 'text-white' : 'text-[#2D5A27]'
+                                            <span className={`text-2xl mb-2 ${frequency === option.value ? 'text-[#D3D9D4]' : 'text-[#748D92]'
                                                 }`}>
                                                 {option.icon}
                                             </span>
-                                            <span className={`font-['Source_Sans_Pro'] font-semibold text-sm ${frequency === option.value ? 'text-white' : 'text-[#2D5A27]'
+                                            <span className={`font-['Source_Sans_Pro'] font-semibold text-sm ${frequency === option.value ? 'text-[#D3D9D4]' : 'text-[#748D92]'
                                                 }`}>
                                                 {option.label}
                                             </span>
-                                            <span className={`text-xs mt-1 ${frequency === option.value ? 'text-white/80' : 'text-[#7A7A7A]'
+                                            <span className={`text-xs mt-1 ${frequency === option.value ? 'text-[#D3D9D4]/80' : 'text-[#748D92]'
                                                 }`}>
                                                 {option.description}
                                             </span>
@@ -313,24 +313,24 @@ const UpdateHabit = () => {
 
                             {/* Target per Week */}
                             <div className="space-y-2">
-                                <label className="font-['Merriweather'] font-semibold text-[#2D5A27] text-lg">
+                                <label className="font-['Merriweather'] font-semibold text-[#D3D9D4] text-lg">
                                     Weekly Target
                                 </label>
-                                <div className="bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] rounded-xl p-5 border border-[#E0E6D6]">
+                                <div className="bg-[#212A31] rounded-xl p-5 border border-[#2E3944]">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                                            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                                                 Target days per week
                                             </p>
-                                            <p className="font-['Source_Sans_Pro'] text-[#7A7A7A] text-xs">
+                                            <p className="font-['Source_Sans_Pro'] text-[#748D92]/80 text-xs">
                                                 Adjust based on your current progress
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="font-['Montserrat'] font-bold text-[#2D5A27] text-2xl">
+                                            <span className="font-['Montserrat'] font-bold text-[#D3D9D4] text-2xl">
                                                 {targetPerWeek}
                                             </span>
-                                            <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">
+                                            <span className="font-['Source_Sans_Pro'] text-[#748D92]">
                                                 days
                                             </span>
                                         </div>
@@ -340,14 +340,14 @@ const UpdateHabit = () => {
                                         <button
                                             type="button"
                                             onClick={() => setTargetPerWeek(prev => Math.max(1, prev - 1))}
-                                            className="w-12 h-12 rounded-full bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] border border-[#E0E6D6] flex items-center justify-center text-2xl font-bold text-[#2D5A27] hover:scale-105 transition"
+                                            className="w-12 h-12 rounded-full bg-[#2E3944] border border-[#748D92]/30 flex items-center justify-center text-2xl font-bold text-[#D3D9D4] hover:scale-105 hover:border-[#748D92] transition"
                                         >
                                             -
                                         </button>
 
-                                        <div className="w-40 h-2 bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] rounded-full overflow-hidden">
+                                        <div className="w-40 h-2 bg-[#2E3944] rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] rounded-full transition-all duration-300"
+                                                className="h-full bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-full transition-all duration-300"
                                                 style={{ width: `${(targetPerWeek / 7) * 100}%` }}
                                             />
                                         </div>
@@ -355,7 +355,7 @@ const UpdateHabit = () => {
                                         <button
                                             type="button"
                                             onClick={() => setTargetPerWeek(prev => Math.min(7, prev + 1))}
-                                            className="w-12 h-12 rounded-full bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] border border-[#E0E6D6] flex items-center justify-center text-2xl font-bold text-[#2D5A27] hover:scale-105 transition"
+                                            className="w-12 h-12 rounded-full bg-[#2E3944] border border-[#748D92]/30 flex items-center justify-center text-2xl font-bold text-[#D3D9D4] hover:scale-105 hover:border-[#748D92] transition"
                                         >
                                             +
                                         </button>
@@ -363,10 +363,10 @@ const UpdateHabit = () => {
 
                                     {/* Current vs Target */}
                                     <div className="mt-4 flex items-center justify-between text-sm">
-                                        <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">
+                                        <span className="font-['Source_Sans_Pro'] text-[#748D92]">
                                             Current: {habit.streak || 0} day streak
                                         </span>
-                                        <span className="font-['Source_Sans_Pro'] text-[#5D6D55]">
+                                        <span className="font-['Source_Sans_Pro'] text-[#748D92]">
                                             Target: {targetPerWeek}/week
                                         </span>
                                     </div>
@@ -374,18 +374,18 @@ const UpdateHabit = () => {
                             </div>
 
                             {/* Stats Summary */}
-                            <div className="bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] rounded-xl p-5 border border-[#E0E6D6]">
-                                <h3 className="font-['Merriweather'] font-semibold text-[#2D5A27] mb-3">
+                            <div className="bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-xl p-5 border border-[#748D92]/20">
+                                <h3 className="font-['Merriweather'] font-semibold text-[#D3D9D4] mb-3">
                                     Current Progress
                                 </h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="text-center">
-                                        <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-xs mb-1">Current Streak</p>
-                                        <p className="font-['Montserrat'] font-bold text-[#2D5A27] text-lg">{habit.streak || 0} days</p>
+                                        <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs mb-1">Current Streak</p>
+                                        <p className="font-['Montserrat'] font-bold text-[#D3D9D4] text-lg">{habit.streak || 0} days</p>
                                     </div>
                                     <div className="text-center">
-                                        <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-xs mb-1">Best Streak</p>
-                                        <p className="font-['Montserrat'] font-bold text-[#2D5A27] text-lg">{habit.longestStreak || 0} days</p>
+                                        <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs mb-1">Best Streak</p>
+                                        <p className="font-['Montserrat'] font-bold text-[#D3D9D4] text-lg">{habit.longestStreak || 0} days</p>
                                     </div>
                                 </div>
                             </div>
@@ -396,13 +396,13 @@ const UpdateHabit = () => {
                                 disabled={loading || !frequency || !category}
                                 whileTap={{ scale: loading ? 1 : 0.98 }}
                                 className={`w-full py-5 rounded-xl font-['Source_Sans_Pro'] font-semibold text-lg transition-all relative overflow-hidden mt-4 ${loading || !frequency || !category
-                                        ? 'bg-gradient-to-r from-[#7A7A7A] to-[#5D6D55] text-white cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] text-white hover:shadow-xl active:scale-95'
+                                    ? 'bg-gradient-to-r from-[#2E3944] to-[#212A31] text-[#748D92] cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4] hover:shadow-xl hover:shadow-[#124E66]/20 active:scale-95'
                                     }`}
                             >
                                 {loading ? (
                                     <div className="flex items-center justify-center gap-3">
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                        <div className="w-5 h-5 border-2 border-[#D3D9D4]/30 border-t-[#D3D9D4] rounded-full animate-spin"></div>
                                         <span>Updating habit...</span>
                                     </div>
                                 ) : (
@@ -417,16 +417,16 @@ const UpdateHabit = () => {
                         </form>
 
                         {/* Tips */}
-                        <div className="mt-8 p-4 bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] rounded-xl border border-[#E0E6D6]">
+                        <div className="mt-8 p-4 bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-xl border border-[#748D92]/20">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] flex items-center justify-center">
-                                    <span className="text-white">💡</span>
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#D3D9D4] to-[#748D92] flex items-center justify-center">
+                                    <span className="text-[#212A31]">💡</span>
                                 </div>
-                                <h3 className="font-['Merriweather'] font-semibold text-[#2D5A27]">
+                                <h3 className="font-['Merriweather'] font-semibold text-[#D3D9D4]">
                                     Editing Tips
                                 </h3>
                             </div>
-                            <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                                 Adjust your target based on your current streak. If you're consistently hitting your target, consider increasing it by 1-2 days. If you're struggling, it's okay to lower the target to build consistency.
                             </p>
                         </div>

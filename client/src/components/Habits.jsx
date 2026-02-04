@@ -5,13 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
 
-  // Nature-themed colors for different habit types
+  // Updated color palette with your colors
   const habitTypeColors = {
-    fitness: 'from-[#4CAF50] to-[#2D5A27]',
-    mental: 'from-[#87CEEB] to-[#3498DB]',
-    study: 'from-[#9B59B6] to-[#8E44AD]',
-    health: 'from-[#FFD166] to-[#FFB347]',
-    default: 'from-[#6B8E23] to-[#4A7C3F]',
+    fitness: 'from-[#124E66] to-[#748D92]',
+    mental: 'from-[#2E3944] to-[#212A31]',
+    study: 'from-[#748D92] to-[#124E66]',
+    health: 'from-[#8B0000] to-[#B22222]',
+    default: 'from-[#124E66] to-[#2E3944]',
   };
 
   // Get color based on habit title
@@ -153,11 +153,11 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
 
   // Get streak color based on streak length
   const getStreakColor = (streak) => {
-    if (streak === 0) return 'text-[#7A7A7A]';
-    if (streak < 3) return 'text-[#6B8E23]';
-    if (streak < 7) return 'text-[#4A7C3F]';
-    if (streak < 14) return 'text-[#2D5A27]';
-    return 'text-[#FFB347]';
+    if (streak === 0) return 'text-[#748D92]';
+    if (streak < 3) return 'text-[#124E66]';
+    if (streak < 7) return 'text-[#2E3944]';
+    if (streak < 14) return 'text-[#212A31]';
+    return 'text-[#D3D9D4]';
   };
 
   return (
@@ -173,11 +173,11 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center justify-center py-12"
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9] flex items-center justify-center mb-4">
-            <i className="ri-seedling-line text-4xl text-[#6B8E23]"></i>
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#2E3944] to-[#212A31] flex items-center justify-center mb-4 border border-[#748D92]/30">
+            <i className="ri-seedling-line text-4xl text-[#748D92]"></i>
           </div>
-          <p className="font-['Merriweather'] text-[#2D5A27] text-xl mb-2">No habits found</p>
-          <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-center max-w-md">
+          <p className="font-['Merriweather'] text-[#D3D9D4] text-xl mb-2">No habits found</p>
+          <p className="font-['Source_Sans_Pro'] text-[#748D92] text-center max-w-md">
             Start planting the seeds of good habits by adding your first one!
           </p>
         </motion.div>
@@ -197,15 +197,15 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(45, 90, 39, 0.1)" }}
+                  whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(18, 78, 102, 0.1)" }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className={`relative bg-white rounded-2xl border border-[#E0E6D6] shadow-lg overflow-hidden
+                  className={`relative bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl border border-[#748D92]/30 shadow-lg overflow-hidden
                     ${isCompleted ? "opacity-90" : ""}
                   `}
                 >
                   {/* Progress Background */}
                   <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F0F8E8] to-[#E8F5E9] rounded-2xl transition-all duration-500"
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-2xl transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                   />
 
@@ -214,18 +214,18 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                     {/* Left Section: Habit Info */}
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       {/* Habit Icon */}
-                      <div className={`flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-r ${habitColor} flex items-center justify-center shadow-md`}>
-                        <i className={`ri-check-line text-2xl text-white ${isCompleted ? "" : "opacity-80"}`}></i>
+                      <div className={`flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-r ${habitColor} flex items-center justify-center shadow-md border border-[#748D92]/20`}>
+                        <i className={`ri-check-line text-2xl text-[#D3D9D4] ${isCompleted ? "" : "opacity-80"}`}></i>
                       </div>
 
                       {/* Habit Details */}
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h2 className={`font-['Merriweather'] font-bold text-[18px] truncate ${isCompleted ? "line-through text-[#7A7A7A]" : "text-[#2D5A27]"}`}>
+                          <h2 className={`font-['Merriweather'] font-bold text-[18px] truncate ${isCompleted ? "line-through text-[#748D92]" : "text-[#D3D9D4]"}`}>
                             {habit.title}
                           </h2>
                           {isCompleted && (
-                            <span className="flex-shrink-0 px-2 py-1 bg-gradient-to-r from-[#4CAF50] to-[#2D5A27] text-white text-xs rounded-full">
+                            <span className="flex-shrink-0 px-2 py-1 bg-gradient-to-r from-[#124E66] to-[#748D92] text-[#D3D9D4] text-xs rounded-full border border-[#748D92]/30">
                               Completed
                             </span>
                           )}
@@ -238,13 +238,13 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                             <span className={`font-['Montserrat'] font-bold ${getStreakColor(habit.streak)}`}>
                               {habit.streak} day{habit.streak !== 1 ? 's' : ''}
                             </span>
-                            <span className="font-['Source_Sans_Pro'] text-[#7A7A7A] text-sm">streak</span>
+                            <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">streak</span>
                           </div>
 
                           {/* Frequency */}
                           <div className="flex items-center gap-2">
-                            <i className="ri-repeat-line text-[#5D6D55]"></i>
-                            <span className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                            <i className="ri-repeat-line text-[#748D92]"></i>
+                            <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                               {habit.frequency}
                             </span>
                           </div>
@@ -256,7 +256,7 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                     <div className="flex-1 max-w-md">
                       <div className="flex items-center gap-4">
                         <div className="flex-1">
-                          <div className="h-3 bg-gradient-to-r from-[#F5E8C7] to-[#F0F8E8] rounded-full overflow-hidden">
+                          <div className="h-3 bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-full overflow-hidden border border-[#748D92]/20">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
@@ -265,8 +265,7 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                             />
                           </div>
                           <div className="flex justify-between mt-2">
-                           
-                            <span className="font-['Montserrat'] font-bold text-[#2D5A27]">
+                            <span className="font-['Montserrat'] font-bold text-[#D3D9D4]">
                               {percentage}%
                             </span>
                           </div>
@@ -278,7 +277,7 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                     <div className="flex flex-col items-end gap-4">
                       {/* Today's Toggle */}
                       <div className="flex items-center gap-3">
-                        <span className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm hidden md:block">
+                        <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm hidden md:block">
                           Today
                         </span>
                         <div className="relative">
@@ -291,18 +290,18 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                           />
                           <label
                             htmlFor={`habit-${habit._id}`}
-                            className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 ${isCompleted ? 'bg-gradient-to-r from-[#4CAF50] to-[#2D5A27]' : 'bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9]'}`}
+                            className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 border border-[#748D92]/30 ${isCompleted ? 'bg-gradient-to-r from-[#124E66] to-[#748D92]' : 'bg-gradient-to-r from-[#212A31] to-[#2E3944]'}`}
                           >
-                            <div className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isCompleted ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                            <div className={`bg-[#D3D9D4] w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isCompleted ? 'translate-x-6' : 'translate-x-0'}`}></div>
                           </label>
                         </div>
                       </div>
 
                       {/* Weekly Progress */}
-                      <div className="bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] rounded-xl p-3">
+                      <div className="bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-xl p-3 border border-[#748D92]/30">
                         <div className="flex items-center gap-2 mb-2">
-                          <i className="ri-calendar-line text-[#5D6D55]"></i>
-                          <span className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                          <i className="ri-calendar-line text-[#748D92]"></i>
+                          <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                             This week
                           </span>
                         </div>
@@ -313,18 +312,18 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
 
                             return (
                               <div key={index} className="flex flex-col items-center">
-                                <span className="font-['Source_Sans_Pro'] text-[11px] text-[#7A7A7A] mb-1">
+                                <span className="font-['Source_Sans_Pro'] text-[11px] text-[#748D92] mb-1">
                                   {days[index]}
                                 </span>
-                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300
-                                  ${done ? 'bg-gradient-to-r from-[#4CAF50] to-[#2D5A27]' : 'bg-gradient-to-r from-[#F5E8C7] to-[#E8F5E9]'}
-                                  ${isToday && !done ? 'ring-2 ring-[#FFD166]' : ''}
-                                  ${isToday && done ? 'ring-2 ring-white' : ''}
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 border border-[#748D92]/20
+                                  ${done ? 'bg-gradient-to-r from-[#124E66] to-[#748D92]' : 'bg-gradient-to-r from-[#212A31] to-[#2E3944]'}
+                                  ${isToday && !done ? 'ring-2 ring-[#D3D9D4]' : ''}
+                                  ${isToday && done ? 'ring-2 ring-[#D3D9D4]' : ''}
                                 `}>
                                   {done ? (
-                                    <i className="ri-check-line text-white text-sm"></i>
+                                    <i className="ri-check-line text-[#D3D9D4] text-sm"></i>
                                   ) : (
-                                    <span className="text-[#7A7A7A] text-xs">{new Date(date).getDate()}</span>
+                                    <span className="text-[#748D92] text-xs">{new Date(date).getDate()}</span>
                                   )}
                                 </div>
                               </div>
@@ -341,9 +340,9 @@ const Habits = ({ habits, setHabits, setMaxHabit, setMinHabit }) => {
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        className="w-8 h-8 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] flex items-center justify-center shadow-lg"
+                        className="w-8 h-8 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center shadow-lg border border-[#748D92]/30"
                       >
-                        <i className="ri-check-fill text-white text-sm"></i>
+                        <i className="ri-check-fill text-[#D3D9D4] text-sm"></i>
                       </motion.div>
                     </div>
                   )}

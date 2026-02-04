@@ -99,24 +99,24 @@ const SignUp = () => {
     }
   }
 
-  // Nature-themed background gradient
-  const backgroundGradient = "bg-gradient-to-br from-[#F5E8C7] via-[#E8F5E9] to-[#D4EDDA]"
+  // New color scheme background gradient
+  const backgroundGradient = "bg-gradient-to-br from-[#212A31] via-[#2E3944] to-[#124E66]"
 
   // Password strength color
   const getStrengthColor = () => {
     if (passwordStrength < 25) return '#FF6B6B'
     if (passwordStrength < 50) return '#FFB347'
     if (passwordStrength < 75) return '#FFD166'
-    return '#4CAF50'
+    return '#748D92'
   }
 
   return (
     <div className={`min-h-screen ${backgroundGradient}`}>
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 right-10 w-40 h-40 rounded-full bg-gradient-to-r from-[#FFD166]/20 to-[#FFB347]/10 blur-3xl"></div>
-        <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full bg-gradient-to-r from-[#4A7C3F]/10 to-[#2D5A27]/10 blur-3xl"></div>
-        <div className="absolute top-1/3 left-1/4 w-32 h-32 rounded-full bg-gradient-to-r from-[#87CEEB]/10 to-[#3498DB]/10 blur-3xl"></div>
+        <div className="absolute top-10 right-10 w-40 h-40 rounded-full bg-gradient-to-r from-[#748D92]/20 to-[#124E66]/20 blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-60 h-60 rounded-full bg-gradient-to-r from-[#D3D9D4]/10 to-[#748D92]/10 blur-3xl"></div>
+        <div className="absolute top-1/3 left-1/4 w-32 h-32 rounded-full bg-gradient-to-r from-[#124E66]/20 to-[#2E3944]/20 blur-3xl"></div>
       </div>
 
       <div className="relative z-10">
@@ -132,7 +132,7 @@ const SignUp = () => {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              className="w-20 h-20 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] flex items-center justify-center mb-4 shadow-xl"
+              className="w-20 h-20 rounded-full bg-gradient-to-r from-[#124E66] to-[#2E3944] flex items-center justify-center mb-4 shadow-xl"
             >
               <img
                 className="h-14 w-14"
@@ -141,10 +141,10 @@ const SignUp = () => {
               />
             </motion.div>
 
-            <h1 className="font-['Merriweather'] text-[28px] font-bold text-[#2D5A27] mb-2">
+            <h1 className="font-['Merriweather'] text-[28px] font-bold text-[#D3D9D4] mb-2">
               Join Habitus
             </h1>
-            <p className="font-['Source_Sans_Pro'] text-[#5D6D55] max-w-md">
+            <p className="font-['Source_Sans_Pro'] text-[#748D92] max-w-md">
               Start your journey to building lasting habits and watch your life grow
             </p>
           </div>
@@ -157,15 +157,15 @@ const SignUp = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="px-6"
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/40 shadow-2xl py-10 px-8">
+          <div className="bg-[#2E3944]/90 backdrop-blur-sm rounded-3xl border border-[#748D92]/20 shadow-2xl py-10 px-8">
             <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#FFD166] to-[#FFB347] flex items-center justify-center mb-4">
-                <span className="text-white text-2xl">🌱</span>
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center mb-4">
+                <span className="text-[#D3D9D4] text-2xl">📝</span>
               </div>
-              <h2 className="font-['Merriweather'] font-bold text-[26px] text-[#2D5A27] mb-2">
+              <h2 className="font-['Merriweather'] font-bold text-[26px] text-[#D3D9D4] mb-2">
                 Create Account
               </h2>
-              <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-center">
+              <p className="font-['Source_Sans_Pro'] text-[#748D92] text-center">
                 Plant the seeds of your new habits
               </p>
             </div>
@@ -177,13 +177,13 @@ const SignUp = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-6 p-4 bg-gradient-to-r from-[#FFE8E8] to-[#FFC9C9] rounded-xl border border-[#FF6B6B]/30"
+                  className="mb-6 p-4 bg-gradient-to-r from-[#FF6B6B]/10 to-[#E74C3C]/10 rounded-xl border border-[#FF6B6B]/30"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C] flex items-center justify-center">
                       <span className="text-white text-lg">!</span>
                     </div>
-                    <p className="font-['Source_Sans_Pro'] text-[#E74C3C] font-medium">
+                    <p className="font-['Source_Sans_Pro'] text-[#FF6B6B] font-medium">
                       {error}
                     </p>
                   </div>
@@ -195,13 +195,13 @@ const SignUp = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mb-6 p-4 bg-gradient-to-r from-[#E8F5E9] to-[#D4EDDA] rounded-xl border border-[#4CAF50]/30"
+                  className="mb-6 p-4 bg-gradient-to-r from-[#748D92]/10 to-[#124E66]/10 rounded-xl border border-[#748D92]/30"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#4CAF50] to-[#2D5A27] flex items-center justify-center">
-                      <span className="text-white text-lg">✓</span>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center">
+                      <span className="text-[#D3D9D4] text-lg">✓</span>
                     </div>
-                    <p className="font-['Source_Sans_Pro'] text-[#2D5A27] font-medium">
+                    <p className="font-['Source_Sans_Pro'] text-[#D3D9D4] font-medium">
                       {success}
                     </p>
                   </div>
@@ -213,12 +213,12 @@ const SignUp = () => {
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                  <label className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] text-sm">
                     First Name
                   </label>
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      <span className="text-[#5D6D55]">👤</span>
+                      <span className="text-[#748D92]">👤</span>
                     </div>
                     <input
                       type="text"
@@ -226,18 +226,18 @@ const SignUp = () => {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="John"
-                      className="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                      className="w-full pl-12 pr-4 py-4 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                  <label className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] text-sm">
                     Last Name
                   </label>
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      <span className="text-[#5D6D55]">👥</span>
+                      <span className="text-[#748D92]">👥</span>
                     </div>
                     <input
                       type="text"
@@ -245,7 +245,7 @@ const SignUp = () => {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="Doe"
-                      className="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                      className="w-full pl-12 pr-4 py-4 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
                     />
                   </div>
                 </div>
@@ -253,12 +253,12 @@ const SignUp = () => {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                <label className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] text-sm">
                   Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                    <span className="text-[#5D6D55]">📧</span>
+                    <span className="text-[#748D92]">📧</span>
                   </div>
                   <input
                     type="email"
@@ -266,19 +266,19 @@ const SignUp = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                    className="w-full pl-12 pr-4 py-4 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
                   />
                 </div>
               </div>
 
               {/* Password Field */}
               <div className="space-y-2">
-                <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                <label className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] text-sm">
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                    <span className="text-[#5D6D55]">🔒</span>
+                    <span className="text-[#748D92]">🔒</span>
                   </div>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -286,14 +286,14 @@ const SignUp = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a strong password"
-                    className="w-full pl-12 pr-12 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                    className="w-full pl-12 pr-12 py-4 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2"
                   >
-                    <span className="text-[#5D6D55]">
+                    <span className="text-[#748D92] hover:text-[#D3D9D4] transition">
                       {showPassword ? "🙈" : "👁️"}
                     </span>
                   </button>
@@ -307,7 +307,7 @@ const SignUp = () => {
                     className="space-y-2 mt-3"
                   >
                     <div className="flex justify-between">
-                      <span className="font-['Source_Sans_Pro'] text-[#5D6D55] text-xs">
+                      <span className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
                         Password strength
                       </span>
                       <span
@@ -317,7 +317,7 @@ const SignUp = () => {
                         {passwordStrength}%
                       </span>
                     </div>
-                    <div className="h-2 bg-gradient-to-r from-[#F5E8C7] to-[#F0F8E8] rounded-full overflow-hidden">
+                    <div className="h-2 bg-[#212A31] rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${passwordStrength}%` }}
@@ -326,7 +326,7 @@ const SignUp = () => {
                         style={{ backgroundColor: getStrengthColor() }}
                       />
                     </div>
-                    <p className="font-['Source_Sans_Pro'] text-[#7A7A7A] text-xs">
+                    <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
                       Use 8+ characters with uppercase, numbers, and symbols
                     </p>
                   </motion.div>
@@ -335,12 +335,12 @@ const SignUp = () => {
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
-                <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                <label className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4] text-sm">
                   Confirm Password
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                    <span className="text-[#5D6D55]">✓</span>
+                    <span className="text-[#748D92]">✓</span>
                   </div>
                   <input
                     type={showConfirmPassword ? "text" : "password"}
@@ -348,9 +348,9 @@ const SignUp = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Re-enter your password"
-                    className={`w-full pl-12 pr-12 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] text-[#2D5A27] ${confirmPassword && password !== confirmPassword
-                        ? 'border-[#FF6B6B] focus:ring-[#FF6B6B]/30'
-                        : 'border-[#E0E6D6] focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F]'
+                    className={`w-full pl-12 pr-12 py-4 bg-[#212A31] border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92] ${confirmPassword && password !== confirmPassword
+                      ? 'border-[#FF6B6B] focus:ring-[#FF6B6B]/50'
+                      : 'border-[#2E3944] focus:ring-[#124E66]/50 focus:border-[#124E66]'
                       }`}
                   />
                   <button
@@ -358,7 +358,7 @@ const SignUp = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2"
                   >
-                    <span className="text-[#5D6D55]">
+                    <span className="text-[#748D92] hover:text-[#D3D9D4] transition">
                       {showConfirmPassword ? "🙈" : "👁️"}
                     </span>
                   </button>
@@ -369,7 +369,7 @@ const SignUp = () => {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className={`flex items-center gap-2 mt-2 ${password === confirmPassword ? 'text-[#4CAF50]' : 'text-[#FF6B6B]'
+                    className={`flex items-center gap-2 mt-2 ${password === confirmPassword ? 'text-[#748D92]' : 'text-[#FF6B6B]'
                       }`}
                   >
                     <span className="text-sm">
@@ -383,17 +383,17 @@ const SignUp = () => {
               </div>
 
               {/* Terms and Conditions */}
-              <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] rounded-xl">
-                <div className="w-5 h-5 rounded border border-[#E0E6D6] flex items-center justify-center mt-1 flex-shrink-0">
-                  <span className="text-[#4A7C3F] text-xs">✓</span>
+              <div className="flex items-start gap-3 p-3 bg-[#212A31] rounded-xl border border-[#2E3944]">
+                <div className="w-5 h-5 rounded border border-[#748D92]/30 flex items-center justify-center mt-1 flex-shrink-0">
+                  <span className="text-[#748D92] text-xs">✓</span>
                 </div>
-                <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-sm">
+                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                   By creating an account, you agree to our{' '}
-                  <Link to="/terms" className="text-[#4A7C3F] hover:text-[#2D5A27]">
+                  <Link to="/terms" className="text-[#748D92] hover:text-[#D3D9D4]">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link to="/privacy" className="text-[#4A7C3F] hover:text-[#2D5A27]">
+                  <Link to="/privacy" className="text-[#748D92] hover:text-[#D3D9D4]">
                     Privacy Policy
                   </Link>
                 </p>
@@ -405,20 +405,20 @@ const SignUp = () => {
                 disabled={loading || password !== confirmPassword || passwordStrength < 75}
                 whileTap={{ scale: loading ? 1 : 0.98 }}
                 className={`w-full py-4 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all relative overflow-hidden ${loading || password !== confirmPassword || passwordStrength < 75
-                    ? 'bg-gradient-to-r from-[#7A7A7A] to-[#5D6D55] text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] text-white hover:shadow-xl active:scale-95'
+                  ? 'bg-gradient-to-r from-[#2E3944] to-[#212A31] text-[#748D92] cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4] hover:shadow-xl hover:shadow-[#124E66]/20 active:scale-95'
                   }`}
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-3">
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-[#D3D9D4]/30 border-t-[#D3D9D4] rounded-full animate-spin"></div>
                     <span>Creating account...</span>
                   </div>
                 ) : (
                   <>
                     <span>Start Your Journey</span>
                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      <span className="text-xl">🌿</span>
+                      <span className="text-xl">🚀</span>
                     </div>
                   </>
                 )}
@@ -427,24 +427,24 @@ const SignUp = () => {
 
             {/* Divider */}
             <div className="flex items-center my-8">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E0E6D6] to-transparent"></div>
-              <span className="px-4 font-['Source_Sans_Pro'] text-[#7A7A7A] text-sm">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#748D92]/30 to-transparent"></div>
+              <span className="px-4 font-['Source_Sans_Pro'] text-[#748D92] text-sm">
                 Or sign up with
               </span>
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E0E6D6] to-transparent"></div>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#748D92]/30 to-transparent"></div>
             </div>
 
             {/* Social Sign Up */}
             <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-3 py-3 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl hover:border-[#4A7C3F] transition">
-                <span className="text-xl">G</span>
-                <span className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27]">
+              <button className="flex items-center justify-center gap-3 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl hover:border-[#124E66] transition group">
+                <span className="text-xl text-[#748D92] group-hover:text-[#D3D9D4] transition">G</span>
+                <span className="font-['Source_Sans_Pro'] font-semibold text-[#748D92] group-hover:text-[#D3D9D4] transition">
                   Google
                 </span>
               </button>
-              <button className="flex items-center justify-center gap-3 py-3 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl hover:border-[#4A7C3F] transition">
-                <span className="text-xl">f</span>
-                <span className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27]">
+              <button className="flex items-center justify-center gap-3 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl hover:border-[#124E66] transition group">
+                <span className="text-xl text-[#748D92] group-hover:text-[#D3D9D4] transition">f</span>
+                <span className="font-['Source_Sans_Pro'] font-semibold text-[#748D92] group-hover:text-[#D3D9D4] transition">
                   Facebook
                 </span>
               </button>
@@ -459,20 +459,20 @@ const SignUp = () => {
           transition={{ delay: 0.3 }}
           className="px-6 py-8 text-center"
         >
-          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
-            <p className="font-['Source_Sans_Pro'] text-[#5D6D55] mb-4">
+          <div className="bg-[#2E3944]/40 backdrop-blur-sm rounded-2xl p-6 border border-[#748D92]/20">
+            <p className="font-['Source_Sans_Pro'] text-[#748D92] mb-4">
               Already have an account?
             </p>
             <Link
               to="/login"
-              className="block py-3 px-6 bg-gradient-to-r from-[#87CEEB] to-[#3498DB] text-white font-['Source_Sans_Pro'] font-semibold rounded-xl hover:shadow-lg transition-all active:scale-95"
+              className="block py-3 px-6 bg-gradient-to-r from-[#748D92] to-[#124E66] text-[#D3D9D4] font-['Source_Sans_Pro'] font-semibold rounded-xl hover:shadow-lg hover:shadow-[#124E66]/20 transition-all active:scale-95"
             >
               Sign In Instead
             </Link>
           </div>
 
           {/* Footer */}
-          <p className="font-['Source_Sans_Pro'] text-[#7A7A7A] text-sm mt-8">
+          <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm mt-8">
             Your journey to better habits starts here
           </p>
         </motion.div>
