@@ -1,107 +1,280 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import AppLogo from '../Assets/HabitTrackerLogo.png'
-import 'remixicon/fonts/remixicon.css'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useUser } from '../context/UserContext'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const Login = () => {
-
-      const navigate = useNavigate();
-      useEffect(() => {
-          const token = localStorage.getItem('token');
-          if (token) {
-              navigate('/home');
-          }
-      }, [navigate]);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const { setUser } = useUser()
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    const newUser = {
-      email: email,
-      password: password
-    };
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/user/login`, newUser);
-    if (response.status === 200) {
-      const data = response.data;
-      setUser(data.user);
-      localStorage.setItem('token', data.token);
-      navigate('/home');
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      navigate('/home')
     }
+  }, [navigate])
 
+  const submitHandler = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
-    setEmail('');
-    setPassword('');
-  };
+    try {
+      const newUser = {
+        email: email.trim(),
+        password: password
+      }
 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/user/login`,
+        newUser
+      )
+
+      if (response.status === 200) {
+        const data = response.data
+        setUser(data.user)
+        localStorage.setItem('token', data.token)
+        navigate('/home')
+      }
+    } catch (err) {
+      console.error('Login failed:', err)
+      setError(
+        err.response?.data?.message ||
+        'Invalid email or password. Please try again.'
+      )
+    } finally {
+      setLoading(false)
+      setEmail('')
+      setPassword('')
+    }
+  }
+
+  // Nature-themed background gradient
+  const backgroundGradient = "bg-gradient-to-br from-[#F5E8C7] via-[#E8F5E9] to-[#D4EDDA]"
 
   return (
-    <div className='flex flex-col bg-blue-50 h-screen'>
-      <div className="flex flex-row mt-12 justify-center gap-0">
-        <img className="h-[60px]" src={AppLogo} alt="app logo" />
-        <div className="flex flex-col justify-center mt-2 -ml-4 items-start">
-          <h2 className="text-[22px] font-bold">HABITUS</h2>
-          <p className="text-[12px] text-gray-500 font-semibold">
-            Consistency made simple.
-          </p>
-        </div>
+    <div className={`min-h-screen ${backgroundGradient}`}>
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-gradient-to-r from-[#FFD166]/20 to-[#FFB347]/10 blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-gradient-to-r from-[#4A7C3F]/10 to-[#2D5A27]/10 blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-gradient-to-r from-[#87CEEB]/10 to-[#3498DB]/10 blur-3xl"></div>
       </div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-blue-50"
-      >
-        <div className="mt-10 mx-5 bg-white shadow-2xl rounded-xl py-12 px-6">
-          <h2 className="font-serif font-semibold text-center text-[26px] mb-6">
-            Login
-          </h2>
-          <form
-            onSubmit={(e) => {
-              submitHandler(e)
-            }}
-            className="flex flex-col gap-4">
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
-              <i className="ri-mail-line text-gray-500"></i>
-              <input
-                className="w-full outline-none"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => { setEmail(e.target.value) }}
-                placeholder="Enter your Email"
-              />
-            </div>
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 gap-3">
-              <i className="ri-lock-line text-gray-500"></i>
-              <input
-                className="w-full outline-none"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => { setPassword(e.target.value) }}
-                placeholder="Enter your Password"
-              />
-              <i className="ri-eye-off-line text-gray-400 cursor-pointer"></i>
-            </div>
-            <button className="bg-black text-white py-3 rounded-lg font-semibold mt-3">
-              Login
-            </button>
-          </form>
-        </div>
-      </motion.div>
 
-      <div className='flex justify-center items-center mt-6'>
-        <p className='text-center'>You don't have an Account?
-          <Link
-            className='text-[#2727fa]'
-            to='/signup'> signup</Link>
-        </p>
+      <div className="relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="pt-12 pb-8 px-6 text-center"
+        >
+          <div className="flex flex-col items-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              className="w-24 h-24 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] flex items-center justify-center mb-4 shadow-xl"
+            >
+              <img
+                className="h-16 w-16"
+                src={AppLogo}
+                alt="Habit Tracker Logo"
+              />
+            </motion.div>
+
+            <h1 className="font-['Merriweather'] text-[32px] font-bold text-[#2D5A27] mb-2">
+              Habitus
+            </h1>
+            <p className="font-['Source_Sans_Pro'] text-[#5D6D55]">
+              Cultivate good habits, grow your life
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Login Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="px-6"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/40 shadow-2xl py-10 px-8">
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] flex items-center justify-center mb-4">
+                <span className="text-white text-2xl">🌿</span>
+              </div>
+              <h2 className="font-['Merriweather'] font-bold text-[28px] text-[#2D5A27] mb-2">
+                Welcome Back
+              </h2>
+              <p className="font-['Source_Sans_Pro'] text-[#5D6D55] text-center">
+                Continue your journey to better habits
+              </p>
+            </div>
+
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-6 p-4 bg-gradient-to-r from-[#FFE8E8] to-[#FFC9C9] rounded-xl border border-[#FF6B6B]/30"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C] flex items-center justify-center">
+                      <span className="text-white text-lg">!</span>
+                    </div>
+                    <p className="font-['Source_Sans_Pro'] text-[#E74C3C] font-medium">
+                      {error}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <form onSubmit={submitHandler} className="space-y-6">
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <span className="text-[#5D6D55]">📧</span>
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27] text-sm">
+                    Password
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="font-['Source_Sans_Pro'] text-[#4A7C3F] text-sm hover:text-[#2D5A27] transition"
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <span className="text-[#5D6D55]">🔒</span>
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full pl-12 pr-12 py-4 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl outline-none focus:ring-2 focus:ring-[#4A7C3F]/30 focus:border-[#4A7C3F] transition-all font-['Source_Sans_Pro'] text-[#2D5A27]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                  >
+                    <span className="text-[#5D6D55]">
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileTap={{ scale: loading ? 1 : 0.98 }}
+                className={`w-full py-4 rounded-xl font-['Source_Sans_Pro'] font-semibold text-white transition-all relative overflow-hidden ${loading
+                    ? 'bg-gradient-to-r from-[#7A7A7A] to-[#5D6D55] cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#4A7C3F] to-[#2D5A27] hover:shadow-xl active:scale-95'
+                  }`}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Signing in...</span>
+                  </div>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <span className="text-xl">→</span>
+                    </div>
+                  </>
+                )}
+              </motion.button>
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center my-8">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E0E6D6] to-transparent"></div>
+              <span className="px-4 font-['Source_Sans_Pro'] text-[#7A7A7A] text-sm">
+                Or continue with
+              </span>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E0E6D6] to-transparent"></div>
+            </div>
+
+            {/* Social Login */}
+            <div className="grid grid-cols-2 gap-3 mb-8">
+              <button className="flex items-center justify-center gap-3 py-3 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl hover:border-[#4A7C3F] transition">
+                <span className="text-xl">G</span>
+                <span className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27]">
+                  Google
+                </span>
+              </button>
+              <button className="flex items-center justify-center gap-3 py-3 bg-gradient-to-r from-[#F9FBF5] to-[#F0F8E8] border border-[#E0E6D6] rounded-xl hover:border-[#4A7C3F] transition">
+                <span className="text-xl">f</span>
+                <span className="font-['Source_Sans_Pro'] font-semibold text-[#2D5A27]">
+                  Facebook
+                </span>
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Sign Up Link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="px-6 py-8 text-center"
+        >
+          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/40">
+            <p className="font-['Source_Sans_Pro'] text-[#5D6D55] mb-4">
+              Don't have an account yet?
+            </p>
+            <Link
+              to="/signup"
+              className="block py-3 px-6 bg-gradient-to-r from-[#FFD166] to-[#FFB347] text-[#2D5A27] font-['Source_Sans_Pro'] font-semibold rounded-xl hover:shadow-lg transition-all active:scale-95"
+            >
+              Create Your Account
+            </Link>
+          </div>
+
+          {/* Footer */}
+          <p className="font-['Source_Sans_Pro'] text-[#7A7A7A] text-sm mt-8">
+            By signing in, you agree to our Terms and Privacy Policy
+          </p>
+        </motion.div>
       </div>
     </div>
   )

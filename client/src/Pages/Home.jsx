@@ -501,16 +501,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* ADD BUTTON */}
-      <Link
-        to="/add-habit"
-        className="fixed bottom-28 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl group"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#4A7C3F] to-[#6B8E23] rounded-full"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#FFD166] to-[#FFB347] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <i className="ri-add-large-line text-white text-2xl relative z-10" />
-        <div className="absolute -inset-1 bg-white/20 rounded-full blur-md group-hover:blur-lg transition-all duration-300"></div>
-      </Link>
 
       {/* NAVBAR */}
       <div className="fixed bottom-0 left-0 right-0 z-40">
