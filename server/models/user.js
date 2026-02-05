@@ -30,7 +30,30 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false
-  }
+  },
+  theme: {
+    type: String,
+    enum: ['light', 'dark'],
+    default: 'light',
+  },
+  notifications: {
+    enabled: {
+      type: Boolean,
+      default: true,
+    },
+    dailyReminder: {
+      type: Boolean,
+      default: true,
+    },
+    reminderTime: {
+      type: String, // "08:00", "21:30"
+      default: '08:00',
+    },
+    motivationalTips: {
+      type: Boolean,
+      default: true,
+    },
+  },
 },
   { timestamps: true }
 );

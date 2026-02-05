@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import HabitAreaChatGraph from '../components/HabitAreaChatGraph'
+import StatCard from '../components/StatCard'
+import CategoryCard from '../components/CategoryCard'
+import InsightCard from '../components/InsightCard'
+import EmptyStateCard from '../components/EmptyStateCard'
 import { useHabits } from '../context/HabitContext'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -8,11 +12,41 @@ import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart'
 
 const Analytics = () => {
   const navigate = useNavigate()
-  const { habits, setHabits } = useHabits()
+  const { habits, setHabits, theme, toggleTheme } = useHabits()
   const [timeRange, setTimeRange] = useState('week')
   const [bestCategory, setBestCategory] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState(null)
 
   const totalHabits = habits?.length || 0
+  const currentTheme = localStorage.getItem('userTheme') || 'dark'
+
+  // Theme colors
+  const themeColors = {
+    light: {
+      backgroundGradient: "bg-gradient-to-b from-[#F1F0E8] via-[#E5E1DA] to-[#B3C8CF]",
+      headerGradient: "from-[#89A8B2] via-[#B3C8CF] to-[#E5E1DA]",
+      categoryColors: {
+        fitness: 'linear-gradient(135deg, #89A8B2, #6E97A3)',
+        mental: 'linear-gradient(135deg, #B3C8CF, #98B7C0)',
+        study: 'linear-gradient(135deg, #E5E1DA, #C9C0B5)',
+        health: 'linear-gradient(135deg, #F1F0E8, #D5D3C5)',
+        other: 'linear-gradient(135deg, #D9E4E8, #B8D0D6)'
+      }
+    },
+    dark: {
+      backgroundGradient: "bg-gradient-to-b from-[#0F1A23] via-[#1A2832] to-[#124E66]",
+      headerGradient: "from-[#124E66] via-[#1E3A52] to-[#2E3944]",
+      categoryColors: {
+        fitness: 'linear-gradient(135deg, #124E66, #0A3A4D)',
+        mental: 'linear-gradient(135deg, #748D92, #5A757B)',
+        study: 'linear-gradient(135deg, #D3D9D4, #B8C2B9)',
+        health: 'linear-gradient(135deg, #2E3944, #1E2832)',
+        other: 'linear-gradient(135deg, #212A31, #151E25)'
+      }
+    }
+  }
+
+  const colors = themeColors[currentTheme]
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -21,7 +55,6 @@ const Analytics = () => {
 
   const calculateOverallAverage = (habits) => {
     if (!habits || habits.length === 0) return 0
-
     let totalCompleted = 0
     let totalTarget = 0
 
@@ -47,11 +80,11 @@ const Analytics = () => {
 
   const getCategoryData = (habits) => {
     const categories = {
-      fitness: { count: 0, completed: 0, color: '#124E66' },
-      mental: { count: 0, completed: 0, color: '#748D92' },
-      study: { count: 0, completed: 0, color: '#D3D9D4' },
-      health: { count: 0, completed: 0, color: '#2E3944' },
-      other: { count: 0, completed: 0, color: '#212A31' }
+      fitness: { count: 0, completed: 0, color: colors.categoryColors.fitness, icon: 'ri-run-line' },
+      mental: { count: 0, completed: 0, color: colors.categoryColors.mental, icon: 'ri-brain-line' },
+      study: { count: 0, completed: 0, color: colors.categoryColors.study, icon: 'ri-book-open-line' },
+      health: { count: 0, completed: 0, color: colors.categoryColors.health, icon: 'ri-heart-pulse-line' },
+      other: { count: 0, completed: 0, color: colors.categoryColors.other, icon: 'ri-star-line' }
     }
 
     habits.forEach(habit => {
@@ -84,6 +117,7 @@ const Analytics = () => {
         label: category.charAt(0).toUpperCase() + category.slice(1),
         value: data.count,
         color: data.color,
+        icon: data.icon,
         completed: data.completed,
         percentage: data.count > 0 ? Math.round((data.completed / (data.count * 30)) * 100) : 0
       }))
@@ -92,11 +126,9 @@ const Analytics = () => {
   const getBestCategory = (habits) => {
     const categories = getCategoryData(habits)
     if (categories.length === 0) return ''
-
-    const best = categories.reduce((prev, current) =>
+    return categories.reduce((prev, current) =>
       (prev.percentage > current.percentage) ? prev : current
     )
-    return best
   }
 
   useEffect(() => {
@@ -104,7 +136,7 @@ const Analytics = () => {
       const bestCat = getBestCategory(habits)
       setBestCategory(bestCat)
     }
-  }, [habits])
+  }, [habits, currentTheme])
 
   const pieData = getCategoryData(habits)
   const completionRate = calculateOverallAverage(habits)
@@ -116,292 +148,395 @@ const Analytics = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen bg-gradient-to-b from-[#212A31] via-[#2E3944] to-[#124E66]"
+      className={`min-h-screen ${colors.backgroundGradient}`}
     >
-      {/* HEADER */}
-      <div className="bg-gradient-to-r from-[#124E66] to-[#2E3944] px-6 pt-8 pb-6">
-        <div className="flex flex-row gap-3 items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#748D92]/20 to-transparent backdrop-blur-sm flex items-center justify-center mb-3">
-            <i className="ri-bar-chart-2-fill text-3xl text-[#D3D9D4]"></i>
-          </div>
-          <div className='flex flex-col items-start'>
-            <h2 className="font-['Merriweather'] text-[28px] font-bold text-[#D3D9D4] text-center mb-1">
-              Habit Analytics
-            </h2>
-            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-center">
-              Track your growth, nurture your progress
-            </p>
-          </div>
+      {/* Floating Theme Toggle */}
+      <motion.button
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        whileHover={{ scale: 1.1, rotate: 180 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={toggleTheme}
+        className={`fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl backdrop-blur-lg border 
+          ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
+          ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'}
+          flex items-center justify-center text-xl transition-all duration-300`}
+        style={{
+          background: currentTheme === 'light'
+            ? 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,240,240,0.7))'
+            : 'linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.7))'
+        }}
+      >
+        {currentTheme === 'light' ? '🌙' : '☀️'}
+      </motion.button>
+
+      {/* Enhanced HEADER */}
+      <div className={`relative bg-gradient-to-r ${colors.headerGradient} px-6 pt-8 pb-8 overflow-hidden`}>
+        {/* Animated background particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ y: -100, x: Math.random() * 100 }}
+              animate={{
+                y: [0, 1000],
+                x: [Math.random() * 100, Math.random() * 100 + 50]
+              }}
+              transition={{
+                duration: 20 + Math.random() * 10,
+                repeat: Infinity,
+                delay: Math.random() * 5
+              }}
+              className="absolute w-[1px] h-[1px] bg-white/10 rounded-full"
+              style={{ left: `${Math.random() * 100}%` }}
+            />
+          ))}
         </div>
 
-        {/* Time Range Selector */}
-        <div className="flex gap-2 mt-2 overflow-x-auto no-scrollbar">
-          {['week', 'month', 'quarter', 'year'].map((range) => (
-            <motion.button
-              key={range}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-full text-sm font-['Source_Sans_Pro'] font-semibold transition-all ${timeRange === range
-                ? 'bg-[#D3D9D4] text-[#124E66] shadow-lg'
-                : 'bg-[#748D92]/20 text-[#D3D9D4] backdrop-blur-sm'
-                }`}
-            >
-              {range.charAt(0).toUpperCase() + range.slice(1)}
-            </motion.button>
-          ))}
+        <div className="relative z-10 flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", damping: 15 }}
+            className={`w-20 h-20 rounded-3xl mb-4 backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
+              ${currentTheme === 'light'
+                ? 'bg-gradient-to-br from-white/40 to-[#F1F0E8]/30'
+                : 'bg-gradient-to-br from-[#1E3A52]/40 to-[#124E66]/30'} flex items-center justify-center`}
+          >
+            <i className={`ri-bar-chart-2-fill text-4xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
+          </motion.div>
+
+          <motion.h2
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="font-['Merriweather'] text-4xl font-bold text-white text-center mb-2"
+          >
+            Habit Analytics
+          </motion.h2>
+
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="font-['Source_Sans_Pro'] text-white/90 text-center mb-6"
+          >
+            Track your growth, nurture your progress
+          </motion.p>
+
+          {/* Enhanced Time Range Selector */}
+          <div className="flex gap-3 overflow-x-auto no-scrollbar">
+            {['week', 'month', 'quarter', 'year'].map((range) => (
+              <motion.button
+                key={range}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setTimeRange(range)}
+                className={`px-5 py-2.5 rounded-xl text-sm font-['Source_Sans_Pro'] font-semibold 
+                  transition-all duration-300 backdrop-blur-sm border 
+                  ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+                  ${timeRange === range
+                    ? (currentTheme === 'light'
+                      ? 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white shadow-lg'
+                      : 'bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white shadow-lg')
+                    : (currentTheme === 'light'
+                      ? 'bg-white/60 text-[#5A6D77] hover:shadow-md'
+                      : 'bg-[#1E3A52]/40 text-[#A3B8C8] hover:shadow-md')
+                  }`}
+              >
+                {range.charAt(0).toUpperCase() + range.slice(1)}
+              </motion.button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* STATS OVERVIEW */}
+      {/* STATS OVERVIEW - Using StatCard Component */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="px-6 py-6"
+        transition={{ delay: 0.3 }}
+        className="px-6 py-8 -mt-6 relative z-20"
       >
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          {/* Completion Rate */}
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center">
-                <i className="ri-check-double-line text-xl text-[#D3D9D4]"></i>
-              </div>
-              <div>
-                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">Completion Rate</p>
-                <h2 className="font-['Montserrat'] font-bold text-[28px] text-[#D3D9D4]">
-                  {completionRate}%
-                </h2>
-              </div>
-            </div>
-            <div className="h-2 bg-gradient-to-r from-[#212A31] to-[#2E3944] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-full transition-all duration-500"
-                style={{ width: `${completionRate}%` }}
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            icon="ri-trophy-fill"
+            label="Best Category"
+            value={bestCategory?.label || 'None'}
+            subtext={`${bestCategory?.percentage || 0}% completion`}
+            color="success"
+            theme={currentTheme}
+          />
 
-          {/* Total Habits */}
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#D3D9D4] to-[#748D92] flex items-center justify-center">
-                <i className="ri-leaf-fill text-xl text-[#212A31]"></i>
-              </div>
-              <div>
-                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">Total Habits</p>
-                <h2 className="font-['Montserrat'] font-bold text-[28px] text-[#D3D9D4]">
-                  {totalHabits}
-                </h2>
-              </div>
-            </div>
-            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
-              {habits.filter(h => h.streak > 0).length} active
-            </p>
-          </div>
+          <StatCard
+            icon="ri-check-double-line"
+            label="Completion Rate"
+            value={`${completionRate}%`}
+            progress={completionRate}
+            subtext="Overall performance"
+            color={completionRate >= 70 ? 'success' : completionRate >= 40 ? 'warning' : 'danger'}
+            theme={currentTheme}
+          />
 
-          {/* Total Streaks */}
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#2E3944] to-[#124E66] flex items-center justify-center">
-                <i className="ri-fire-fill text-xl text-[#D3D9D4]"></i>
-              </div>
-              <div>
-                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">Total Streaks</p>
-                <h2 className="font-['Montserrat'] font-bold text-[28px] text-[#D3D9D4]">
-                  {totalStreaks}
-                </h2>
-              </div>
-            </div>
-            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
-              {activeStreaks} strong streaks
-            </p>
-          </div>
+          <StatCard
+            icon="ri-leaf-fill"
+            label="Total Habits"
+            value={totalHabits}
+            subtext={`${habits.filter(h => h.streak > 0).length} active`}
+            color="primary"
+            theme={currentTheme}
+          />
 
-          {/* Best Category */}
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center">
-                <i className="ri-trophy-fill text-xl text-[#D3D9D4]"></i>
-              </div>
-              <div>
-                <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">Best Category</p>
-                <h2 className="font-['Montserrat'] font-bold text-[22px] text-[#D3D9D4] truncate">
-                  {bestCategory?.label || 'None'}
-                </h2>
-              </div>
-            </div>
-            <p className="font-['Source_Sans_Pro'] text-[#748D92] text-xs">
-              {bestCategory?.percentage || 0}% completion
-            </p>
-          </div>
+          <StatCard
+            icon="ri-fire-fill"
+            label="Total Streaks"
+            value={totalStreaks}
+            progress={Math.min(100, (activeStreaks / Math.max(1, totalHabits)) * 100)}
+            subtext={`${activeStreaks} strong streaks`}
+            color="warning"
+            theme={currentTheme}
+          />
         </div>
 
         {/* CATEGORY DISTRIBUTION */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#212A31] flex items-center justify-center">
-              <i className="ri-pie-chart-2-fill text-xl text-[#D3D9D4]"></i>
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                ? 'bg-gradient-to-br from-[#89A8B2]/20 to-[#F1F0E8]/20'
+                : 'bg-gradient-to-br from-[#124E66]/30 to-[#212A31]/30'} flex items-center justify-center`}
+            >
+              <i className={`ri-pie-chart-2-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
             </div>
-            <h3 className="font-['Merriweather'] text-[20px] font-bold text-[#D3D9D4]">
-              Category Distribution
-            </h3>
+            <div>
+              <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                Category Distribution
+              </h3>
+              <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
+                Click on a category to view details
+              </p>
+            </div>
           </div>
 
           {pieData.length > 0 ? (
-            <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row items-center">
-                <div className="md:w-1/2 flex justify-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Pie Chart */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className={`rounded-3xl p-6 backdrop-blur-sm 
+                  ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'} 
+                  border ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+                  ${currentTheme === 'light'
+                    ? 'bg-gradient-to-br from-white/40 to-white/20'
+                    : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
+              >
+                <div className="flex flex-col items-center">
                   <PieChart
-                    series={[
-                      {
-                        data: pieData,
-                        highlightScope: { fade: 'global', highlight: 'item' },
-                        innerRadius: 40,
-                        outerRadius: 100,
-                        paddingAngle: 2,
-                        cornerRadius: 5,
-                      },
-                    ]}
-                    height={250}
-                    width={300}
+                    series={[{
+                      data: pieData,
+                      highlightScope: { fade: 'global', highlight: 'item' },
+                      innerRadius: 50,
+                      outerRadius: 110,
+                      paddingAngle: 2,
+                      cornerRadius: 8,
+                      arcLabel: (item) => `${item.value}`,
+                    }]}
+                    height={300}
+                    width={350}
+                    slotProps={{
+                      legend: { hidden: true }
+                    }}
                     sx={{
                       [`& .${pieArcLabelClasses.root}`]: {
-                        fill: '#D3D9D4',
+                        fill: currentTheme === 'light' ? '#2E3944' : '#E8F0F7',
                         fontWeight: 'bold',
-                        fontSize: '12px',
-                        fontFamily: '"Source Sans Pro", sans-serif',
+                        fontSize: '14px',
+                        fontFamily: '"Montserrat", sans-serif',
                       },
                     }}
                   />
+                  <p className={`mt-4 font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
+                    Hover to see category details
+                  </p>
                 </div>
+              </motion.div>
 
-                <div className="md:w-1/2 space-y-4">
-                  {pieData.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#212A31] to-[#2E3944] border border-[#748D92]/20">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="font-['Source_Sans_Pro'] font-semibold text-[#D3D9D4]">
-                          {item.label}
-                        </span>
+              {/* Category Cards */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ staggerChildren: 0.1 }}
+                className="space-y-4"
+              >
+                {pieData.map((category) => (
+                  <CategoryCard
+                    key={category.id}
+                    category={category}
+                    isSelected={selectedCategory?.id === category.id}
+                    onClick={setSelectedCategory}
+                    theme={currentTheme}
+                  />
+                ))}
+
+                {/* Selected Category Details */}
+                {selectedCategory && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className={`rounded-2xl p-5 backdrop-blur-sm border 
+                      ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
+                      ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'}
+                      ${currentTheme === 'light'
+                        ? 'bg-gradient-to-br from-white/40 to-white/20'
+                        : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
+                  >
+                    <h4 className={`font-['Montserrat'] font-bold text-lg ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'} mb-2`}>
+                      {selectedCategory.label} Details
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Total Habits</p>
+                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.value}</p>
                       </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-2">
-                          <span className="font-['Montserrat'] font-bold text-[#D3D9D4]">
-                            {item.value} habits
-                          </span>
-                          <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
-                            ({item.percentage}%)
-                          </span>
-                        </div>
+                      <div>
+                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Completion Rate</p>
+                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.percentage}%</p>
+                      </div>
+                      <div>
+                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Total Completions</p>
+                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.completed}</p>
+                      </div>
+                      <div>
+                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Average Streak</p>
+                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                          {Math.round(selectedCategory.completed / selectedCategory.value) || 0}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </motion.div>
+                )}
+              </motion.div>
             </div>
           ) : (
-            <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-8 border border-[#748D92]/20 shadow-lg flex flex-col items-center justify-center backdrop-blur-sm">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#212A31] to-[#2E3944] flex items-center justify-center mb-4">
-                <i className="ri-pie-chart-2-line text-3xl text-[#748D92]"></i>
-              </div>
-              <p className="font-['Merriweather'] text-[#D3D9D4] text-lg mb-2">No data yet</p>
-              <p className="font-['Source_Sans_Pro'] text-[#748D92] text-center">
-                Start tracking habits to see category distribution
-              </p>
-            </div>
+            <EmptyStateCard
+              theme={currentTheme}
+              onAddHabit={() => navigate('/')}
+            />
           )}
         </div>
 
         {/* PERFORMANCE GRAPH */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center">
-              <i className="ri-line-chart-fill text-xl text-[#D3D9D4]"></i>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+                ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+                ${currentTheme === 'light'
+                  ? 'bg-gradient-to-br from-[#B3C8CF]/20 to-[#89A8B2]/20'
+                  : 'bg-gradient-to-br from-[#748D92]/30 to-[#124E66]/30'} flex items-center justify-center`}
+              >
+                <i className={`ri-line-chart-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
+              </div>
+              <div>
+                <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                  Performance Trend
+                </h3>
+                <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
+                  Visualize your habit completion over time
+                </p>
+              </div>
             </div>
-            <h3 className="font-['Merriweather'] text-[20px] font-bold text-[#D3D9D4]">
-              Performance Trend
-            </h3>
+
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                ? 'bg-gradient-to-br from-white/40 to-white/20'
+                : 'bg-gradient-to-br from-[#1E3A52]/40 to-[#0F1A23]/40'}`}
+            >
+              <i className={`ri-calendar-line ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}></i>
+              <span className={`font-['Source_Sans_Pro'] font-semibold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}
+              </span>
+            </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-4">
-              <p className="font-['Source_Sans_Pro'] text-[#748D92]">
-                Showing {timeRange}ly trends
+          <div className={`rounded-3xl p-6 backdrop-blur-sm 
+            ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'} 
+            border ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+            ${currentTheme === 'light'
+              ? 'bg-gradient-to-br from-white/40 to-white/20'
+              : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
+          >
+            <HabitAreaChatGraph
+              habits={habits}
+              setHabits={setHabits}
+              timeRange={timeRange}
+              theme={currentTheme}
+            />
+          </div>
+        </motion.div>
+
+        {/* GROWTH INSIGHTS using InsightCard component */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                ? 'bg-gradient-to-br from-[#89A8B2]/20 to-[#F1F0E8]/20'
+                : 'bg-gradient-to-br from-[#124E66]/30 to-[#212A31]/30'} flex items-center justify-center`}
+            >
+              <i className={`ri-lightbulb-flash-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
+            </div>
+            <div>
+              <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                Growth Insights
+              </h3>
+              <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
+                Personalized recommendations based on your data
               </p>
-              <div className="flex items-center gap-2">
-                <i className="ri-calendar-line text-[#748D92]"></i>
-                <span className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
-                  {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}
-                </span>
-              </div>
-            </div>
-            <HabitAreaChatGraph habits={habits} setHabits={setHabits} timeRange={timeRange} />
-          </div>
-        </div>
-
-        {/* INSIGHTS */}
-        <div className="mt-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#212A31] flex items-center justify-center">
-              <i className="ri-lightbulb-flash-fill text-xl text-[#D3D9D4]"></i>
-            </div>
-            <h3 className="font-['Merriweather'] text-[20px] font-bold text-[#D3D9D4]">
-              Growth Insights
-            </h3>
-          </div>
-
-          <div className="bg-gradient-to-br from-[#2E3944]/90 to-[#212A31]/90 rounded-2xl mb-[80px] p-5 border border-[#748D92]/20 shadow-lg backdrop-blur-sm">
-            <div className="space-y-4">
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center flex-shrink-0 mt-1">
-                  <i className="ri-arrow-up-line text-[#D3D9D4] text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-['Merriweather'] font-semibold text-[#D3D9D4]">
-                    Consistency is Key
-                  </h4>
-                  <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
-                    You've maintained {activeStreaks} strong streaks. Try to keep at least 3 habits active daily for optimal growth.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#D3D9D4] to-[#748D92] flex items-center justify-center flex-shrink-0 mt-1">
-                  <i className="ri-timer-line text-[#212A31] text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-['Merriweather'] font-semibold text-[#D3D9D4]">
-                    Best Time to Grow
-                  </h4>
-                  <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
-                    Your {bestCategory?.label?.toLowerCase() || ''} habits have the highest completion rate. Focus here for quick wins.
-                  </p>
-                </div>
-              </div>
-
-
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#2E3944] to-[#124E66] flex items-center justify-center flex-shrink-0 mt-1">
-                  <i className="ri-seedling-line text-[#D3D9D4] text-sm"></i>
-                </div>
-                <div>
-                  <h4 className="font-['Merriweather'] font-semibold text-[#D3D9D4]">
-                    Next Growth Phase
-                  </h4>
-                  <p className="font-['Source_Sans_Pro'] text-[#748D92] text-sm">
-                    Aim for {completionRate < 70 ? '70%' : '80%'} overall completion rate to unlock your next level of habit mastery.
-                  </p>
-                </div>
-              </div>
-
             </div>
           </div>
-        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-[100px]">
+            <InsightCard
+              icon="ri-bar-chart-line"
+              title="Consistency is Key"
+              description={`You've maintained ${activeStreaks} strong streaks. Try to keep at least 3 habits active daily for optimal growth.`}
+              color="green"
+              theme={currentTheme}
+            />
+
+            <InsightCard
+              icon="ri-timer-line"
+              title="Best Time to Grow"
+              description={`Your ${bestCategory?.label?.toLowerCase() || ''} habits have the highest completion rate. Focus here for quick wins.`}
+              color="blue"
+              theme={currentTheme}
+            />
+
+            <InsightCard
+              icon="ri-seedling-line"
+              title="Next Growth Phase"
+              description={`Aim for ${completionRate < 70 ? '70%' : '80%'} overall completion rate to unlock your next level of habit mastery.`}
+              color="purple"
+              theme={currentTheme}
+            />
+          </div>
+        </motion.div>
       </motion.div>
 
       {/* NAVBAR */}

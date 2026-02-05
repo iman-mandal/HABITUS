@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes } from "react-icons/fa";
 
-const CalendarView = ({ history = [] }) => {
+const CalendarView = ({ history = [], theme = 'dark' }) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -11,7 +11,51 @@ const CalendarView = ({ history = [] }) => {
   const month = currentMonth;
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Sunday
+  const firstDayIndex = new Date(year, month, 1).getDay();
+
+  // Theme colors
+  const themeColors = {
+    dark: {
+      bgGradient: "from-[#2E3944] to-[#212A31]",
+      border: "border-[#748D92]/30",
+      textPrimary: "#D3D9D4",
+      textSecondary: "#748D92",
+      accentFrom: "#124E66",
+      accentTo: "#748D92",
+      accentBg: "from-[#124E66]/20 to-[#124E66]/10",
+      missedFrom: "#8B0000",
+      missedTo: "#B22222",
+      dayBg: "#212A31",
+      dayBorder: "border-[#748D92]/20",
+      dayHoverBorder: "border-[#748D92]/40",
+      weekendColor: "#124E66",
+      progressBg: "#212A31",
+      statBoxBg: "#212A31",
+      statBoxBorder: "border-[#748D92]/20",
+      dividerColor: "#748D92/30",
+    },
+    light: {
+      bgGradient: "from-[#F1F0E8] to-[#E5E1DA]",
+      border: "border-[#89A8B2]/40",
+      textPrimary: "#2E3944",
+      textSecondary: "#5A6D77",
+      accentFrom: "#B3C8CF",
+      accentTo: "#89A8B2",
+      accentBg: "from-[#B3C8CF]/30 to-[#B3C8CF]/10",
+      missedFrom: "#D86A6A",
+      missedTo: "#C45C5C",
+      dayBg: "#F1F0E8",
+      dayBorder: "border-[#89A8B2]/30",
+      dayHoverBorder: "border-[#89A8B2]/50",
+      weekendColor: "#89A8B2",
+      progressBg: "#E5E1DA",
+      statBoxBg: "#F1F0E8",
+      statBoxBorder: "border-[#89A8B2]/30",
+      dividerColor: "#89A8B2/30",
+    }
+  };
+
+  const colors = themeColors[theme];
 
   // Map backend history
   const historyMap = {};
@@ -24,17 +68,17 @@ const CalendarView = ({ history = [] }) => {
     const baseStyles = "h-12 w-12 flex flex-col items-center justify-center rounded-xl transition-all duration-300";
 
     if (isToday) {
-      return `${baseStyles} bg-gradient-to-r from-[#124E66] to-[#748D92] text-[#D3D9D4] border-2 border-[#D3D9D4] shadow-lg`;
+      return `${baseStyles} bg-gradient-to-r ${theme === 'dark' ? 'from-[#124E66] to-[#748D92]' : 'from-[#B3C8CF] to-[#89A8B2]'} text-[#D3D9D4] border-2 ${theme === 'dark' ? 'border-[#D3D9D4]' : 'border-[#2E3944]'} shadow-lg`;
     }
 
-    if (status === "done") return `${baseStyles} bg-gradient-to-r from-[#124E66]/20 to-[#124E66]/10 text-[#D3D9D4] border border-[#748D92]/30`;
-    if (status === "missed") return `${baseStyles} bg-gradient-to-r from-[#8B0000]/20 to-[#B22222]/10 text-[#748D92] border border-[#748D92]/20`;
-    return `${baseStyles} bg-[#212A31] text-[#748D92] border border-[#748D92]/20 hover:border-[#748D92]/40`;
+    if (status === "done") return `${baseStyles} bg-gradient-to-r ${colors.accentBg} ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} border ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/40'}`;
+    if (status === "missed") return `${baseStyles} bg-gradient-to-r from-[${colors.missedFrom}]/20 to-[${colors.missedTo}]/10 ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`;
+    return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${colors.dayBorder} hover:${colors.dayHoverBorder}`;
   };
 
   const getDayStyle = (day) => {
-    if (day === 0 || day === 6) return "text-[#124E66]"; // Weekend color
-    return "text-[#D3D9D4]";
+    if (day === 0 || day === 6) return `text-${theme === 'dark' ? '[#124E66]' : '[#89A8B2]'}`;
+    return `text-[${colors.textPrimary}]`;
   };
 
   const handlePrevMonth = () => {
@@ -87,30 +131,30 @@ const CalendarView = ({ history = [] }) => {
 
   return (
     <div className="p-1">
-      <div className="bg-gradient-to-br from-[#2E3944] to-[#212A31] rounded-2xl border border-[#748D92]/30 shadow-xl p-6">
+      <div className={`bg-gradient-to-br ${colors.bgGradient} rounded-2xl border ${colors.border} shadow-xl p-6`}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={handlePrevMonth}
-            className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center text-[#D3D9D4] hover:opacity-90 transition active:scale-95"
+            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
           >
             <FaChevronLeft />
           </button>
 
           <div className="text-center">
-            <h2 className="text-xl font-['Merriweather'] font-bold text-[#D3D9D4]">
+            <h2 className={`text-xl font-['Merriweather'] font-bold text-[${colors.textPrimary}]`}>
               {monthNames[month]} {year}
             </h2>
             <div className="flex items-center justify-center gap-4 mt-2">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92]"></div>
-                <span className="text-[#748D92] text-sm font-['Source_Sans_Pro']">
+                <div className={`w-3 h-3 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}]`}></div>
+                <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
                   {monthStats.completed} completed
                 </span>
               </div>
-              <div className="h-4 w-px bg-[#748D92]/30"></div>
-              <span className="text-[#748D92] text-sm font-['Source_Sans_Pro']">
+              <div className={`h-4 w-px bg-${colors.dividerColor}`}></div>
+              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
                 {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}% rate
               </span>
             </div>
@@ -118,7 +162,7 @@ const CalendarView = ({ history = [] }) => {
 
           <button
             onClick={handleNextMonth}
-            className="w-10 h-10 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center text-[#D3D9D4] hover:opacity-90 transition active:scale-95"
+            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
           >
             <FaChevronRight />
           </button>
@@ -155,15 +199,15 @@ const CalendarView = ({ history = [] }) => {
                 key={date}
                 className={getStatusStyle(status, day, todayFlag)}
               >
-                <span className="text-xs mb-1 font-['Source_Sans_Pro']">
+                <span className={`text-xs mb-1 font-['Source_Sans_Pro'] ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'}`}>
                   {day}
                 </span>
                 <div className="flex items-center justify-center">
                   {status === "done" && (
-                    <FaCheck className="text-[#124E66]" />
+                    <FaCheck className={theme === 'dark' ? "text-[#124E66]" : "text-[#B3C8CF]"} />
                   )}
                   {status === "missed" && (
-                    <FaTimes className="text-[#8B0000]" />
+                    <FaTimes className={theme === 'dark' ? "text-[#8B0000]" : "text-[#D86A6A]"} />
                   )}
                 </div>
               </div>
@@ -172,33 +216,33 @@ const CalendarView = ({ history = [] }) => {
         </div>
 
         {/* Legend & Stats */}
-        <div className="mt-8 pt-6 border-t border-[#748D92]/30">
+        <div className={`mt-8 pt-6 border-t ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/30'}`}>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] flex items-center justify-center">
-                  <FaCheck className="text-[#D3D9D4] text-xs" />
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center`}>
+                  <FaCheck className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
                 </div>
-                <span className="text-[#D3D9D4] text-sm font-['Source_Sans_Pro']">Completed</span>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Completed</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[#8B0000] to-[#B22222] flex items-center justify-center">
-                  <FaTimes className="text-[#D3D9D4] text-xs" />
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.missedFrom}] to-[${colors.missedTo}] flex items-center justify-center`}>
+                  <FaTimes className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
                 </div>
-                <span className="text-[#D3D9D4] text-sm font-['Source_Sans_Pro']">Missed</span>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Missed</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-gradient-to-r from-[#124E66] to-[#748D92] border-2 border-[#D3D9D4]"></div>
-                <span className="text-[#D3D9D4] text-sm font-['Source_Sans_Pro']">Today</span>
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] ${theme === 'dark' ? 'border-2 border-[#D3D9D4]' : 'border-2 border-[#2E3944]'}`}></div>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Today</span>
               </div>
             </div>
 
             {/* Monthly Summary */}
-            <div className="bg-[#212A31] rounded-xl px-4 py-2 border border-[#748D92]/20">
-              <span className="text-[#748D92] text-sm font-['Source_Sans_Pro']">
-                Monthly: <span className="text-[#D3D9D4] font-semibold">
+            <div className={`${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#F1F0E8]'} rounded-xl px-4 py-2 border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
+              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
+                Monthly: <span className={`text-[${colors.textPrimary}] font-semibold`}>
                   {monthStats.completed}/{monthStats.total}
                 </span> days
               </span>
@@ -209,14 +253,14 @@ const CalendarView = ({ history = [] }) => {
         {/* Progress Bar */}
         <div className="mt-6">
           <div className="flex justify-between mb-2">
-            <span className="text-[#D3D9D4] text-sm font-['Source_Sans_Pro']">Monthly Progress</span>
-            <span className="text-[#D3D9D4] font-['Montserrat'] font-semibold">
+            <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Monthly Progress</span>
+            <span className={`text-[${colors.textPrimary}] font-['Montserrat'] font-semibold`}>
               {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%
             </span>
           </div>
-          <div className="h-2 bg-[#212A31] rounded-full overflow-hidden border border-[#748D92]/20">
+          <div className={`h-2 ${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#E5E1DA]'} rounded-full overflow-hidden border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
             <div
-              className="h-full bg-gradient-to-r from-[#124E66] to-[#748D92] rounded-full transition-all duration-700"
+              className={`h-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] rounded-full transition-all duration-700`}
               style={{
                 width: `${monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%`
               }}

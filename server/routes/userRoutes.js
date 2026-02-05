@@ -32,5 +32,7 @@ router.get('/profile', authMiddleware.authUser, userController.getUserProfile);
 // logout user route
 router.get('/logout', authMiddleware.authUser, userController.logoutUser);
 
+// Update theme
+router.put('/theme', authMiddleware.authUser, userController.updateTheme);
 
 module.exports = router;

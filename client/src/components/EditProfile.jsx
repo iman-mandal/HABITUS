@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useUser } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,6 +18,77 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
     const [showOldPassword, setShowOldPassword] = useState(false)
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+
+    // Theme colors
+    const themeColors = {
+        light: {
+            containerBg: "bg-[#F1F0E8]/90",
+            containerBorder: "border-[#B3C8CF]/20",
+            cardBg: "from-[#E5E1DA]/50 to-[#F1F0E8]/50",
+            cardBorder: "border-[#B3C8CF]/20",
+            textPrimary: "#2E3944",
+            textSecondary: "#89A8B2",
+            textAccent: "#124E66",
+            inputBg: "#E5E1DA",
+            inputBorder: "border-[#B3C8CF]/30",
+            inputFocusBorder: "border-[#89A8B2]",
+            inputFocusRing: "ring-[#89A8B2]/30",
+            placeholder: "rgba(137, 168, 178, 0.6)",
+            buttonBg: "from-[#89A8B2] to-[#B3C8CF]",
+            buttonText: "#F1F0E8",
+            buttonDisabled: "from-[#F1F0E8] to-[#E5E1DA]",
+            buttonDisabledText: "#89A8B2",
+            successBg: "from-[#B3C8CF]/10 to-[#89A8B2]/10",
+            successBorder: "border-[#B3C8CF]/30",
+            successText: "#2E3944",
+            errorBg: "from-[#FFB6B6]/10 to-[#FF6B6B]/10",
+            errorBorder: "border-[#FFB6B6]/30",
+            errorText: "#FF6B6B",
+            iconBg: "from-[#89A8B2] to-[#B3C8CF]",
+            iconText: "#F1F0E8",
+            iconBgAlt: "from-[#B3C8CF] to-[#89A8B2]",
+            iconTextAlt: "#2E3944",
+            iconHover: "hover:scale-105",
+            shadow: "shadow-[#89A8B2]/10",
+            requirementMet: "#89A8B2",
+            requirementUnmet: "rgba(137, 168, 178, 0.3)"
+        },
+        dark: {
+            containerBg: "bg-[#2E3944]/90",
+            containerBorder: "border-[#748D92]/20",
+            cardBg: "from-[#212A31]/50 to-[#2E3944]/50",
+            cardBorder: "border-[#748D92]/20",
+            textPrimary: "#text-[#D3D9D4]",
+            textSecondary: "#748D92",
+            textAccent: "#124E66",
+            inputBg: "#212A31",
+            inputBorder: "border-[#2E3944]",
+            inputFocusBorder: "border-[#124E66]",
+            inputFocusRing: "ring-[#124E66]/50",
+            placeholder: "#748D92",
+            buttonBg: "from-[#124E66] to-[#212A31]",
+            buttonText: "#D3D9D4",
+            buttonDisabled: "from-[#2E3944] to-[#212A31]",
+            buttonDisabledText: "#748D92",
+            successBg: "from-[#748D92]/10 to-[#124E66]/10",
+            successBorder: "border-[#748D92]/30",
+            successText: "#D3D9D4",
+            errorBg: "from-[#FF6B6B]/10 to-[#E74C3C]/10",
+            errorBorder: "border-[#FF6B6B]/30",
+            errorText: "#FF6B6B",
+            iconBg: "from-[#124E66] to-[#212A31]",
+            iconText: "#D3D9D4",
+            iconBgAlt: "from-[#748D92] to-[#124E66]",
+            iconTextAlt: "#D3D9D4",
+            iconHover: "hover:scale-105",
+            shadow: "shadow-[#124E66]/10",
+            requirementMet: "#748D92",
+            requirementUnmet: "rgba(116, 141, 146, 0.5)"
+        }
+    }
+    let theme = localStorage.getItem('userTheme') || user.theme;
+    const colors = themeColors[theme]
 
     useEffect(() => {
         if (toast.show) {
@@ -112,7 +182,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
     }
 
     return (
-        <div className="bg-[#2E3944]/90 backdrop-blur-sm flex flex-col rounded-xl border border-[#748D92]/20">
+        <div className={`${colors.containerBg} backdrop-blur-sm flex flex-col rounded-xl border ${colors.containerBorder}`}>
 
             {/* Toast Notification */}
             <AnimatePresence>
@@ -121,20 +191,19 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
-                        className={`fixed bottom-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl z-50 shadow-lg ${toast.type === 'success'
-                            ? 'bg-gradient-to-r from-[#748D92]/10 to-[#124E66]/10 border border-[#748D92]/30'
-                            : 'bg-gradient-to-r from-[#FF6B6B]/10 to-[#E74C3C]/10 border border-[#FF6B6B]/30'
-                            } backdrop-blur-sm`}
+                        className={`fixed bottom-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl z-50 shadow-lg backdrop-blur-sm ${toast.type === 'success'
+                            ? `bg-gradient-to-r ${colors.successBg} border ${colors.successBorder}`
+                            : `bg-gradient-to-r ${colors.errorBg} border ${colors.errorBorder}`
+                            }`}
                     >
                         <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success'
-                                ? 'bg-gradient-to-r from-[#748D92] to-[#124E66]'
-                                : 'bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C]'
+                                ? `bg-gradient-to-r ${colors.iconBgAlt}`
+                                : theme === 'light' ? 'bg-gradient-to-r from-[#FFB6B6] to-[#FF6B6B]' : 'bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C]'
                                 }`}>
-                                <i className={`ri-${toast.type === 'success' ? 'check' : 'close'}-line text-white text-sm`}></i>
+                                <i className={`ri-${toast.type === 'success' ? 'check' : 'close'}-line ${toast.type === 'success' ? (theme === 'light' ? 'text-[#2E3944]' : 'text-white') : 'text-white'} text-sm`}></i>
                             </div>
-                            <span className={`font-['Source_Sans_Pro'] font-semibold ${toast.type === 'success' ? 'text-[#D3D9D4]' : 'text-[#FF6B6B]'
-                                }`}>
+                            <span className={`font-['Source_Sans_Pro'] font-semibold ${toast.type === 'success' ? colors.successText : colors.errorText}`}>
                                 {toast.text}
                             </span>
                         </div>
@@ -146,26 +215,26 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
             <div className="my-5 mx-4 flex flex-col gap-5">
 
                 {/* CHANGE NAME */}
-                <div className='flex flex-col py-4 px-4 bg-gradient-to-b from-[#212A31]/50 to-[#2E3944]/50 rounded-xl border border-[#748D92]/20 shadow-lg'>
+                <div className={`flex flex-col py-4 px-4 bg-gradient-to-b ${colors.cardBg} rounded-xl border ${colors.cardBorder} shadow-lg`}>
                     <div
                         onClick={() => setShowNamePanel(!showNamePanel)}
                         className='flex flex-row items-center justify-between cursor-pointer group'
                     >
                         <div className='flex gap-4 items-center'>
-                            <div className='w-12 h-12 rounded-full bg-gradient-to-r from-[#124E66] to-[#212A31] flex items-center justify-center group-hover:scale-105 transition'>
-                                <i className="ri-edit-box-line text-[22px] text-[#D3D9D4]"></i>
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center ${colors.iconHover} transition`}>
+                                <i className={`ri-edit-box-line text-[22px] ${colors.iconText}`}></i>
                             </div>
                             <div>
-                                <h3 className='text-[17px] font-bold font-["Merriweather"] text-[#D3D9D4]'>
+                                <h3 className={`text-[17px] font-bold font-["Merriweather"] ${colors.textPrimary}`}>
                                     Change your Name
                                 </h3>
-                                <p className='font-["Source_Sans_Pro"] text-[#748D92] text-sm'>
+                                <p className={`font-["Source_Sans_Pro"] ${colors.textSecondary} text-sm`}>
                                     Update your first and last name
                                 </p>
                             </div>
                         </div>
                         <i
-                            className={`ri-arrow-right-s-line text-2xl text-[#748D92] transition-transform duration-300 ${showNamePanel ? 'rotate-90' : ''
+                            className={`ri-arrow-right-s-line text-2xl ${colors.textSecondary} transition-transform duration-300 ${showNamePanel ? 'rotate-90' : ''
                                 }`}
                         ></i>
                     </div>
@@ -181,15 +250,15 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                             >
                                 {/* First Name */}
                                 <div className='space-y-2'>
-                                    <label className='font-["Source_Sans_Pro"] font-semibold text-[#D3D9D4] text-sm'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         First Name
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i className="ri-user-line text-[#748D92]"></i>
+                                            <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className="w-full pl-12 pr-4 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
                                             value={newFirstName}
                                             onChange={(e) => setNewFirstName(e.target.value)}
                                             placeholder="Enter first name"
@@ -199,15 +268,15 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
 
                                 {/* Last Name */}
                                 <div className='space-y-2'>
-                                    <label className='font-["Source_Sans_Pro"] font-semibold text-[#D3D9D4] text-sm'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Last Name
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i className="ri-user-line text-[#748D92]"></i>
+                                            <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className="w-full pl-12 pr-4 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
                                             value={newLastName}
                                             onChange={(e) => setNewLastName(e.target.value)}
                                             placeholder="Enter last name"
@@ -223,13 +292,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     disabled={loading}
                                     whileTap={{ scale: 0.95 }}
                                     className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading
-                                        ? 'bg-gradient-to-r from-[#2E3944] to-[#212A31] text-[#748D92] cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4] hover:shadow-lg hover:shadow-[#124E66]/20'
+                                        ? `bg-gradient-to-r ${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `bg-gradient-to-r ${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
                                         <div className="flex items-center justify-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-[#D3D9D4]/30 border-t-[#D3D9D4] rounded-full animate-spin"></div>
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-[#F1F0E8]/30 border-t-[#F1F0E8]' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Saving...</span>
                                         </div>
                                     ) : (
@@ -245,26 +314,26 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                 </div>
 
                 {/* CHANGE PASSWORD */}
-                <div className='flex flex-col py-4 px-4 bg-gradient-to-b from-[#212A31]/50 to-[#2E3944]/50 rounded-xl border border-[#748D92]/20 shadow-lg'>
+                <div className={`flex flex-col py-4 px-4 bg-gradient-to-b ${colors.cardBg} rounded-xl border ${colors.cardBorder} shadow-lg`}>
                     <div
                         onClick={() => setShowPasswordPanel(!showPasswordPanel)}
                         className='flex flex-row items-center justify-between cursor-pointer group'
                     >
                         <div className='flex gap-4 items-center'>
-                            <div className='w-12 h-12 rounded-full bg-gradient-to-r from-[#748D92] to-[#124E66] flex items-center justify-center group-hover:scale-105 transition'>
-                                <i className="ri-lock-password-line text-[22px] text-[#D3D9D4]"></i>
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${colors.iconBgAlt} flex items-center justify-center ${colors.iconHover} transition`}>
+                                <i className={`ri-lock-password-line text-[22px] ${colors.iconText}`}></i>
                             </div>
                             <div>
-                                <h3 className='text-[17px] font-bold font-["Merriweather"] text-[#D3D9D4]'>
+                                <h3 className={`text-[17px] font-bold font-["Merriweather"] ${colors.textPrimary}`}>
                                     Change Your Password
                                 </h3>
-                                <p className='font-["Source_Sans_Pro"] text-[#748D92] text-sm'>
+                                <p className={`font-["Source_Sans_Pro"] ${colors.textSecondary} text-sm`}>
                                     Update your account password
                                 </p>
                             </div>
                         </div>
                         <i
-                            className={`ri-arrow-right-s-line text-2xl text-[#748D92] transition-transform duration-300 ${showPasswordPanel ? 'rotate-90' : ''
+                            className={`ri-arrow-right-s-line text-2xl ${colors.textSecondary} transition-transform duration-300 ${showPasswordPanel ? 'rotate-90' : ''
                                 }`}
                         ></i>
                     </div>
@@ -280,16 +349,16 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                             >
                                 {/* Old Password */}
                                 <div className='space-y-2'>
-                                    <label className='font-["Source_Sans_Pro"] font-semibold text-[#D3D9D4] text-sm'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Current Password
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i className="ri-lock-line text-[#748D92]"></i>
+                                            <i className={`ri-lock-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showOldPassword ? "text" : "password"}
-                                            className="w-full pl-12 pr-12 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
                                             placeholder="Enter current password"
@@ -299,23 +368,23 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             onClick={() => setShowOldPassword(!showOldPassword)}
                                             className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showOldPassword ? 'eye-off-line' : 'eye-line'} text-[#748D92] hover:text-[#D3D9D4]`}></i>
+                                            <i className={`ri-${showOldPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* New Password */}
                                 <div className='space-y-2'>
-                                    <label className='font-["Source_Sans_Pro"] font-semibold text-[#D3D9D4] text-sm'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         New Password
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i className="ri-lock-unlock-line text-[#748D92]"></i>
+                                            <i className={`ri-lock-unlock-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showNewPassword ? "text" : "password"}
-                                            className="w-full pl-12 pr-12 py-3 bg-[#212A31] border border-[#2E3944] rounded-xl outline-none focus:ring-2 focus:ring-[#124E66]/50 focus:border-[#124E66] transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92]"
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="Enter new password"
@@ -325,25 +394,27 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             onClick={() => setShowNewPassword(!showNewPassword)}
                                             className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showNewPassword ? 'eye-off-line' : 'eye-line'} text-[#748D92] hover:text-[#D3D9D4]`}></i>
+                                            <i className={`ri-${showNewPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Confirm Password */}
                                 <div className='space-y-2'>
-                                    <label className='font-["Source_Sans_Pro"] font-semibold text-[#D3D9D4] text-sm'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Confirm New Password
                                     </label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i className="ri-check-double-line text-[#748D92]"></i>
+                                            <i className={`ri-check-double-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
-                                            className={`w-full pl-12 pr-12 py-3 bg-[#212A31] border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] text-[#D3D9D4] placeholder:text-[#748D92] ${confirmPassword && newPassword !== confirmPassword
-                                                ? 'border-[#FF6B6B] focus:ring-[#FF6B6B]/50'
-                                                : 'border-[#2E3944] focus:ring-[#124E66]/50 focus:border-[#124E66]'
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'} ${confirmPassword && newPassword !== confirmPassword
+                                                ? theme === 'light'
+                                                    ? 'border-[#FFB6B6] focus:ring-[#FFB6B6]/50'
+                                                    : 'border-[#FF6B6B] focus:ring-[#FF6B6B]/50'
+                                                : `${colors.inputBorder} ${colors.inputFocusRing} focus:${colors.inputFocusBorder}`
                                                 }`}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -354,7 +425,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showConfirmPassword ? 'eye-off-line' : 'eye-line'} text-[#748D92] hover:text-[#D3D9D4]`}></i>
+                                            <i className={`ri-${showConfirmPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
 
@@ -363,11 +434,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
-                                            className={`flex items-center gap-2 mt-2 ${newPassword === confirmPassword ? 'text-[#748D92]' : 'text-[#FF6B6B]'
+                                            className={`flex items-center gap-2 mt-2 ${newPassword === confirmPassword
+                                                ? colors.textSecondary
+                                                : theme === 'light' ? 'text-[#FF6B6B]' : 'text-[#FF6B6B]'
                                                 }`}
                                         >
                                             <i className={`ri-${newPassword === confirmPassword ? 'check-line' : 'close-line'} text-sm`}></i>
-                                            <span className="font-['Source_Sans_Pro'] text-xs">
+                                            <span className={`font-['Source_Sans_Pro'] text-xs`}>
                                                 {newPassword === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
                                             </span>
                                         </motion.div>
@@ -382,13 +455,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     disabled={loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                                     whileTap={{ scale: 0.95 }}
                                     className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
-                                        ? 'bg-gradient-to-r from-[#2E3944] to-[#212A31] text-[#748D92] cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4] hover:shadow-lg hover:shadow-[#124E66]/20'
+                                        ? `bg-gradient-to-r ${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `bg-gradient-to-r ${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
                                         <div className="flex items-center justify-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-[#D3D9D4]/30 border-t-[#D3D9D4] rounded-full animate-spin"></div>
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-[#F1F0E8]/30 border-t-[#F1F0E8]' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Updating...</span>
                                         </div>
                                     ) : (
@@ -400,15 +473,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                 </motion.button>
 
                                 {/* Password Requirements */}
-                                <div className="p-3 bg-[#212A31]/50 rounded-xl border border-[#748D92]/20 mt-2">
-                                    <p className="font-['Source_Sans_Pro'] text-sm text-[#D3D9D4] mb-2">
+                                <div className={`p-3 ${theme === 'light' ? 'bg-[#E5E1DA]/50' : 'bg-[#212A31]/50'} rounded-xl border ${colors.cardBorder} mt-2`}>
+                                    <p className={`font-['Source_Sans_Pro'] text-sm ${colors.textPrimary} mb-2`}>
                                         Password Requirements:
                                     </p>
                                     <div className="flex items-center gap-2">
-                                        <i className={`ri-${newPassword.length >= 6 ? 'check' : 'close'}-line text-xs ${newPassword.length >= 6 ? 'text-[#748D92]' : 'text-[#748D92]/50'
-                                            }`}></i>
-                                        <span className={`font-['Source_Sans_Pro'] text-xs ${newPassword.length >= 6 ? 'text-[#748D92]' : 'text-[#748D92]/50'
-                                            }`}>
+                                        <i className={`ri-${newPassword.length >= 6 ? 'check' : 'close'}-line text-xs ${newPassword.length >= 6 ? colors.requirementMet : colors.requirementUnmet}`}></i>
+                                        <span className={`font-['Source_Sans_Pro'] text-xs ${newPassword.length >= 6 ? colors.requirementMet : colors.requirementUnmet}`}>
                                             At least 6 characters
                                         </span>
                                     </div>
