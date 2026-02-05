@@ -9,10 +9,11 @@ import { useHabits } from '../context/HabitContext'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart'
+import HabitDistributionCard from '../components/HabitDistributionCard'
 
 const Analytics = () => {
   const navigate = useNavigate()
-  const { habits, setHabits, theme, toggleTheme } = useHabits()
+  const { habits, setHabits, toggleTheme } = useHabits()
   const [timeRange, setTimeRange] = useState('week')
   const [bestCategory, setBestCategory] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(null)
@@ -226,7 +227,7 @@ const Analytics = () => {
           </motion.p>
 
           {/* Enhanced Time Range Selector */}
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">
+          <div className="flex gap-3 overflow-hidden no-scrollbar">
             {['week', 'month', 'quarter', 'year'].map((range) => (
               <motion.button
                 key={range}
@@ -301,70 +302,15 @@ const Analytics = () => {
           />
         </div>
 
-        {/* CATEGORY DISTRIBUTION */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
-              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
-              ${currentTheme === 'light'
-                ? 'bg-gradient-to-br from-[#89A8B2]/20 to-[#F1F0E8]/20'
-                : 'bg-gradient-to-br from-[#124E66]/30 to-[#212A31]/30'} flex items-center justify-center`}
-            >
-              <i className={`ri-pie-chart-2-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
-            </div>
-            <div>
-              <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
-                Category Distribution
-              </h3>
-              <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
-                Click on a category to view details
-              </p>
-            </div>
-          </div>
-
           {pieData.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Pie Chart */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={`rounded-3xl p-6 backdrop-blur-sm 
-                  ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'} 
-                  border ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
-                  ${currentTheme === 'light'
-                    ? 'bg-gradient-to-br from-white/40 to-white/20'
-                    : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
-              >
+              
                 <div className="flex flex-col items-center">
-                  <PieChart
-                    series={[{
-                      data: pieData,
-                      highlightScope: { fade: 'global', highlight: 'item' },
-                      innerRadius: 50,
-                      outerRadius: 110,
-                      paddingAngle: 2,
-                      cornerRadius: 8,
-                      arcLabel: (item) => `${item.value}`,
-                    }]}
-                    height={300}
-                    width={350}
-                    slotProps={{
-                      legend: { hidden: true }
-                    }}
-                    sx={{
-                      [`& .${pieArcLabelClasses.root}`]: {
-                        fill: currentTheme === 'light' ? '#2E3944' : '#E8F0F7',
-                        fontWeight: 'bold',
-                        fontSize: '14px',
-                        fontFamily: '"Montserrat", sans-serif',
-                      },
-                    }}
-                  />
-                  <p className={`mt-4 font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
-                    Hover to see category details
-                  </p>
+                  <HabitDistributionCard timeRange={timeRange}  habits={habits} theme={currentTheme} />
                 </div>
-              </motion.div>
+              
 
               {/* Category Cards */}
               <motion.div

@@ -172,28 +172,41 @@ const Home = () => {
     <div className={`min-h-screen overflow-hidden ${theme.bgGradient}`}>
 
       {/* ================= HEADER ================= */}
-      <div className={`fixed top-0 left-0 right-0 z-40 bg-gradient-to-r ${greetingColor} px-6 pt-4 pb-3 flex justify-between items-center shadow-lg`}>
+      <div
+        className={`fixed top-0 left-0 right-0 z-40 bg-gradient-to-r ${greetingColor} px-4 sm:px-6 pt-4 pb-3 flex justify-between items-center shadow-lg`} >
+        {/* Left Section */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <i className="ri-leaf-fill text-2xl text-white"></i>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <i className="ri-leaf-fill text-xl sm:text-2xl text-white"></i>
           </div>
+
           <div>
-            <h2 className="font-['Merriweather'] text-[24px] font-bold text-white">
+            <h2 className="font-['Merriweather'] font-bold text-white text-[18px] sm:text-[22px] lg:text-[24px]">
               {greeting}
             </h2>
-            <p className="font-['Source_Sans_Pro'] text-white/90 text-lg mt-1">
+            <p className="font-['Source_Sans_Pro'] text-white/90 text-sm sm:text-base mt-0.5">
               {user?.fullname?.firstname || 'Nature Lover'}
             </p>
           </div>
         </div>
-        <div className="text-right flex flex-row items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-2">
-            <i className="ri-calendar-event-fill text-xl text-white"></i>
+
+        {/* Right Section */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <i className="ri-calendar-event-fill text-lg sm:text-xl text-white"></i>
           </div>
-          <p className="font-['Source_Sans_Pro'] font-semibold text-white text-[15px]">{week},</p>
-          <p className="font-['Source_Sans_Pro'] font-semibold text-white text-[15px]">{formattedDate}</p>
+
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-1 text-right">
+            <p className="font-['Source_Sans_Pro'] font-semibold text-white text-[13px] sm:text-[14px] lg:text-[15px]">
+              {week},
+            </p>
+            <p className="font-['Source_Sans_Pro'] font-semibold text-white text-[13px] sm:text-[14px] lg:text-[15px]">
+              {formattedDate}
+            </p>
+          </div>
         </div>
       </div>
+
 
       {/* ================= MAIN ================= */}
       <div className="pt-[120px] px-6 flex flex-col lg:flex-row gap-6">

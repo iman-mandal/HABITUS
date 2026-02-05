@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-const HabitDistributionCard = ({ habits, theme }) => {
+const HabitDistributionCard = ({ habits, theme, timeRange }) => {
     // Theme configuration (same as in Home component)
     const themeConfig = {
         light: {
@@ -58,12 +58,65 @@ const HabitDistributionCard = ({ habits, theme }) => {
 
     const pieData = getOverallPieData(habits);
 
+    const getCurrentWeekRange = () => {
+        const now = new Date();
+        const day = now.getDay(); // 0 = Sun, 1 = Mon
+        const diffToMonday = day === 0 ? -6 : 1 - day;
+
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() + diffToMonday);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        return { startOfWeek, endOfWeek };
+    };
+
+    const getWeeklyPieData = (habits) => {
+        if (!habits || habits.length === 0) return [];
+
+        const { startOfWeek, endOfWeek } = getCurrentWeekRange();
+
+        const totalCompleted = habits.reduce((acc, habit) => {
+            const weeklyCompleted =
+                habit.history?.filter(h => {
+                    const date = new Date(h.date);
+                    return h.completed && date >= startOfWeek && date <= endOfWeek;
+                }).length || 0;
+
+            return acc + weeklyCompleted;
+        }, 0);
+
+        return habits.map((habit, index) => {
+            const weeklyCompleted =
+                habit.history?.filter(h => {
+                    const date = new Date(h.date);
+                    return h.completed && date >= startOfWeek && date <= endOfWeek;
+                }).length || 0;
+
+            const percentageOfTotal =
+                totalCompleted === 0 ? 0 : (weeklyCompleted / totalCompleted) * 100;
+
+            return {
+                id: index,
+                label: habit.title,
+                value: Math.round(percentageOfTotal),
+                completed: weeklyCompleted,
+                color: colors.pieColors[index % colors.pieColors.length],
+            };
+        });
+    };
+
+    
+
     return (
         <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className={`${colors.cardBg} rounded-2xl p-6 border ${colors.cardBorder} shadow-lg`}
+            className={`${colors.cardBg} rounded-2xl w-full p-6 border ${colors.cardBorder} shadow-lg`}
         >
             <div className="flex items-center gap-3 mb-4">
                 <div className={`w-10 h-10 rounded-full ${colors.iconBg} flex items-center justify-center`}>
