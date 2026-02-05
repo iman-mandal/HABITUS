@@ -48,9 +48,11 @@ const App = () => {
           <AddHabit />
         </HabitProvider>} />
       <Route path='/habit-analytics' element={
+        <UserProvider>
         <HabitProvider>
           <Analytics />
-        </HabitProvider>} />
+        </HabitProvider>
+        </UserProvider>} />
 
       <Route path='/habit-list' element={
         <HabitProvider>

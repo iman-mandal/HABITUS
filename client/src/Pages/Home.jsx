@@ -392,7 +392,7 @@ const Home = () => {
         {/* -------- RIGHT COLUMN -------- */}
         <div className="lg:w-[380px] flex flex-col gap-6">
           {/* Use the new components */}
-          <HabitDistributionCard habits={habits} theme={currentTheme} />
+          <HabitDistributionCard habits={habits} timeRange={'overall'} theme={currentTheme} />
           <MotivationCard theme={currentTheme} />
           <StatsSummaryCard habits={habits} theme={currentTheme} />
         </div>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -7,12 +7,19 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
-  Legend
+  Legend,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  ComposedChart
 } from 'recharts';
 
-const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
+const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const [filter, setFilter] = useState(timeRange);
-  let theme=localStorage.getItem('userTheme');
+  const [graphType, setGraphType] = useState('area'); // 'area', 'bar', 'line'
+  const [timeData, setTimeData] = useState([]);
+
   // Theme colors
   const themeColors = {
     light: {
@@ -21,6 +28,7 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
       accent: '#2E3944',
       success: '#89A8B2',
       error: '#FF6B6B',
+      warning: '#FFA726',
       background: 'rgba(241, 240, 232, 0.3)',
       grid: 'rgba(137, 168, 178, 0.1)',
       textPrimary: '#2E3944',
@@ -37,7 +45,10 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
       iconText: '#F1F0E8',
       iconBgAlt: 'from-[#F1F0E8] to-[#E5E1DA]',
       iconTextAlt: '#2E3944',
-      divider: 'border-[#B3C8CF]/20'
+      divider: 'border-[#B3C8CF]/20',
+      barFill: '#89A8B2',
+      lineStroke: '#B3C8CF',
+      areaFill: 'rgba(137, 168, 178, 0.1)'
     },
     dark: {
       primary: '#124E66',
@@ -45,6 +56,7 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
       accent: '#D3D9D4',
       success: '#748D92',
       error: '#FF6B6B',
+      warning: '#FFA726',
       background: 'rgba(33, 42, 49, 0.3)',
       grid: 'rgba(116, 141, 146, 0.1)',
       textPrimary: '#D3D9D4',
@@ -61,161 +73,318 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
       iconText: '#D3D9D4',
       iconBgAlt: 'from-[#2E3944] to-[#124E66]',
       iconTextAlt: '#D3D9D4',
-      divider: 'border-[#748D92]/20'
+      divider: 'border-[#748D92]/20',
+      barFill: '#124E66',
+      lineStroke: '#748D92',
+      areaFill: 'rgba(18, 78, 102, 0.1)'
     }
   };
 
-  const colors = themeColors[theme];
-  const isLight = theme === 'light';
+  // Use prop theme if provided, otherwise get from localStorage
+  const currentTheme = theme || localStorage.getItem('userTheme') || 'dark';
+  const colors = themeColors[currentTheme];
+  const isLight = currentTheme === 'light';
 
-  // Filter options with icons
-  const filterOptions = [
-    { value: 'weekly', label: 'Weekly', icon: '📅', description: '7 days' },
-    { value: 'monthly', label: 'Monthly', icon: '🗓️', description: '4 weeks' },
-    { value: 'quarterly', label: 'Quarterly', icon: '📊', description: '3 months' },
-    { value: 'yearly', label: 'Yearly', icon: '🌱', description: '12 months' },
-  ];
-
-  const chartData = useMemo(() => {
-    if (!habits || habits.length === 0) {
-      // Return sample data for empty state
-      const labels = filter === 'weekly' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] :
-        filter === 'monthly' ? ['Week 1', 'Week 2', 'Week 3', 'Week 4'] :
-          filter === 'quarterly' ? ['Month 1', 'Month 2', 'Month 3'] :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-      return labels.map(label => ({
-        name: label,
-        value: Math.floor(Math.random() * 30) + 40, // Sample data between 40-70%
-        growth: Math.floor(Math.random() * 20) + 10,
-      }));
+  // Sync filter with prop timeRange
+  useEffect(() => {
+    if (timeRange) {
+      // Convert from 'week' to 'weekly', 'month' to 'monthly', etc.
+      const convertedFilter =
+        timeRange === 'week' ? 'weekly' :
+          timeRange === 'month' ? 'monthly' :
+            timeRange === 'quarter' ? 'quarterly' :
+              timeRange === 'year' ? 'yearly' : timeRange;
+      setFilter(convertedFilter);
     }
+  }, [timeRange]);
 
-    const now = new Date();
-    let buckets = [];
-    let labels = [];
-    let bucketCount = 0;
+  // Generate time-based data for the selected range
+  useEffect(() => {
+    if (!habits || habits.length === 0) return;
 
-    // Initialize buckets based on filter
-    switch (filter) {
-      case 'weekly':
-        bucketCount = 7;
-        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        break;
-      case 'monthly':
-        bucketCount = 4;
-        labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        break;
-      case 'quarterly':
-        bucketCount = 3;
-        labels = ['Month 1', 'Month 2', 'Month 3'];
-        break;
-      default: // yearly
-        bucketCount = 12;
-        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    }
+    const generateTimeData = () => {
+      const now = new Date();
+      let data = [];
+      let labels = [];
+      let startDate, endDate;
 
-    buckets = Array(bucketCount).fill(0).map(() => ({
-      completed: 0,
-      total: 0,
-      growth: 0
-    }));
+      // Calculate date range based on filter
+      switch (filter) {
+        case 'weekly': {
+          const day = now.getDay();
+          const diffToMonday = day === 0 ? -6 : 1 - day;
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() + diffToMonday);
+          startDate.setHours(0, 0, 0, 0);
 
-    habits.forEach(habit => {
-      habit.history?.forEach(h => {
-        const date = new Date(isNaN(h.date) ? h.date : parseInt(h.date));
-        let index = -1;
+          endDate = new Date(startDate);
+          endDate.setDate(startDate.getDate() + 6);
+          endDate.setHours(23, 59, 59, 999);
 
-        switch (filter) {
-          case 'weekly':
-            index = (date.getDay() + 6) % 7; // Convert to Monday start
-            break;
-          case 'monthly':
-            const weekOfMonth = Math.floor((date.getDate() - 1) / 7);
-            index = Math.min(weekOfMonth, 3);
-            break;
-          case 'quarterly':
-            const month = date.getMonth();
-            index = Math.floor(month / 3);
-            break;
-          default: // yearly
-            index = date.getMonth();
+          labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+          // Initialize data for each day
+          data = labels.map((label, index) => {
+            const dayDate = new Date(startDate);
+            dayDate.setDate(startDate.getDate() + index);
+            return {
+              name: label,
+              date: dayDate,
+              completed: 0,
+              total: 0,
+              missed: 0
+            };
+          });
+          break;
         }
 
-        if (index >= 0 && buckets[index]) {
-          buckets[index].total += 1;
-          if (h.completed) buckets[index].completed += 1;
+        case 'monthly': {
+          const year = now.getFullYear();
+          const month = now.getMonth();
+          startDate = new Date(year, month, 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(year, month + 1, 0);
+          endDate.setHours(23, 59, 59, 999);
+
+          // Get weeks in month
+          const firstDay = startDate.getDay();
+          const daysInMonth = endDate.getDate();
+          const weeks = Math.ceil((daysInMonth + firstDay) / 7);
+
+          labels = Array.from({ length: weeks }, (_, i) => `Week ${i + 1}`);
+
+          data = labels.map((label, weekIndex) => {
+            const weekStart = new Date(startDate);
+            weekStart.setDate(startDate.getDate() + (weekIndex * 7));
+            return {
+              name: label,
+              startDate: weekStart,
+              completed: 0,
+              total: 0,
+              missed: 0
+            };
+          });
+          break;
         }
+
+        case 'quarterly': {
+          const currentMonth = now.getMonth();
+          const quarter = Math.floor(currentMonth / 3);
+          const quarterStartMonth = quarter * 3;
+
+          startDate = new Date(now.getFullYear(), quarterStartMonth, 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(now.getFullYear(), quarterStartMonth + 3, 0);
+          endDate.setHours(23, 59, 59, 999);
+
+          labels = ['Month 1', 'Month 2', 'Month 3'];
+
+          data = labels.map((label, monthIndex) => {
+            const monthStart = new Date(now.getFullYear(), quarterStartMonth + monthIndex, 1);
+            return {
+              name: label,
+              month: monthIndex + 1,
+              startDate: monthStart,
+              completed: 0,
+              total: 0,
+              missed: 0
+            };
+          });
+          break;
+        }
+
+        case 'yearly': {
+          const year = now.getFullYear();
+          startDate = new Date(year, 0, 1);
+          startDate.setHours(0, 0, 0, 0);
+
+          endDate = new Date(year, 11, 31);
+          endDate.setHours(23, 59, 59, 999);
+
+          labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+          data = labels.map((label, monthIndex) => {
+            const monthStart = new Date(year, monthIndex, 1);
+            return {
+              name: label,
+              month: monthIndex + 1,
+              startDate: monthStart,
+              completed: 0,
+              total: 0,
+              missed: 0
+            };
+          });
+          break;
+        }
+      }
+
+      // Populate data with habits history
+      habits.forEach(habit => {
+        if (!habit.history) return;
+
+        habit.history.forEach(h => {
+          try {
+            const historyDate = new Date(h.date);
+
+            if (historyDate >= startDate && historyDate <= endDate) {
+              let dataIndex = -1;
+
+              switch (filter) {
+                case 'weekly': {
+                  const dayIndex = (historyDate.getDay() + 6) % 7; // Convert to Monday start
+                  if (dayIndex >= 0 && dayIndex < 7) dataIndex = dayIndex;
+                  break;
+                }
+                case 'monthly': {
+                  const weekOfMonth = Math.floor((historyDate.getDate() - 1) / 7);
+                  if (weekOfMonth >= 0 && weekOfMonth < data.length) dataIndex = weekOfMonth;
+                  break;
+                }
+                case 'quarterly': {
+                  const month = historyDate.getMonth();
+                  const quarterStartMonth = Math.floor(month / 3) * 3;
+                  const monthInQuarter = month - quarterStartMonth;
+                  if (monthInQuarter >= 0 && monthInQuarter < 3) dataIndex = monthInQuarter;
+                  break;
+                }
+                case 'yearly': {
+                  const month = historyDate.getMonth();
+                  if (month >= 0 && month < 12) dataIndex = month;
+                  break;
+                }
+              }
+
+              if (dataIndex >= 0 && data[dataIndex]) {
+                data[dataIndex].total += 1;
+                if (h.completed) {
+                  data[dataIndex].completed += 1;
+                } else {
+                  data[dataIndex].missed += 1;
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error processing history date:', error);
+          }
+        });
       });
-    });
 
-    // Calculate growth trend
-    for (let i = 1; i < buckets.length; i++) {
-      const prevValue = buckets[i - 1].total ? Math.round((buckets[i - 1].completed / buckets[i - 1].total) * 100) : 0;
-      const currValue = buckets[i].total ? Math.round((buckets[i].completed / buckets[i].total) * 100) : 0;
-      buckets[i].growth = currValue - prevValue;
-    }
+      // Calculate percentages and additional metrics
+      const processedData = data.map(item => {
+        const completionRate = item.total > 0 ? Math.round((item.completed / item.total) * 100) : 0;
+        const missRate = item.total > 0 ? Math.round((item.missed / item.total) * 100) : 0;
+        const avgHabits = habits.length > 0 ? Math.round(item.total / habits.length) : 0;
 
-    return buckets.map((b, i) => ({
-      name: labels[i],
-      value: b.total ? Math.round((b.completed / b.total) * 100) : 0,
-      growth: b.growth,
-      trend: b.growth > 5 ? 'up' : b.growth < -5 ? 'down' : 'stable'
-    }));
+        return {
+          ...item,
+          completionRate,
+          missRate,
+          avgHabits,
+          efficiency: item.total > 0 ? Math.round((item.completed / (item.completed + item.missed)) * 100) : 0,
+          value: completionRate // For backward compatibility
+        };
+      });
+
+      // Calculate trends
+      if (processedData.length > 1) {
+        for (let i = 1; i < processedData.length; i++) {
+          const prev = processedData[i - 1].completionRate;
+          const curr = processedData[i].completionRate;
+          processedData[i].trend = curr - prev;
+        }
+      }
+
+      setTimeData(processedData);
+    };
+
+    generateTimeData();
   }, [habits, filter]);
 
-  // Calculate overall statistics
-  const stats = useMemo(() => {
-    if (!habits || habits.length === 0) {
+  // Calculate statistics for the time range
+  const timeRangeStats = useMemo(() => {
+    if (timeData.length === 0) {
       return {
-        avgCompletion: 65,
-        bestPeriod: 'Week 3',
-        growth: 12,
-        streak: 0
+        totalCompleted: 0,
+        totalMissed: 0,
+        avgCompletion: 0,
+        bestPeriod: '',
+        worstPeriod: '',
+        consistency: 0
       };
     }
 
-    const totalCompleted = habits.reduce((acc, habit) =>
-      acc + (habit.history?.filter(h => h.completed).length || 0), 0);
-    const totalDays = habits.reduce((acc, habit) =>
-      acc + (habit.history?.length || 0), 0);
-    const avgCompletion = totalDays ? Math.round((totalCompleted / totalDays) * 100) : 0;
+    const totalCompleted = timeData.reduce((sum, item) => sum + item.completed, 0);
+    const totalMissed = timeData.reduce((sum, item) => sum + item.missed, 0);
+    const total = totalCompleted + totalMissed;
+    const avgCompletion = total > 0 ? Math.round((totalCompleted / total) * 100) : 0;
 
-    // Find best period
-    const bestPeriod = chartData.length > 0 ?
-      chartData.reduce((max, item) => item.value > max.value ? item : max, { value: 0, name: 'None' }).name :
-      'None';
+    const bestPeriod = timeData.reduce((best, item) =>
+      item.completionRate > best.completionRate ? item : best,
+      { completionRate: 0, name: '' }
+    );
 
-    // Calculate growth
-    const growth = chartData.length > 1 ?
-      chartData[chartData.length - 1].value - chartData[0].value : 0;
+    const worstPeriod = timeData.reduce((worst, item) =>
+      item.completionRate < worst.completionRate ? item : worst,
+      { completionRate: 100, name: '' }
+    );
+
+    // Calculate consistency (how close values are to average)
+    const values = timeData.map(item => item.completionRate);
+    const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const variance = values.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / values.length;
+    const consistency = Math.max(0, 100 - Math.sqrt(variance));
 
     return {
+      totalCompleted,
+      totalMissed,
       avgCompletion,
-      bestPeriod,
-      growth,
-      streak: habits.reduce((acc, habit) => acc + (habit.streak || 0), 0)
+      bestPeriod: bestPeriod.name,
+      worstPeriod: worstPeriod.name,
+      bestRate: bestPeriod.completionRate,
+      worstRate: worstPeriod.completionRate,
+      consistency: Math.round(consistency)
     };
-  }, [habits, chartData]);
+  }, [timeData]);
+
+  // Graph type options
+  const graphTypeOptions = [
+    { value: 'area', label: 'Area Chart', icon: '📈' },
+    { value: 'bar', label: 'Bar Chart', icon: '📊' },
+    { value: 'line', label: 'Line Chart', icon: '📉' },
+    { value: 'composed', label: 'Detailed', icon: '🔍' },
+  ];
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const data = payload[0]?.payload;
+      if (!data) return null;
+
       return (
-        <div className={`${isLight ? 'bg-[#F1F0E8]/90' : 'bg-[#2E3944]/90'} backdrop-blur-sm p-4 rounded-xl border ${colors.cardBorder} shadow-lg`}>
+        <div className={`${isLight ? 'bg-[#F1F0E8]/90' : 'bg-[#2E3944]/90'} backdrop-blur-sm p-4 rounded-xl border ${colors.cardBorder} shadow-lg min-w-[200px]`}>
           <p className={`font-['Merriweather'] font-semibold ${colors.textPrimary} mb-2`}>{label}</p>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary}`}>Completion:</span>
-              <span className={`font-['Montserrat'] font-bold ${colors.textPrimary}`}>{payload[0].value}%</span>
+              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion:</span>
+              <span className={`font-['Montserrat'] font-bold ${colors.textPrimary}`}>{data.completionRate}%</span>
             </div>
-            {payload[1] && (
+            <div className="flex items-center justify-between">
+              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completed:</span>
+              <span className={`font-['Montserrat'] font-bold ${colors.success}`}>{data.completed}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Missed:</span>
+              <span className={`font-['Montserrat'] font-bold ${colors.error}`}>{data.missed}</span>
+            </div>
+            {data.trend !== undefined && (
               <div className="flex items-center justify-between">
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary}`}>Growth:</span>
-                <span className={`font-['Montserrat'] font-bold ${payload[1].value > 0 ? colors.secondary :
-                  payload[1].value < 0 ? colors.error :
-                    isLight ? 'text-[#89A8B2]/60' : 'text-[#748D92]/60'
+                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Trend:</span>
+                <span className={`font-['Montserrat'] font-bold ${data.trend > 0 ? colors.success :
+                  data.trend < 0 ? colors.error :
+                    colors.textSecondary
                   }`}>
-                  {payload[1].value > 0 ? '+' : ''}{payload[1].value}%
+                  {data.trend > 0 ? '↗' : data.trend < 0 ? '↘' : '→'} {data.trend > 0 ? '+' : ''}{data.trend || 0}%
                 </span>
               </div>
             )}
@@ -226,19 +395,120 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
     return null;
   };
 
+  // Render the appropriate chart based on graphType
+  const renderChart = () => {
+    if (timeData.length === 0) {
+      return (
+        <div className="h-[300px] flex flex-col items-center justify-center">
+          <div className={`w-24 h-24 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#212A31] to-[#2E3944]'} flex items-center justify-center mb-4`}>
+            <span className={`text-4xl ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>📈</span>
+          </div>
+          <h4 className={`font-['Merriweather'] ${colors.textPrimary} text-lg mb-2`}>No data yet</h4>
+          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-center max-w-md`}>
+            Start tracking your habits to see your {filter} trends here
+          </p>
+        </div>
+      );
+    }
+
+    switch (graphType) {
+      case 'area':
+        return renderAreaChart();
+      case 'bar':
+        return renderBarChart();
+      case 'line':
+        return renderLineChart();
+      case 'composed':
+        return renderComposedChart();
+      default:
+        return renderAreaChart();
+    }
+  };
+
+  const renderAreaChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart
+        data={timeData}
+        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+      >
+        <defs>
+          <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={colors.primary} stopOpacity={isLight ? 0.4 : 0.6} />
+            <stop offset="95%" stopColor={colors.primary} stopOpacity={isLight ? 0.1 : 0.1} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
+        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} tickFormatter={value => `${value}%`} />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Area type="monotone" dataKey="completionRate" stroke={colors.primary} fill="url(#colorCompletion)" name="Completion Rate" />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+
+  const renderBarChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
+        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Bar dataKey="completed" fill={colors.primary} name="Completed" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="missed" fill={colors.error} name="Missed" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+
+  const renderLineChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
+        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} tickFormatter={value => `${value}%`} />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Line type="monotone" dataKey="completionRate" stroke={colors.primary} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} name="Completion Rate" />
+        <Line type="monotone" dataKey="efficiency" stroke={colors.secondary} strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4 }} name="Efficiency" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+
+  const renderComposedChart = () => (
+    <ResponsiveContainer width="100%" height="100%">
+      <ComposedChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
+        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Bar yAxisId="left" dataKey="completed" fill={colors.primary} name="Completed" radius={[4, 4, 0, 0]} />
+        <Bar yAxisId="left" dataKey="missed" fill={colors.error} name="Missed" radius={[4, 4, 0, 0]} />
+        <Line yAxisId="right" type="monotone" dataKey="completionRate" stroke={colors.accent} strokeWidth={2} dot={{ r: 4 }} name="Completion Rate" />
+      </ComposedChart>
+    </ResponsiveContainer>
+  );
+
   return (
     <div className="w-full">
-      {/* STATS OVERVIEW */}
+      {/* TIME RANGE STATS OVERVIEW */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {/* Avg. Rate */}
+        {/* Completion Rate */}
         <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
           <div className="flex items-center gap-2 mb-2">
             <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center`}>
               <span className={`text-sm ${colors.iconText}`}>✓</span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Avg. Rate</p>
+            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion</p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl`}>{stats.avgCompletion}%</p>
+          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl`}>
+            {timeRangeStats.avgCompletion}%
+          </p>
+          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+            {timeRangeStats.totalCompleted}/{timeRangeStats.totalCompleted + timeRangeStats.totalMissed} habits
+          </p>
         </div>
 
         {/* Best Period */}
@@ -249,41 +519,57 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
             </div>
             <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Best Period</p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl truncate`}>{stats.bestPeriod}</p>
-        </div>
-
-        {/* Growth */}
-        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'} flex items-center justify-center`}>
-              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📈</span>
-            </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Growth</p>
-          </div>
-          <p className={`font-['Montserrat'] font-bold text-xl ${stats.growth > 0 ? colors.secondary :
-            stats.growth < 0 ? colors.error :
-              colors.textPrimary
-            }`}>
-            {stats.growth > 0 ? '+' : ''}{stats.growth}%
+          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl truncate`}>
+            {timeRangeStats.bestPeriod}
+          </p>
+          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+            {timeRangeStats.bestRate}% completion
           </p>
         </div>
 
-        {/* Total Streaks */}
+        {/* Consistency */}
+        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📊</span>
+            </div>
+            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Consistency</p>
+          </div>
+          <p className={`font-['Montserrat'] font-bold text-xl ${timeRangeStats.consistency > 80 ? colors.success :
+            timeRangeStats.consistency > 60 ? colors.warning :
+              colors.error
+            }`}>
+            {timeRangeStats.consistency}%
+          </p>
+          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+            {timeRangeStats.consistency > 80 ? 'Excellent' :
+              timeRangeStats.consistency > 60 ? 'Good' : 'Needs improvement'}
+          </p>
+        </div>
+
+        {/* Period Overview */}
         <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
           <div className="flex items-center gap-2 mb-2">
             <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#89A8B2] to-[#F1F0E8]' : 'bg-gradient-to-r from-[#124E66] to-[#212A31]'} flex items-center justify-center`}>
-              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>🔥</span>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>{filter === 'weekly' ? '📅' : filter === 'monthly' ? '🗓️' : filter === 'quarterly' ? '📊' : '🌱'}</span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Total Streaks</p>
+            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Period</p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl`}>{stats.streak}</p>
+          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl capitalize`}>
+            {filter}
+          </p>
+          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+            {timeData.length} {filter === 'weekly' ? 'days' :
+              filter === 'monthly' ? 'weeks' :
+                filter === 'quarterly' ? 'months' : 'months'}
+          </p>
         </div>
       </div>
 
-      {/* CHART CARD */}
+      {/* MAIN GRAPH CARD */}
       <div className={`bg-gradient-to-br ${colors.cardBg} backdrop-blur-sm rounded-2xl p-6 border ${colors.cardBorder} shadow-lg`}>
-        {/* HEADER */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        {/* HEADER WITH CONTROLS */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center`}>
@@ -291,241 +577,117 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly' }) => {
               </div>
               <div>
                 <h3 className={`font-['Merriweather'] font-bold ${colors.textPrimary} text-lg`}>
-                  Growth Trend
+                  {filter.charAt(0).toUpperCase() + filter.slice(1)} Performance
                 </h3>
                 <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
-                  Track your habit completion over time
+                  Track your habit completion across the {filter} period
                 </p>
               </div>
             </div>
           </div>
 
-          {/* FILTER BUTTONS */}
-          <div className="flex flex-wrap gap-2">
-            {filterOptions.map(f => (
-              <button
-                key={f.value}
-                onClick={() => setFilter(f.value)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-['Source_Sans_Pro'] font-semibold transition-all ${filter === f.value
-                  ? `bg-gradient-to-r ${colors.buttonActive} ${colors.buttonTextActive} shadow-lg ${isLight ? 'shadow-[#89A8B2]/20' : 'shadow-[#124E66]/20'}`
-                  : `${colors.buttonInactive} ${colors.buttonTextInactive} border ${colors.buttonBorder} ${isLight ? 'hover:border-[#89A8B2]' : 'hover:border-[#124E66]'}`
-                  }`}
-              >
-                <span className="text-base">{f.icon}</span>
-                <span>{f.label}</span>
-              </button>
-            ))}
+          {/* CONTROLS */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            {/* Graph Type Selector */}
+            <div className="flex flex-wrap gap-2">
+              {graphTypeOptions.map(g => (
+                <button
+                  key={g.value}
+                  onClick={() => setGraphType(g.value)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-['Source_Sans_Pro'] font-semibold transition-all ${graphType === g.value
+                    ? `bg-gradient-to-r ${colors.buttonActive} ${colors.buttonTextActive} shadow-lg ${isLight ? 'shadow-[#89A8B2]/20' : 'shadow-[#124E66]/20'}`
+                    : `${colors.buttonInactive} ${colors.buttonTextInactive} border ${colors.buttonBorder} ${isLight ? 'hover:border-[#89A8B2]' : 'hover:border-[#124E66]'}`
+                    }`}
+                >
+                  <span className="text-sm">{g.icon}</span>
+                  <span className="hidden sm:inline">{g.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* CHART */}
         <div className="h-[300px] w-full">
-          {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chartData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  {/* Primary gradient for completion */}
-                  <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={colors.primary} stopOpacity={isLight ? 0.4 : 0.6} />
-                    <stop offset="95%" stopColor={colors.primary} stopOpacity={isLight ? 0.1 : 0.1} />
-                  </linearGradient>
-
-                  {/* Secondary gradient for growth */}
-                  <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={colors.secondary} stopOpacity={isLight ? 0.3 : 0.4} />
-                    <stop offset="95%" stopColor={colors.secondary} stopOpacity={isLight ? 0.05 : 0.05} />
-                  </linearGradient>
-                </defs>
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke={colors.grid}
-                />
-
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: colors.textSecondary, fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif" }}
-                  dy={10}
-                />
-
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  domain={[0, 100]}
-                  tick={{ fill: colors.textSecondary, fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif" }}
-                  tickFormatter={value => `${value}%`}
-                />
-
-                <Tooltip
-                  content={<CustomTooltip />}
-                  cursor={{
-                    stroke: colors.primary,
-                    strokeWidth: 1,
-                    strokeDasharray: '5 5',
-                    strokeOpacity: isLight ? 0.5 : 0.8
-                  }}
-                />
-
-                <Legend
-                  verticalAlign="top"
-                  height={36}
-                  iconType="circle"
-                  formatter={(value) => (
-                    <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
-                      {value === 'value' ? 'Completion' : 'Growth'}
-                    </span>
-                  )}
-                  wrapperStyle={{
-                    color: colors.textPrimary,
-                    fontFamily: "'Source Sans Pro', sans-serif"
-                  }}
-                />
-
-                {/* Completion Area */}
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke={colors.primary}
-                  strokeWidth={3}
-                  fill="url(#colorCompletion)"
-                  fillOpacity={1}
-                  name="Completion"
-                  dot={{
-                    r: 5,
-                    fill: colors.primary,
-                    stroke: isLight ? '#E5E1DA' : '#2E3944',
-                    strokeWidth: 2
-                  }}
-                  activeDot={{
-                    r: 7,
-                    fill: colors.primary,
-                    stroke: colors.accent,
-                    strokeWidth: 3
-                  }}
-                  animationDuration={1500}
-                  animationEasing="ease-in-out"
-                />
-
-                {/* Growth Area */}
-                <Area
-                  type="monotone"
-                  dataKey="growth"
-                  stroke={colors.secondary}
-                  strokeWidth={2}
-                  strokeDasharray="4 4"
-                  fill="url(#colorGrowth)"
-                  fillOpacity={0.3}
-                  name="Growth"
-                  dot={{
-                    r: 4,
-                    fill: colors.secondary,
-                    stroke: isLight ? '#E5E1DA' : '#2E3944',
-                    strokeWidth: 2
-                  }}
-                  activeDot={{
-                    r: 6,
-                    fill: colors.secondary,
-                    stroke: colors.accent,
-                    strokeWidth: 3
-                  }}
-                  animationDuration={2000}
-                  animationEasing="ease-in-out"
-                  animationBegin={500}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center">
-              <div className={`w-24 h-24 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#212A31] to-[#2E3944]'} flex items-center justify-center mb-4`}>
-                <span className={`text-4xl ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>📈</span>
-              </div>
-              <h4 className={`font-['Merriweather'] ${colors.textPrimary} text-lg mb-2`}>No data yet</h4>
-              <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-center max-w-md`}>
-                Start tracking your habits to see your growth trends here
-              </p>
-            </div>
-          )}
+          {renderChart()}
         </div>
 
         {/* CHART FOOTER */}
         <div className={`mt-6 pt-6 border-t ${colors.divider}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full ${isLight ? 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF]' : 'bg-gradient-to-r from-[#124E66] to-[#748D92]'}`}></div>
                 <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion Rate</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'}`}></div>
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Growth Trend</span>
+                <div className={`w-3 h-3 rounded-full ${colors.primary}`}></div>
+                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completed Habits</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${colors.error}`}></div>
+                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Missed Habits</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Showing:</span>
+              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Viewing:</span>
               <span className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary} text-sm capitalize`}>
-                {filter}
+                {filter} • {graphTypeOptions.find(g => g.value === graphType)?.label || 'Area Chart'}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* INSIGHTS */}
-      {chartData.length > 0 && (
+      {/* TIME RANGE INSIGHTS */}
+      {timeData.length > 0 && (
         <div className={`mt-6 bg-gradient-to-r ${colors.cardBgSecondary} rounded-2xl p-6 border ${colors.cardBorder}`}>
           <h4 className={`font-['Merriweather'] font-semibold ${colors.textPrimary} mb-4`}>
-            Growth Insights
+            {filter.charAt(0).toUpperCase() + filter.slice(1)} Insights
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Positive Growth / Needs Attention */}
+            {/* Performance Summary */}
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${isLight ? 'from-[#B3C8CF] to-[#89A8B2]' : 'from-[#748D92] to-[#124E66]'} flex items-center justify-center flex-shrink-0`}>
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📈</span>
               </div>
               <div>
                 <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
-                  {stats.growth > 0 ? 'Positive Growth' : 'Needs Attention'}
+                  Performance Summary
                 </p>
                 <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
-                  {stats.growth > 0
-                    ? `Your completion rate increased by ${stats.growth}% this period`
-                    : 'Try increasing consistency to see positive growth'}
+                  Your average completion rate is {timeRangeStats.avgCompletion}% with {timeRangeStats.consistency}% consistency across {timeData.length} {filter === 'weekly' ? 'days' : filter === 'monthly' ? 'weeks' : 'months'}.
                 </p>
               </div>
             </div>
 
-            {/* Best Performance */}
+            {/* Peak Performance */}
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#D3D9D4] to-[#748D92]'} flex items-center justify-center flex-shrink-0`}>
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#212A31]'}`}>🏆</span>
               </div>
               <div>
                 <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
-                  Best Performance
+                  Peak Performance
                 </p>
                 <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
-                  {stats.bestPeriod} was your strongest period with {chartData.find(d => d.name === stats.bestPeriod)?.value || 0}% completion
+                  {timeRangeStats.bestPeriod} was your strongest with {timeRangeStats.bestRate}% completion.
+                  {timeRangeStats.worstPeriod && ` ${timeRangeStats.worstPeriod} needs attention with ${timeRangeStats.worstRate}%.`}
                 </p>
               </div>
             </div>
 
-            {/* Next Goal */}
+            {/* Improvement Areas */}
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'} flex items-center justify-center flex-shrink-0`}>
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>🎯</span>
               </div>
               <div>
                 <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
-                  Next Goal
+                  Improvement Areas
                 </p>
                 <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
-                  Aim for {stats.avgCompletion + 10}% average to reach your next milestone
+                  Aim for {Math.min(100, timeRangeStats.avgCompletion + 15)}% average next {filter}. Focus on consistency during weaker periods.
                 </p>
               </div>
             </div>
