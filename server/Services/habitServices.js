@@ -1,16 +1,26 @@
 const HabitModel = require('../models/habits');
 
 
-exports.createHabit = async (userId, { title, description, frequency, targetPerWeek }) => {
-  if (!userId) throw new Error('User not found');
+exports.createHabit = async (userId, habitData) => {
 
-  return await HabitModel.create({
+  const today = new Date().toISOString().slice(0, 10);
+
+  const habit = new HabitModel({
     user: userId,
-    title,
-    description,
-    frequency,
-    targetPerWeek
+    ...habitData,
+
+    // 🔥 Force default history entry
+    history: [
+      {
+        date: today,
+        completed: false
+      }
+    ]
   });
+
+  await habit.save();
+
+  return habit;
 };
 
 exports.getHabits = async (userId) => {

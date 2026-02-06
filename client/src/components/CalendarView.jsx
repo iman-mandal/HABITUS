@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaLock } from "react-icons/fa";
 
 const CalendarView = ({ history = [], theme = 'dark' }) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
   const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+
   const year = currentYear;
   const month = currentMonth;
 
@@ -64,16 +64,38 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
     historyMap[dateStr] = h.completed ? "done" : "missed";
   });
 
-  const getStatusStyle = (status, day, isToday) => {
-    const baseStyles = "h-12 w-12 flex flex-col items-center justify-center rounded-xl transition-all duration-300";
+  // Check if a specific day is today
+  const isToday = (day) => {
+    const date = new Date(year, month, day);
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
 
-    if (isToday) {
-      return `${baseStyles} bg-gradient-to-r ${theme === 'dark' ? 'from-[#124E66] to-[#748D92]' : 'from-[#B3C8CF] to-[#89A8B2]'} text-[#D3D9D4] border-2 ${theme === 'dark' ? 'border-[#D3D9D4]' : 'border-[#2E3944]'} shadow-lg`;
+  // Check if a date is in the future
+  const isFutureDate = (day) => {
+    const date = new Date(year, month, day);
+    return date > today;
+  };
+
+  const getStatusStyle = (status, day) => {
+    const baseStyles = "h-12 w-12 flex flex-col items-center justify-center rounded-xl transition-all duration-300";
+    const todayFlag = isToday(day);
+    const futureFlag = isFutureDate(day);
+
+    if (todayFlag) {
+      return `${baseStyles} bg-gradient-to-r ${theme === 'dark' ? 'from-[#124E66] to-[#748D92]' : 'from-[#B3C8CF] to-[#89A8B2]'} text-[#D3D9D4] border-2 ${theme === 'dark' ? 'border-[#D3D9D4]' : 'border-[#2E3944]'} shadow-lg cursor-not-allowed`;
+    }
+
+    if (futureFlag) {
+      return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]/40' : 'text-[#5A6D77]/40'} border ${colors.dayBorder} opacity-50 cursor-not-allowed`;
     }
 
     if (status === "done") return `${baseStyles} bg-gradient-to-r ${colors.accentBg} ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} border ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/40'}`;
     if (status === "missed") return `${baseStyles} bg-gradient-to-r from-[${colors.missedFrom}]/20 to-[${colors.missedTo}]/10 ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`;
-    return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${colors.dayBorder} hover:${colors.dayHoverBorder}`;
+    return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${colors.dayBorder}`;
   };
 
   const getDayStyle = (day) => {
@@ -97,14 +119,6 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
     } else {
       setCurrentMonth(month + 1);
     }
-  };
-
-  const isToday = (day) => {
-    return (
-      day === today.getDate() &&
-      month === today.getMonth() &&
-      year === today.getFullYear()
-    );
   };
 
   const monthNames = [
@@ -193,21 +207,28 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
             const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             const status = historyMap[date];
             const todayFlag = isToday(day);
+            const futureFlag = isFutureDate(day);
 
             return (
               <div
                 key={date}
-                className={getStatusStyle(status, day, todayFlag)}
+                className={getStatusStyle(status, day)}
               >
-                <span className={`text-xs mb-1 font-['Source_Sans_Pro'] ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'}`}>
+                <span className={`text-xs mb-1 font-['Source_Sans_Pro'] ${todayFlag ? 'font-bold text-white' : theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'}`}>
                   {day}
                 </span>
                 <div className="flex items-center justify-center">
-                  {status === "done" && (
+                  {status === "done" && !todayFlag && !futureFlag && (
                     <FaCheck className={theme === 'dark' ? "text-[#124E66]" : "text-[#B3C8CF]"} />
                   )}
-                  {status === "missed" && (
+                  {status === "missed" && !todayFlag && !futureFlag && (
                     <FaTimes className={theme === 'dark' ? "text-[#8B0000]" : "text-[#D86A6A]"} />
+                  )}
+                  {todayFlag && (
+                    <FaLock className="text-white text-xs" />
+                  )}
+                  {futureFlag && (
+                    <div className="w-2 h-2 rounded-full bg-gray-500"></div>
                   )}
                 </div>
               </div>
@@ -234,8 +255,10 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] ${theme === 'dark' ? 'border-2 border-[#D3D9D4]' : 'border-2 border-[#2E3944]'}`}></div>
-                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Today</span>
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] ${theme === 'dark' ? 'border-2 border-[#D3D9D4]' : 'border-2 border-[#2E3944]'} flex items-center justify-center`}>
+                  <FaLock className="text-xs" />
+                </div>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Today (Locked)</span>
               </div>
             </div>
 

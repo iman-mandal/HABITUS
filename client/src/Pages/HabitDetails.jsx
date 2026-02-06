@@ -9,7 +9,7 @@ import { useUser } from '../context/UserContext'
 const HabitDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { habits } = useHabits()
+  const { habits, fetchHabits } = useHabits()
   const { user } = useUser()
   const [deleteConfirmTost, setDeleteConfirmTost] = useState(false)
 
@@ -116,8 +116,11 @@ const HabitDetails = () => {
           },
         }
       );
+      if(response.status===200){
+        await fetchHabits();
+        console.log('Habit deleted successfully:', response.data);
+      }
 
-      console.log('Habit deleted successfully:', response.data);
     } catch (err) {
       console.log('Delete failed:', err.response?.data || err.message);
     }

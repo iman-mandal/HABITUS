@@ -5,9 +5,10 @@ exports.createHabit = async (req, res) => {
   try {
     const { title, description, frequency, targetPerWeek } = req.body;
 
-    // Validate required fields
     if (!title || !description || !frequency) {
-      return res.status(400).json({ message: 'Title, description, and frequency are required' });
+      return res.status(400).json({
+        message: 'Title, description, and frequency are required'
+      });
     }
 
     const habit = await habitService.createHabit(req.userId, {
@@ -18,11 +19,13 @@ exports.createHabit = async (req, res) => {
     });
 
     res.status(201).json({ message: 'Habit created', habit });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 exports.getHabits = async (req, res) => {
@@ -57,7 +60,7 @@ exports.updateHabit = async (req, res) => {
 exports.deleteHabit = async (req, res) => {
   try {
     await habitService.deleteHabit(req.userId, req.params.id);
-    res.json({ message: 'Habit deleted' });
+    res.status(200).json({ message: 'Habit deleted' });
   } catch (err) {
     console.log(err);
     res.status(403).json({ message: err.message });

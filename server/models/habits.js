@@ -34,4 +34,20 @@ const HabitSchema = new mongoose.Schema({
     active: { type: Boolean, default: true }
 }, { timestamps: true });
 
+HabitSchema.pre('save', async function () {
+
+  if (this.isNew && this.history.length === 0) {
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    this.history.push({
+      date: today,
+      completed: false
+    });
+
+  }
+
+});
+
+
 module.exports = mongoose.model('Habits', HabitSchema);

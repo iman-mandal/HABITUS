@@ -37,21 +37,23 @@ const App = () => {
         <HabitProvider>
           <HabitDetails />
         </HabitProvider>} />
-        <Route path='/habit/update/:id' element={
+      <Route path='/habit/update/:id' element={
         <UserProvider>
           <HabitProvider>
             <UpdateHabit />
           </HabitProvider>
         </UserProvider>} />
       <Route path='/add-habit' element={
-        <HabitProvider>
-          <AddHabit />
-        </HabitProvider>} />
+        <UserProvider>
+          <HabitProvider>
+            <AddHabit />
+          </HabitProvider>
+        </UserProvider>} />
       <Route path='/habit-analytics' element={
         <UserProvider>
-        <HabitProvider>
-          <Analytics />
-        </HabitProvider>
+          <HabitProvider>
+            <Analytics />
+          </HabitProvider>
         </UserProvider>} />
 
       <Route path='/habit-list' element={

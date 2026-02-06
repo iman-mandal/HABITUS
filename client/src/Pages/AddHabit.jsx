@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUser } from '../context/UserContext'
+import { useHabits } from '../context/HabitContext'
 
 const AddHabit = () => {
   const [title, setTitle] = useState('')
@@ -13,12 +14,12 @@ const AddHabit = () => {
   const [error, setError] = useState('')
   const [category, setCategory] = useState('')
   const [icon, setIcon] = useState('🌱')
-
+  const { fetchHabits } = useHabits();
   const navigate = useNavigate()
   const { user } = useUser()
-  
+
   // Get current theme
-  const currentTheme = localStorage.getItem('userTheme') ||'dark'|| user.theme ;
+  const currentTheme = localStorage.getItem('userTheme') || 'dark' || user.theme;
 
   // Theme configuration
   const themeConfig = {
@@ -27,23 +28,23 @@ const AddHabit = () => {
       bgGradient: 'bg-gradient-to-br from-[#F1F0E8] via-[#E5E1DA] to-[#B3C8CF]',
       headerGradient: 'from-[#89A8B2] to-[#B3C8CF]',
       formBg: 'bg-white/90',
-      
+
       // Text colors
       primaryText: 'text-[#2E3944]',
       secondaryText: 'text-[#5A6D74]',
       accentText: 'text-[#89A8B2]',
-      
+
       // Borders
       cardBorder: 'border-[#B3C8CF]/40',
       inputBorder: 'border-[#E5E1DA]',
       inputFocusBorder: 'border-[#89A8B2]',
       inputFocusRing: 'ring-[#89A8B2]/50',
-      
+
       // Input backgrounds
       inputBg: 'bg-white',
       previewBg: 'bg-[#B3C8CF]/20',
       previewBorder: 'border-[#B3C8CF]/30',
-      
+
       // Category colors
       categoryColors: {
         health: 'from-[#89A8B2] to-[#5A6D74]',
@@ -53,35 +54,35 @@ const AddHabit = () => {
         social: 'from-[#FF9A8B] to-[#FF6B6B]',
         other: 'from-[#89A8B2] to-[#2E3944]',
       },
-      
+
       // Button colors
       buttonEnabled: 'bg-gradient-to-r from-[#89A8B2] to-[#5A6D74] text-white',
       buttonDisabled: 'bg-gradient-to-r from-[#E5E1DA] to-[#F1F0E8] text-[#5A6D74]',
       buttonHover: 'hover:shadow-xl hover:shadow-[#89A8B2]/20',
-      
+
       // Progress bar
       progressBg: 'bg-[#E5E1DA]',
       progressFill: 'from-[#89A8B2] to-[#B3C8CF]',
-      
+
       // Error
       errorBg: 'bg-gradient-to-r from-[#FF9A8B]/10 to-[#FF6B6B]/10',
       errorBorder: 'border-[#FF9A8B]/30',
       errorText: 'text-[#FF6B6B]',
-      
+
       // Tips box
       tipsBg: 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]',
       tipsBorder: 'border-[#B3C8CF]/20',
       tipsIconBg: 'from-[#2E3944] to-[#5A6D74]',
       tipsIconText: 'text-white',
-      
+
       // Control buttons
       controlBtn: 'bg-white border-[#B3C8CF]/40 text-[#2E3944]',
       controlBtnHover: 'hover:border-[#89A8B2]',
-      
+
       // Back button
       backBtn: 'bg-[#B3C8CF]/20',
       backBtnHover: 'hover:bg-[#B3C8CF]/30',
-      
+
       // Spinner
       spinnerBorder: 'border-[#5A6D74]/30 border-t-[#5A6D74]',
     },
@@ -90,23 +91,23 @@ const AddHabit = () => {
       bgGradient: 'bg-gradient-to-br from-[#212A31] via-[#2E3944] to-[#124E66]',
       headerGradient: 'from-[#124E66] to-[#2E3944]',
       formBg: 'bg-[#2E3944]/90',
-      
+
       // Text colors
       primaryText: 'text-[#D3D9D4]',
       secondaryText: 'text-[#748D92]',
       accentText: 'text-[#748D92]',
-      
+
       // Borders
       cardBorder: 'border-[#748D92]/20',
       inputBorder: 'border-[#2E3944]',
       inputFocusBorder: 'border-[#124E66]',
       inputFocusRing: 'ring-[#124E66]/50',
-      
+
       // Input backgrounds
       inputBg: 'bg-[#212A31]',
       previewBg: 'bg-[#748D92]/20',
       previewBorder: 'border-[#748D92]/30',
-      
+
       // Category colors
       categoryColors: {
         health: 'from-[#124E66] to-[#2E3944]',
@@ -116,35 +117,35 @@ const AddHabit = () => {
         social: 'from-[#FF6B6B] to-[#E74C3C]',
         other: 'from-[#124E66] to-[#212A31]',
       },
-      
+
       // Button colors
       buttonEnabled: 'bg-gradient-to-r from-[#124E66] to-[#212A31] text-[#D3D9D4]',
       buttonDisabled: 'bg-gradient-to-r from-[#2E3944] to-[#212A31] text-[#748D92]',
       buttonHover: 'hover:shadow-xl hover:shadow-[#124E66]/20',
-      
+
       // Progress bar
       progressBg: 'bg-[#2E3944]',
       progressFill: 'from-[#124E66] to-[#748D92]',
-      
+
       // Error
       errorBg: 'bg-gradient-to-r from-[#FF6B6B]/10 to-[#E74C3C]/10',
       errorBorder: 'border-[#FF6B6B]/30',
       errorText: 'text-[#FF6B6B]',
-      
+
       // Tips box
       tipsBg: 'bg-gradient-to-r from-[#212A31] to-[#2E3944]',
       tipsBorder: 'border-[#748D92]/20',
       tipsIconBg: 'from-[#D3D9D4] to-[#748D92]',
       tipsIconText: 'text-[#212A31]',
-      
+
       // Control buttons
       controlBtn: 'bg-[#2E3944] border-[#748D92]/30 text-[#D3D9D4]',
       controlBtnHover: 'hover:border-[#748D92]',
-      
+
       // Back button
       backBtn: 'bg-[#748D92]/20',
       backBtnHover: 'hover:bg-[#748D92]/30',
-      
+
       // Spinner
       spinnerBorder: 'border-[#D3D9D4]/30 border-t-[#D3D9D4]',
     }
@@ -185,21 +186,28 @@ const AddHabit = () => {
   }, [category])
 
   const submitHandler = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+
+    setLoading(true);
+    setError('');
 
     // Validation
     if (!frequency) {
-      setError('Please select a frequency')
-      setLoading(false)
-      return
+      setError('Please select a frequency');
+      setLoading(false);
+      return;
     }
 
     if (!category) {
-      setError('Please select a category')
-      setLoading(false)
-      return
+      setError('Please select a category');
+      setLoading(false);
+      return;
+    }
+
+    if (!title.trim() || !description.trim()) {
+      setError('Title and description are required');
+      setLoading(false);
+      return;
     }
 
     try {
@@ -210,7 +218,7 @@ const AddHabit = () => {
         targetPerWeek,
         category,
         icon
-      }
+      };
 
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/habit/createHabit`,
@@ -220,20 +228,26 @@ const AddHabit = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
-      )
+      );
 
       if (response.status === 201) {
+        await fetchHabits();
+        // Optional success UI delay
         setTimeout(() => {
-          navigate(-1)
-        }, 1000)
+          navigate(-1);
+        }, 800);
       }
+
     } catch (err) {
-      console.error('Error creating habit:', err)
-      setError('Failed to create habit. Please try again.')
+      console.error('Error creating habit:', err?.response?.data || err.message);
+      setError(err?.response?.data?.message || 'Failed to create habit');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+
+
 
   return (
     <div className={`min-h-screen ${theme.bgGradient}`}>
