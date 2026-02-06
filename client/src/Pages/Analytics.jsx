@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import HabitAreaChatGraph from '../components/HabitAreaChatGraph'
 import StatCard from '../components/StatCard'
-import CategoryCard from '../components/CategoryCard'
 import InsightCard from '../components/InsightCard'
-import EmptyStateCard from '../components/EmptyStateCard'
 import { useHabits } from '../context/HabitContext'
 import { useUser } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
@@ -16,8 +14,6 @@ const Analytics = () => {
   const { user, setUser } = useUser();
   const { habits, setHabits, toggleTheme } = useHabits()
   const [timeRange, setTimeRange] = useState('week')
-  const [bestCategory, setBestCategory] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState(null)
   const [bestHabit, setBestHabit] = useState(null)
   const [worstHabit, setWorstHabit] = useState(null)
 
@@ -141,44 +137,6 @@ const Analytics = () => {
     return Math.round((totalCompleted / totalTarget) * 100);
   };
 
-  // Calculate total streaks for selected time range
-  const calculateTotalStreaks = () => {
-    if (!habits || habits.length === 0) return 0;
-
-    const { startDate, endDate } = getDateRange(timeRange);
-    let totalStreaks = 0;
-
-    habits.forEach(habit => {
-      // Filter history within date range
-      const filteredHistory = habit.history?.filter(h => {
-        const date = new Date(h.date);
-        return date >= startDate && date <= endDate;
-      }) || [];
-
-      if (filteredHistory.length === 0) return;
-
-      // Calculate streak within date range
-      let currentStreak = 0;
-      let maxStreakInRange = 0;
-
-      // Sort by date ascending
-      filteredHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      for (let i = 0; i < filteredHistory.length; i++) {
-        if (filteredHistory[i].completed) {
-          currentStreak++;
-          maxStreakInRange = Math.max(maxStreakInRange, currentStreak);
-        } else {
-          currentStreak = 0;
-        }
-      }
-
-      totalStreaks += maxStreakInRange;
-    });
-
-    return totalStreaks;
-  };
-
   // Calculate active streaks for selected time range
   const calculateActiveStreaks = () => {
     if (!habits || habits.length === 0) return 0;
@@ -224,72 +182,6 @@ const Analytics = () => {
         return date >= startDate && date <= endDate;
       });
     }).length;
-  };
-
-  // Get category data for selected time range
-  const getCategoryData = () => {
-    const { startDate, endDate } = getDateRange(timeRange);
-
-    const categories = {
-      fitness: { count: 0, completed: 0, color: colors.categoryColors.fitness, icon: 'ri-run-line' },
-      mental: { count: 0, completed: 0, color: colors.categoryColors.mental, icon: 'ri-brain-line' },
-      study: { count: 0, completed: 0, color: colors.categoryColors.study, icon: 'ri-book-open-line' },
-      health: { count: 0, completed: 0, color: colors.categoryColors.health, icon: 'ri-heart-pulse-line' },
-      other: { count: 0, completed: 0, color: colors.categoryColors.other, icon: 'ri-star-line' }
-    };
-
-    habits.forEach(habit => {
-      const title = habit.title?.toLowerCase() || '';
-
-      // Count habits in this category that have history in the date range
-      const hasHistoryInRange = habit.history?.some(h => {
-        const date = new Date(h.date);
-        return date >= startDate && date <= endDate;
-      });
-
-      if (!hasHistoryInRange) return;
-
-      // Calculate completed in range
-      const completedInRange = habit.history?.filter(h => {
-        const date = new Date(h.date);
-        return h.completed && date >= startDate && date <= endDate;
-      }).length || 0;
-
-      // Calculate total in range
-      const totalInRange = habit.history?.filter(h => {
-        const date = new Date(h.date);
-        return date >= startDate && date <= endDate;
-      }).length || 0;
-
-      if (title.includes('run') || title.includes('exercise') || title.includes('workout') || title.includes('gym')) {
-        categories.fitness.count += 1;
-        categories.fitness.completed += completedInRange;
-      } else if (title.includes('meditate') || title.includes('read') || title.includes('journal') || title.includes('pray')) {
-        categories.mental.count += 1;
-        categories.mental.completed += completedInRange;
-      } else if (title.includes('study') || title.includes('learn') || title.includes('practice')) {
-        categories.study.count += 1;
-        categories.study.completed += completedInRange;
-      } else if (title.includes('water') || title.includes('sleep') || title.includes('eat') || title.includes('fruit')) {
-        categories.health.count += 1;
-        categories.health.completed += completedInRange;
-      } else {
-        categories.other.count += 1;
-        categories.other.completed += completedInRange;
-      }
-    });
-
-    return Object.entries(categories)
-      .filter(([_, data]) => data.count > 0)
-      .map(([category, data], index) => ({
-        id: index,
-        label: category.charAt(0).toUpperCase() + category.slice(1),
-        value: data.count,
-        color: data.color,
-        icon: data.icon,
-        completed: data.completed,
-        percentage: data.count > 0 ? Math.round((data.completed / (data.count * (timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : timeRange === 'quarter' ? 90 : 365))) * 100) : 0
-      }));
   };
 
   // Function to calculate best habit (highest completion rate)
@@ -410,7 +302,6 @@ const Analytics = () => {
     }
   }, [habits, timeRange, currentTheme]);
 
-  const pieData = getCategoryData();
   const completionRate = calculateCompletionRate();
   const activeStreaks = calculateActiveStreaks();
   const activeHabits = calculateActiveHabits();
@@ -617,76 +508,9 @@ const Analytics = () => {
           />
         </div>
 
-        <div className="mb-8">
-          {pieData.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Habit Distribution Card */}
-              <div className="flex flex-col items-center">
-                <HabitDistributionCard timeRange={timeRange} user={user} habits={habits} theme={currentTheme} />
-              </div>
-
-              {/* Category Cards */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ staggerChildren: 0.1 }}
-                className="space-y-4"
-              >
-                {pieData.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    isSelected={selectedCategory?.id === category.id}
-                    onClick={setSelectedCategory}
-                    theme={currentTheme}
-                  />
-                ))}
-
-                {/* Selected Category Details */}
-                {selectedCategory && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className={`rounded-2xl p-5 backdrop-blur-sm border 
-                      ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
-                      ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'}
-                      ${currentTheme === 'light'
-                        ? 'bg-gradient-to-br from-white/40 to-white/20'
-                        : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
-                  >
-                    <h4 className={`font-['Montserrat'] font-bold text-lg ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'} mb-2`}>
-                      {selectedCategory.label} Details
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Active Habits</p>
-                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.value}</p>
-                      </div>
-                      <div>
-                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Completion Rate</p>
-                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.percentage}%</p>
-                      </div>
-                      <div>
-                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Total Completions</p>
-                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>{selectedCategory.completed}</p>
-                      </div>
-                      <div>
-                        <p className={`text-sm ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}>Avg. Completions</p>
-                        <p className={`text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
-                          {Math.round(selectedCategory.completed / Math.max(1, selectedCategory.value)) || 0}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            </div>
-          ) : (
-            <EmptyStateCard
-              theme={currentTheme}
-              onAddHabit={() => navigate('/')}
-            />
-          )}
+        {/* Habit Distribution Card */}
+        <div className="flex flex-col mb-8 items-center">
+          <HabitDistributionCard timeRange={timeRange} user={user} habits={habits} theme={currentTheme} />
         </div>
 
         {/* PERFORMANCE GRAPH */}
