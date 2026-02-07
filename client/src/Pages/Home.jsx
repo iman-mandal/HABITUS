@@ -10,11 +10,13 @@ import { useHabits } from '../context/HabitContext'
 import { useUser } from '../context/UserContext';
 import { motion } from 'framer-motion';
 import '../global.css';
+import HabitChat from './HabitChat';
 
 const Home = () => {
   const { habits, setHabits } = useHabits()
   const [maxHabit, setMaxHabit] = useState('')
   const [minHabit, setMinHabit] = useState('')
+  const [openChat, setOpenChat] = useState(false)
   const { user, setUser } = useUser();
 
   // Get current theme from user or default to 'dark'
@@ -169,8 +171,17 @@ const Home = () => {
   };
 
   return (
-    <div className={`min-h-screen overflow-hidden ${theme.bgGradient}`}>
-
+    <div className={`min-h-screen overflow-hidden ${theme.bgGradient} relative`}>
+    <button
+      onClick={() => setOpenChat(true)}
+      className="fixed bottom-6 right-6 z-50 
+      bg-gradient-to-r from-indigo-500 to-purple-600 
+      text-white px-5 py-3 rounded-full shadow-lg 
+      hover:scale-105 transition-all"
+    >
+      💬 AI Coach
+    </button>
+    {openChat && <HabitChat onClose={() => setOpenChat(false)} />}
       {/* ================= HEADER ================= */}
       <div
         className={`fixed top-0 left-0 right-0 z-40 bg-gradient-to-r ${greetingColor} px-4 sm:px-6 pt-4 pb-3 flex justify-between items-center shadow-lg`} >

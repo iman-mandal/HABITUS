@@ -3,26 +3,30 @@ dotenv.config();
 
 const express = require('express');
 const app = express();
-app.use(express.json());
 
 const cors = require('cors');
-app.use(cors());
-
-const connectToDB=require('./db');
-connectToDB();
-
-app.use(express.urlencoded({extended:true}));
-
 const cookieParser = require("cookie-parser");
+
+// ✅ CORS MUST come before routes
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-//import from routes
-const userRoutes=require('./routes/userRoutes');
-const habitRoutes=require('./routes/habitsRoutes');
+const connectToDB = require('./db');
+connectToDB();
 
-//use routes in app
-app.use('/user',userRoutes);
-app.use('/habit',habitRoutes);
+// routes
+const userRoutes = require('./routes/userRoutes');
+const habitRoutes = require('./routes/habitsRoutes');
+const AIRoutes = require('./routes/AIRoutes');
 
+app.use('/user', userRoutes);
+app.use('/habit', habitRoutes);
+app.use('/api/ai', AIRoutes);
 
 module.exports = app;
