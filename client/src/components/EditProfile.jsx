@@ -19,7 +19,6 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-
     // Theme colors
     const themeColors = {
         light: {
@@ -27,66 +26,63 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
             containerBorder: "border-[#B3C8CF]/20",
             cardBg: "from-[#E5E1DA]/50 to-[#F1F0E8]/50",
             cardBorder: "border-[#B3C8CF]/20",
-            textPrimary: "#2E3944",
-            textSecondary: "#89A8B2",
-            textAccent: "#124E66",
-            inputBg: "#E5E1DA",
+            textPrimary: "text-[#2E3944]",
+            textSecondary: "text-[#89A8B2]",
+            inputBg: "bg-white",
             inputBorder: "border-[#B3C8CF]/30",
             inputFocusBorder: "border-[#89A8B2]",
             inputFocusRing: "ring-[#89A8B2]/30",
-            placeholder: "rgba(137, 168, 178, 0.6)",
+            placeholder: "placeholder:text-[#89A8B2]/60",
             buttonBg: "from-[#89A8B2] to-[#B3C8CF]",
-            buttonText: "#F1F0E8",
+            buttonText: "text-white",
             buttonDisabled: "from-[#F1F0E8] to-[#E5E1DA]",
-            buttonDisabledText: "#89A8B2",
+            buttonDisabledText: "text-[#89A8B2]",
             successBg: "from-[#B3C8CF]/10 to-[#89A8B2]/10",
             successBorder: "border-[#B3C8CF]/30",
-            successText: "#2E3944",
+            successText: "text-[#2E3944]",
             errorBg: "from-[#FFB6B6]/10 to-[#FF6B6B]/10",
             errorBorder: "border-[#FFB6B6]/30",
-            errorText: "#FF6B6B",
+            errorText: "text-[#FF6B6B]",
             iconBg: "from-[#89A8B2] to-[#B3C8CF]",
-            iconText: "#F1F0E8",
+            iconText: "text-white",
             iconBgAlt: "from-[#B3C8CF] to-[#89A8B2]",
-            iconTextAlt: "#2E3944",
+            iconTextAlt: "text-[#2E3944]",
             iconHover: "hover:scale-105",
-            shadow: "shadow-[#89A8B2]/10",
-            requirementMet: "#89A8B2",
-            requirementUnmet: "rgba(137, 168, 178, 0.3)"
+            requirementMet: "text-[#89A8B2]",
+            requirementUnmet: "text-[#89A8B2]/30"
         },
         dark: {
             containerBg: "bg-[#2E3944]/90",
             containerBorder: "border-[#748D92]/20",
             cardBg: "from-[#212A31]/50 to-[#2E3944]/50",
             cardBorder: "border-[#748D92]/20",
-            textPrimary: "#text-[#D3D9D4]",
-            textSecondary: "#748D92",
-            textAccent: "#124E66",
-            inputBg: "#212A31",
-            inputBorder: "border-[#2E3944]",
+            textPrimary: "text-[#D3D9D4]",
+            textSecondary: "text-[#748D92]",
+            inputBg: "bg-[#212A31]",
+            inputBorder: "border-[#748D92]/30",
             inputFocusBorder: "border-[#124E66]",
             inputFocusRing: "ring-[#124E66]/50",
-            placeholder: "#748D92",
+            placeholder: "placeholder:text-[#748D92]/60",
             buttonBg: "from-[#124E66] to-[#212A31]",
-            buttonText: "#D3D9D4",
+            buttonText: "text-[#D3D9D4]",
             buttonDisabled: "from-[#2E3944] to-[#212A31]",
-            buttonDisabledText: "#748D92",
+            buttonDisabledText: "text-[#748D92]",
             successBg: "from-[#748D92]/10 to-[#124E66]/10",
             successBorder: "border-[#748D92]/30",
-            successText: "#D3D9D4",
+            successText: "text-[#D3D9D4]",
             errorBg: "from-[#FF6B6B]/10 to-[#E74C3C]/10",
             errorBorder: "border-[#FF6B6B]/30",
-            errorText: "#FF6B6B",
+            errorText: "text-[#FF6B6B]",
             iconBg: "from-[#124E66] to-[#212A31]",
-            iconText: "#D3D9D4",
+            iconText: "text-[#D3D9D4]",
             iconBgAlt: "from-[#748D92] to-[#124E66]",
-            iconTextAlt: "#D3D9D4",
+            iconTextAlt: "text-[#D3D9D4]",
             iconHover: "hover:scale-105",
-            shadow: "shadow-[#124E66]/10",
-            requirementMet: "#748D92",
-            requirementUnmet: "rgba(116, 141, 146, 0.5)"
+            requirementMet: "text-[#748D92]",
+            requirementUnmet: "text-[#748D92]/50"
         }
     }
+
     let theme = localStorage.getItem('userTheme') || user.theme;
     const colors = themeColors[theme]
 
@@ -198,7 +194,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                     >
                         <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success'
-                                ? `bg-gradient-to-r ${colors.iconBgAlt}`
+                                ? `${colors.iconBgAlt}`
                                 : theme === 'light' ? 'bg-gradient-to-r from-[#FFB6B6] to-[#FF6B6B]' : 'bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C]'
                                 }`}>
                                 <i className={`ri-${toast.type === 'success' ? 'check' : 'close'}-line ${toast.type === 'success' ? (theme === 'light' ? 'text-[#2E3944]' : 'text-white') : 'text-white'} text-sm`}></i>
@@ -258,7 +254,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newFirstName}
                                             onChange={(e) => setNewFirstName(e.target.value)}
                                             placeholder="Enter first name"
@@ -276,7 +272,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newLastName}
                                             onChange={(e) => setNewLastName(e.target.value)}
                                             placeholder="Enter last name"
@@ -292,13 +288,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     disabled={loading}
                                     whileTap={{ scale: 0.95 }}
                                     className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading
-                                        ? `bg-gradient-to-r ${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
-                                        : `bg-gradient-to-r ${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
+                                        ? `${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
                                         <div className="flex items-center justify-center gap-2">
-                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-[#F1F0E8]/30 border-t-[#F1F0E8]' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-white/30 border-t-white' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Saving...</span>
                                         </div>
                                     ) : (
@@ -321,7 +317,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                     >
                         <div className='flex gap-4 items-center'>
                             <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${colors.iconBgAlt} flex items-center justify-center ${colors.iconHover} transition`}>
-                                <i className={`ri-lock-password-line text-[22px] ${colors.iconText}`}></i>
+                                <i className={`ri-lock-password-line text-[22px] ${colors.iconTextAlt}`}></i>
                             </div>
                             <div>
                                 <h3 className={`text-[17px] font-bold font-["Merriweather"] ${colors.textPrimary}`}>
@@ -358,7 +354,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         </div>
                                         <input
                                             type={showOldPassword ? "text" : "password"}
-                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
                                             placeholder="Enter current password"
@@ -384,7 +380,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         </div>
                                         <input
                                             type={showNewPassword ? "text" : "password"}
-                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'}`}
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="Enter new password"
@@ -410,7 +406,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         </div>
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
-                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} placeholder:${theme === 'light' ? 'text-[#89A8B2]/60' : 'text-[#748D92]'} ${confirmPassword && newPassword !== confirmPassword
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder} ${confirmPassword && newPassword !== confirmPassword
                                                 ? theme === 'light'
                                                     ? 'border-[#FFB6B6] focus:ring-[#FFB6B6]/50'
                                                     : 'border-[#FF6B6B] focus:ring-[#FF6B6B]/50'
@@ -436,7 +432,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                             animate={{ opacity: 1 }}
                                             className={`flex items-center gap-2 mt-2 ${newPassword === confirmPassword
                                                 ? colors.textSecondary
-                                                : theme === 'light' ? 'text-[#FF6B6B]' : 'text-[#FF6B6B]'
+                                                : colors.errorText
                                                 }`}
                                         >
                                             <i className={`ri-${newPassword === confirmPassword ? 'check-line' : 'close-line'} text-sm`}></i>
@@ -455,13 +451,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     disabled={loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                                     whileTap={{ scale: 0.95 }}
                                     className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
-                                        ? `bg-gradient-to-r ${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
-                                        : `bg-gradient-to-r ${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
+                                        ? `${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
                                         <div className="flex items-center justify-center gap-2">
-                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-[#F1F0E8]/30 border-t-[#F1F0E8]' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-white/30 border-t-white' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Updating...</span>
                                         </div>
                                     ) : (

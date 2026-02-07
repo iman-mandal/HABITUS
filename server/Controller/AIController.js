@@ -30,7 +30,13 @@ exports.chatWithAI = async (req, res) => {
       You are a habit coach AI.
       User habits: ${JSON.stringify(habitSummary, null, 2)}
       User question: ${message}
-      Give practical, motivating advice.
+      Give practical, motivating advice 
+      Instructions:
+      - Answer in 4–6 short bullet points
+      - Keep it concise but helpful
+      - No long paragraphs
+      - Be practical and motivating
+      - Avoid unnecessary explanations
     `;
 
     // Generate response

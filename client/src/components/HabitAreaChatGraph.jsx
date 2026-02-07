@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -17,10 +17,13 @@ import {
 
 const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const [filter, setFilter] = useState(timeRange);
-  const [graphType, setGraphType] = useState('area'); // 'area', 'bar', 'line'
+  const [graphType, setGraphType] = useState('area');
   const [timeData, setTimeData] = useState([]);
+  const [currentTheme, setCurrentTheme] = useState('dark');
+  const [colors, setColors] = useState({});
+  const [isLight, setIsLight] = useState(false);
 
-  // Theme colors
+  // Theme colors definition
   const themeColors = {
     light: {
       primary: '#89A8B2',
@@ -29,26 +32,27 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       success: '#89A8B2',
       error: '#FF6B6B',
       warning: '#FFA726',
-      background: 'rgba(241, 240, 232, 0.3)',
+      background: 'rgba(241, 240, 232, 0.9)',
       grid: 'rgba(137, 168, 178, 0.1)',
       textPrimary: '#2E3944',
       textSecondary: '#89A8B2',
-      cardBg: 'from-[#F1F0E8]/90 to-[#E5E1DA]/90',
+      cardBg: 'from-[#F1F0E8] to-[#E5E1DA]',
       cardBgSecondary: 'from-[#E5E1DA] to-[#F1F0E8]',
-      cardBorder: 'border-[#B3C8CF]/20',
+      cardBorder: 'border-[#B3C8CF]/30',
       buttonActive: 'from-[#89A8B2] to-[#B3C8CF]',
       buttonInactive: 'bg-[#F1F0E8]',
       buttonTextActive: '#F1F0E8',
       buttonTextInactive: '#89A8B2',
-      buttonBorder: 'border-[#B3C8CF]/30',
+      buttonBorder: 'border-[#B3C8CF]/50',
       iconBg: 'from-[#89A8B2] to-[#B3C8CF]',
       iconText: '#F1F0E8',
       iconBgAlt: 'from-[#F1F0E8] to-[#E5E1DA]',
       iconTextAlt: '#2E3944',
-      divider: 'border-[#B3C8CF]/20',
+      divider: 'border-[#B3C8CF]/30',
       barFill: '#89A8B2',
       lineStroke: '#B3C8CF',
-      areaFill: 'rgba(137, 168, 178, 0.1)'
+      areaFill: 'rgba(137, 168, 178, 0.2)',
+      tooltipBg: '#F1F0E8'
     },
     dark: {
       primary: '#124E66',
@@ -57,13 +61,13 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       success: '#748D92',
       error: '#FF6B6B',
       warning: '#FFA726',
-      background: 'rgba(33, 42, 49, 0.3)',
+      background: 'rgba(33, 42, 49, 0.9)',
       grid: 'rgba(116, 141, 146, 0.1)',
       textPrimary: '#D3D9D4',
       textSecondary: '#748D92',
-      cardBg: 'from-[#2E3944]/90 to-[#212A31]/90',
+      cardBg: 'from-[#2E3944] to-[#212A31]',
       cardBgSecondary: 'from-[#212A31] to-[#2E3944]',
-      cardBorder: 'border-[#748D92]/20',
+      cardBorder: 'border-[#748D92]/30',
       buttonActive: 'from-[#124E66] to-[#212A31]',
       buttonInactive: 'bg-[#212A31]',
       buttonTextActive: '#D3D9D4',
@@ -73,22 +77,68 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       iconText: '#D3D9D4',
       iconBgAlt: 'from-[#2E3944] to-[#124E66]',
       iconTextAlt: '#D3D9D4',
-      divider: 'border-[#748D92]/20',
+      divider: 'border-[#748D92]/30',
       barFill: '#124E66',
       lineStroke: '#748D92',
-      areaFill: 'rgba(18, 78, 102, 0.1)'
+      areaFill: 'rgba(18, 78, 102, 0.2)',
+      tooltipBg: '#2E3944'
     }
   };
 
-  // Use prop theme if provided, otherwise get from localStorage
-  const currentTheme = theme || localStorage.getItem('userTheme') || 'dark';
-  const colors = themeColors[currentTheme];
-  const isLight = currentTheme === 'light';
+  // Initialize theme
+  useEffect(() => {
+    const initializeTheme = () => {
+      try {
+        const savedTheme = localStorage.getItem('userTheme');
+        const initialTheme = theme || savedTheme || 'dark';
+        setCurrentTheme(initialTheme);
+        setIsLight(initialTheme === 'light');
+        setColors(themeColors[initialTheme] || themeColors.dark);
+      } catch (error) {
+        console.error('Error initializing theme:', error);
+        setCurrentTheme('dark');
+        setIsLight(false);
+        setColors(themeColors.dark);
+      }
+    };
+
+    initializeTheme();
+  }, [theme]);
+
+  // Listen for theme changes
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'userTheme') {
+        const newTheme = e.newValue || 'dark';
+        setCurrentTheme(newTheme);
+        setIsLight(newTheme === 'light');
+        setColors(themeColors[newTheme] || themeColors.dark);
+      }
+    };
+
+    // Listen for storage events (from other tabs/windows)
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom theme change events
+    const handleThemeChange = (e) => {
+      if (e.detail?.theme) {
+        setCurrentTheme(e.detail.theme);
+        setIsLight(e.detail.theme === 'light');
+        setColors(themeColors[e.detail.theme] || themeColors.dark);
+      }
+    };
+
+    window.addEventListener('themeChange', handleThemeChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('themeChange', handleThemeChange);
+    };
+  }, []);
 
   // Sync filter with prop timeRange
   useEffect(() => {
     if (timeRange) {
-      // Convert from 'week' to 'weekly', 'month' to 'monthly', etc.
       const convertedFilter =
         timeRange === 'week' ? 'weekly' :
           timeRange === 'month' ? 'monthly' :
@@ -233,7 +283,7 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
 
               switch (filter) {
                 case 'weekly': {
-                  const dayIndex = (historyDate.getDay() + 6) % 7; // Convert to Monday start
+                  const dayIndex = (historyDate.getDay() + 6) % 7;
                   if (dayIndex >= 0 && dayIndex < 7) dataIndex = dayIndex;
                   break;
                 }
@@ -283,7 +333,7 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
           missRate,
           avgHabits,
           efficiency: item.total > 0 ? Math.round((item.completed / (item.completed + item.missed)) * 100) : 0,
-          value: completionRate // For backward compatibility
+          value: completionRate
         };
       });
 
@@ -330,7 +380,7 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       { completionRate: 100, name: '' }
     );
 
-    // Calculate consistency (how close values are to average)
+    // Calculate consistency
     const values = timeData.map(item => item.completionRate);
     const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
     const variance = values.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / values.length;
@@ -362,28 +412,54 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       if (!data) return null;
 
       return (
-        <div className={`${isLight ? 'bg-[#F1F0E8]/90' : 'bg-[#2E3944]/90'} backdrop-blur-sm p-4 rounded-xl border ${colors.cardBorder} shadow-lg min-w-[200px]`}>
-          <p className={`font-['Merriweather'] font-semibold ${colors.textPrimary} mb-2`}>{label}</p>
+        <div 
+          className="backdrop-blur-sm p-4 rounded-xl border shadow-lg min-w-[200px]"
+          style={{
+            backgroundColor: isLight ? '#F1F0E8' : '#2E3944',
+            borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)'
+          }}
+        >
+          <p className={`font-['Merriweather'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} mb-2`}>
+            {label}
+          </p>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion:</span>
-              <span className={`font-['Montserrat'] font-bold ${colors.textPrimary}`}>{data.completionRate}%</span>
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                Completion:
+              </span>
+              <span className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
+                {data.completionRate}%
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completed:</span>
-              <span className={`font-['Montserrat'] font-bold ${colors.success}`}>{data.completed}</span>
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                Completed:
+              </span>
+              <span className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>
+                {data.completed}
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Missed:</span>
-              <span className={`font-['Montserrat'] font-bold ${colors.error}`}>{data.missed}</span>
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                Missed:
+              </span>
+              <span className={`font-['Montserrat'] font-bold text-[#FF6B6B]`}>
+                {data.missed}
+              </span>
             </div>
             {data.trend !== undefined && (
               <div className="flex items-center justify-between">
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Trend:</span>
-                <span className={`font-['Montserrat'] font-bold ${data.trend > 0 ? colors.success :
-                  data.trend < 0 ? colors.error :
-                    colors.textSecondary
-                  }`}>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Trend:
+                </span>
+                <span 
+                  className={`font-['Montserrat'] font-bold`}
+                  style={{
+                    color: data.trend > 0 ? (isLight ? '#89A8B2' : '#748D92') : 
+                           data.trend < 0 ? '#FF6B6B' : 
+                           (isLight ? '#89A8B2' : '#748D92')
+                  }}
+                >
                   {data.trend > 0 ? '↗' : data.trend < 0 ? '↘' : '→'} {data.trend > 0 ? '+' : ''}{data.trend || 0}%
                 </span>
               </div>
@@ -395,16 +471,42 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
     return null;
   };
 
+  // Helper function to get gradient classes
+  const getGradientClass = (type) => {
+    switch (type) {
+      case 'cardBg':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#2E3944] to-[#212A31]';
+      case 'cardBgSecondary':
+        return isLight ? 'from-[#E5E1DA] to-[#F1F0E8]' : 'from-[#212A31] to-[#2E3944]';
+      case 'iconBg':
+        return isLight ? 'from-[#89A8B2] to-[#B3C8CF]' : 'from-[#124E66] to-[#212A31]';
+      case 'buttonActive':
+        return isLight ? 'from-[#89A8B2] to-[#B3C8CF]' : 'from-[#124E66] to-[#212A31]';
+      case 'iconBgAlt':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#2E3944] to-[#124E66]';
+      case 'iconBgLight':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#D3D9D4] to-[#748D92]';
+      case 'iconBgMix':
+        return isLight ? 'from-[#E5E1DA] to-[#89A8B2]' : 'from-[#2E3944] to-[#124E66]';
+      case 'iconBgAlt2':
+        return isLight ? 'from-[#89A8B2] to-[#F1F0E8]' : 'from-[#124E66] to-[#212A31]';
+      default:
+        return '';
+    }
+  };
+
   // Render the appropriate chart based on graphType
   const renderChart = () => {
     if (timeData.length === 0) {
       return (
         <div className="h-[300px] flex flex-col items-center justify-center">
-          <div className={`w-24 h-24 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#212A31] to-[#2E3944]'} flex items-center justify-center mb-4`}>
+          <div className={`w-24 h-24 rounded-full bg-gradient-to-r ${getGradientClass('iconBgAlt')} flex items-center justify-center mb-4`}>
             <span className={`text-4xl ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>📈</span>
           </div>
-          <h4 className={`font-['Merriweather'] ${colors.textPrimary} text-lg mb-2`}>No data yet</h4>
-          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-center max-w-md`}>
+          <h4 className={`font-['Merriweather'] ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-lg mb-2`}>
+            No data yet
+          </h4>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-center max-w-md`}>
             Start tracking your habits to see your {filter} trends here
           </p>
         </div>
@@ -433,16 +535,36 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       >
         <defs>
           <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={colors.primary} stopOpacity={isLight ? 0.4 : 0.6} />
-            <stop offset="95%" stopColor={colors.primary} stopOpacity={isLight ? 0.1 : 0.1} />
+            <stop offset="5%" stopColor={isLight ? '#89A8B2' : '#124E66'} stopOpacity={isLight ? 0.4 : 0.6} />
+            <stop offset="95%" stopColor={isLight ? '#89A8B2' : '#124E66'} stopOpacity={0.1} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
-        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} tickFormatter={value => `${value}%`} />
+        <CartesianGrid 
+          strokeDasharray="3 3" 
+          vertical={false} 
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        />
+        <XAxis 
+          dataKey="name" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
+        <YAxis 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+          tickFormatter={value => `${value}%`} 
+        />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Area type="monotone" dataKey="completionRate" stroke={colors.primary} fill="url(#colorCompletion)" name="Completion Rate" />
+        <Area 
+          type="monotone" 
+          dataKey="completionRate" 
+          stroke={isLight ? '#89A8B2' : '#124E66'} 
+          fill="url(#colorCompletion)" 
+          name="Completion Rate" 
+        />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -450,13 +572,36 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderBarChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
-        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <CartesianGrid 
+          strokeDasharray="3 3" 
+          vertical={false} 
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        />
+        <XAxis 
+          dataKey="name" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
+        <YAxis 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar dataKey="completed" fill={colors.primary} name="Completed" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="missed" fill={colors.error} name="Missed" radius={[4, 4, 0, 0]} />
+        <Bar 
+          dataKey="completed" 
+          fill={isLight ? '#89A8B2' : '#124E66'} 
+          name="Completed" 
+          radius={[4, 4, 0, 0]} 
+        />
+        <Bar 
+          dataKey="missed" 
+          fill="#FF6B6B" 
+          name="Missed" 
+          radius={[4, 4, 0, 0]} 
+        />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -464,13 +609,43 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderLineChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
-        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-        <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} tickFormatter={value => `${value}%`} />
+        <CartesianGrid 
+          strokeDasharray="3 3" 
+          vertical={false} 
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        />
+        <XAxis 
+          dataKey="name" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
+        <YAxis 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+          tickFormatter={value => `${value}%`} 
+        />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Line type="monotone" dataKey="completionRate" stroke={colors.primary} strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} name="Completion Rate" />
-        <Line type="monotone" dataKey="efficiency" stroke={colors.secondary} strokeWidth={2} strokeDasharray="5 5" dot={{ r: 4 }} name="Efficiency" />
+        <Line 
+          type="monotone" 
+          dataKey="completionRate" 
+          stroke={isLight ? '#89A8B2' : '#124E66'} 
+          strokeWidth={2} 
+          dot={{ r: 4 }} 
+          activeDot={{ r: 6 }} 
+          name="Completion Rate" 
+        />
+        <Line 
+          type="monotone" 
+          dataKey="efficiency" 
+          stroke={isLight ? '#B3C8CF' : '#748D92'} 
+          strokeWidth={2} 
+          strokeDasharray="5 5" 
+          dot={{ r: 4 }} 
+          name="Efficiency" 
+        />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -478,15 +653,55 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderComposedChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
-        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-        <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-        <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+        <CartesianGrid 
+          strokeDasharray="3 3" 
+          vertical={false} 
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        />
+        <XAxis 
+          dataKey="name" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
+        <YAxis 
+          yAxisId="left" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
+        <YAxis 
+          yAxisId="right" 
+          orientation="right" 
+          axisLine={false} 
+          tickLine={false} 
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar yAxisId="left" dataKey="completed" fill={colors.primary} name="Completed" radius={[4, 4, 0, 0]} />
-        <Bar yAxisId="left" dataKey="missed" fill={colors.error} name="Missed" radius={[4, 4, 0, 0]} />
-        <Line yAxisId="right" type="monotone" dataKey="completionRate" stroke={colors.accent} strokeWidth={2} dot={{ r: 4 }} name="Completion Rate" />
+        <Bar 
+          yAxisId="left" 
+          dataKey="completed" 
+          fill={isLight ? '#89A8B2' : '#124E66'} 
+          name="Completed" 
+          radius={[4, 4, 0, 0]} 
+        />
+        <Bar 
+          yAxisId="left" 
+          dataKey="missed" 
+          fill="#FF6B6B" 
+          name="Missed" 
+          radius={[4, 4, 0, 0]} 
+        />
+        <Line 
+          yAxisId="right" 
+          type="monotone" 
+          dataKey="completionRate" 
+          stroke={isLight ? '#2E3944' : '#D3D9D4'} 
+          strokeWidth={2} 
+          dot={{ r: 4 }} 
+          name="Completion Rate" 
+        />
       </ComposedChart>
     </ResponsiveContainer>
   );
@@ -496,69 +711,87 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       {/* TIME RANGE STATS OVERVIEW */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {/* Completion Rate */}
-        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center`}>
-              <span className={`text-sm ${colors.iconText}`}>✓</span>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBg')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'}`}>✓</span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion</p>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+              Completion
+            </p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl`}>
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl`}>
             {timeRangeStats.avgCompletion}%
           </p>
-          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.totalCompleted}/{timeRangeStats.totalCompleted + timeRangeStats.totalMissed} habits
           </p>
         </div>
 
         {/* Best Period */}
-        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#D3D9D4] to-[#748D92]'} flex items-center justify-center`}>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgLight')} flex items-center justify-center`}>
               <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#212A31]'}`}>🏆</span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Best Period</p>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+              Best Period
+            </p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl truncate`}>
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl truncate`}>
             {timeRangeStats.bestPeriod}
           </p>
-          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.bestRate}% completion
           </p>
         </div>
 
         {/* Consistency */}
-        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'} flex items-center justify-center`}>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgMix')} flex items-center justify-center`}>
               <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📊</span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Consistency</p>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+              Consistency
+            </p>
           </div>
-          <p className={`font-['Montserrat'] font-bold text-xl ${timeRangeStats.consistency > 80 ? colors.success :
-            timeRangeStats.consistency > 60 ? colors.warning :
-              colors.error
-            }`}>
+          <p 
+            className={`font-['Montserrat'] font-bold text-xl`}
+            style={{
+              color: timeRangeStats.consistency > 80 ? (isLight ? '#89A8B2' : '#748D92') : 
+                     timeRangeStats.consistency > 60 ? '#FFA726' : 
+                     '#FF6B6B'
+            }}
+          >
             {timeRangeStats.consistency}%
           </p>
-          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.consistency > 80 ? 'Excellent' :
               timeRangeStats.consistency > 60 ? 'Good' : 'Needs improvement'}
           </p>
         </div>
 
         {/* Period Overview */}
-        <div className={`bg-gradient-to-br ${colors.cardBg} rounded-xl p-4 border ${colors.cardBorder} backdrop-blur-sm`}>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
           <div className="flex items-center gap-2 mb-2">
-            <div className={`w-8 h-8 rounded-full ${isLight ? 'bg-gradient-to-r from-[#89A8B2] to-[#F1F0E8]' : 'bg-gradient-to-r from-[#124E66] to-[#212A31]'} flex items-center justify-center`}>
-              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>{filter === 'weekly' ? '📅' : filter === 'monthly' ? '🗓️' : filter === 'quarterly' ? '📊' : '🌱'}</span>
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgAlt2')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
+                {filter === 'weekly' ? '📅' : filter === 'monthly' ? '🗓️' : filter === 'quarterly' ? '📊' : '🌱'}
+              </span>
             </div>
-            <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Period</p>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+              Period
+            </p>
           </div>
-          <p className={`font-['Montserrat'] font-bold ${colors.textPrimary} text-xl capitalize`}>
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl capitalize`}>
             {filter}
           </p>
-          <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-xs mt-1`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeData.length} {filter === 'weekly' ? 'days' :
               filter === 'monthly' ? 'weeks' :
                 filter === 'quarterly' ? 'months' : 'months'}
@@ -567,19 +800,20 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       </div>
 
       {/* MAIN GRAPH CARD */}
-      <div className={`bg-gradient-to-br ${colors.cardBg} backdrop-blur-sm rounded-2xl p-6 border ${colors.cardBorder} shadow-lg`}>
+      <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} backdrop-blur-sm rounded-2xl p-6 border shadow-lg`}
+           style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
         {/* HEADER WITH CONTROLS */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center`}>
-                <span className={`text-lg ${colors.iconText}`}>📊</span>
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${getGradientClass('iconBg')} flex items-center justify-center`}>
+                <span className={`text-lg ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'}`}>📊</span>
               </div>
               <div>
-                <h3 className={`font-['Merriweather'] font-bold ${colors.textPrimary} text-lg`}>
+                <h3 className={`font-['Merriweather'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-lg`}>
                   {filter.charAt(0).toUpperCase() + filter.slice(1)} Performance
                 </h3>
-                <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Track your habit completion across the {filter} period
                 </p>
               </div>
@@ -595,8 +829,8 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
                   key={g.value}
                   onClick={() => setGraphType(g.value)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-['Source_Sans_Pro'] font-semibold transition-all ${graphType === g.value
-                    ? `bg-gradient-to-r ${colors.buttonActive} ${colors.buttonTextActive} shadow-lg ${isLight ? 'shadow-[#89A8B2]/20' : 'shadow-[#124E66]/20'}`
-                    : `${colors.buttonInactive} ${colors.buttonTextInactive} border ${colors.buttonBorder} ${isLight ? 'hover:border-[#89A8B2]' : 'hover:border-[#124E66]'}`
+                    ? `bg-gradient-to-r ${getGradientClass('buttonActive')} ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'} shadow-lg ${isLight ? 'shadow-[#89A8B2]/20' : 'shadow-[#124E66]/20'}`
+                    : `${isLight ? 'bg-[#F1F0E8]' : 'bg-[#212A31]'} ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} border ${isLight ? 'border-[#B3C8CF]/50 hover:border-[#89A8B2]' : 'border-[#2E3944] hover:border-[#124E66]'}`
                     }`}
                 >
                   <span className="text-sm">{g.icon}</span>
@@ -613,25 +847,40 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
         </div>
 
         {/* CHART FOOTER */}
-        <div className={`mt-6 pt-6 border-t ${colors.divider}`}>
+        <div className={`mt-6 pt-6 border-t`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${isLight ? 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF]' : 'bg-gradient-to-r from-[#124E66] to-[#748D92]'}`}></div>
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completion Rate</span>
+                <div 
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: isLight ? 'linear-gradient(to right, #89A8B2, #B3C8CF)' : 'linear-gradient(to right, #124E66, #748D92)' }}
+                ></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Completion Rate
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${colors.primary}`}></div>
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Completed Habits</span>
+                <div 
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: isLight ? '#89A8B2' : '#124E66' }}
+                ></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Completed Habits
+                </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${colors.error}`}></div>
-                <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Missed Habits</span>
+                <div className="w-3 h-3 rounded-full bg-[#FF6B6B]"></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Missed Habits
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>Viewing:</span>
-              <span className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary} text-sm capitalize`}>
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                Viewing:
+              </span>
+              <span className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-sm capitalize`}>
                 {filter} • {graphTypeOptions.find(g => g.value === graphType)?.label || 'Area Chart'}
               </span>
             </div>
@@ -641,8 +890,9 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
 
       {/* TIME RANGE INSIGHTS */}
       {timeData.length > 0 && (
-        <div className={`mt-6 bg-gradient-to-r ${colors.cardBgSecondary} rounded-2xl p-6 border ${colors.cardBorder}`}>
-          <h4 className={`font-['Merriweather'] font-semibold ${colors.textPrimary} mb-4`}>
+        <div className={`mt-6 bg-gradient-to-r ${getGradientClass('cardBgSecondary')} rounded-2xl p-6 border`}
+             style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <h4 className={`font-['Merriweather'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} mb-4`}>
             {filter.charAt(0).toUpperCase() + filter.slice(1)} Insights
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -652,10 +902,10 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📈</span>
               </div>
               <div>
-                <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Performance Summary
                 </p>
-                <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Your average completion rate is {timeRangeStats.avgCompletion}% with {timeRangeStats.consistency}% consistency across {timeData.length} {filter === 'weekly' ? 'days' : filter === 'monthly' ? 'weeks' : 'months'}.
                 </p>
               </div>
@@ -667,10 +917,10 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#212A31]'}`}>🏆</span>
               </div>
               <div>
-                <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Peak Performance
                 </p>
-                <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   {timeRangeStats.bestPeriod} was your strongest with {timeRangeStats.bestRate}% completion.
                   {timeRangeStats.worstPeriod && ` ${timeRangeStats.worstPeriod} needs attention with ${timeRangeStats.worstRate}%.`}
                 </p>
@@ -683,10 +933,10 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
                 <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>🎯</span>
               </div>
               <div>
-                <p className={`font-['Source_Sans_Pro'] font-semibold ${colors.textPrimary}`}>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Improvement Areas
                 </p>
-                <p className={`font-['Source_Sans_Pro'] ${colors.textSecondary} text-sm`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Aim for {Math.min(100, timeRangeStats.avgCompletion + 15)}% average next {filter}. Focus on consistency during weaker periods.
                 </p>
               </div>
