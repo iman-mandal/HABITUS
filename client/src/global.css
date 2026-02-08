@@ -8772,3 +8772,861 @@
 .habit-list-animate-scale-in {
   animation: scaleIn 0.3s ease forwards;
 }
+
+/* ======================================================================= */
+/* Home Component Styles */
+
+/* Base container */
+.home-container {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Theme-specific background gradients */
+.home-container.light-theme {
+  background: linear-gradient(135deg, #F1F0E8, #E5E1DA, #B3C8CF);
+}
+
+.home-container.dark-theme {
+  background: linear-gradient(135deg, #212A31, #2E3944, #124E66);
+}
+
+/* ================= HEADER ================= */
+.home-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 1rem 1rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Header gradients based on time */
+.home-header.morning-gradient {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF);
+}
+
+.home-header.afternoon-gradient {
+  background: linear-gradient(to right, #B3C8CF, #5A6D74);
+}
+
+.home-header.evening-gradient {
+  background: linear-gradient(to right, #5A6D74, #2E3944);
+}
+
+.home-header.night-gradient {
+  background: linear-gradient(to right, #2E3944, #89A8B2);
+}
+
+.dark-theme .home-header.morning-gradient {
+  background: linear-gradient(to right, #124E66, #748D92);
+}
+
+.dark-theme .home-header.afternoon-gradient {
+  background: linear-gradient(to right, #748D92, #2E3944);
+}
+
+.dark-theme .home-header.evening-gradient {
+  background: linear-gradient(to right, #2E3944, #212A31);
+}
+
+.dark-theme .home-header.night-gradient {
+  background: linear-gradient(to right, #212A31, #124E66);
+}
+
+/* Header sections */
+.home-header-left,
+.home-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Header icons */
+.home-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-header-icon i {
+  color: white;
+  font-size: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .home-header {
+    padding: 1rem 1.5rem 0.75rem;
+  }
+
+  .home-header-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .home-header-icon i {
+    font-size: 1.5rem;
+  }
+}
+
+.home-header-icon {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Header text */
+.home-header-greeting {
+  font-family: 'Merriweather', serif;
+  font-weight: 700;
+  color: white;
+  font-size: 18px;
+}
+
+.home-header-username {
+  font-family: 'Source Sans Pro', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  margin-top: 0.125rem;
+}
+
+.home-header-date {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.home-header-weekday {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  color: white;
+  font-size: 13px;
+}
+
+.home-header-formatted-date {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  color: white;
+  font-size: 13px;
+}
+
+@media (min-width: 640px) {
+  .home-header-greeting {
+    font-size: 22px;
+  }
+
+  .home-header-username {
+    font-size: 1rem;
+  }
+
+  .home-header-weekday,
+  .home-header-formatted-date {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-header-greeting {
+    font-size: 24px;
+  }
+
+  .home-header-weekday,
+  .home-header-formatted-date {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-header-date {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+/* ================= MAIN CONTENT ================= */
+.home-main-content {
+  padding-top: 120px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .home-main-content {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* ================= LEFT COLUMN ================= */
+.home-left-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Progress Section */
+.home-progress-section {
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .home-progress-section {
+    grid-template-columns: 2fr 1fr;
+    gap: 1.25rem;
+  }
+}
+
+/* Card Base Styles */
+.home-card {
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.light-theme .home-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(179, 200, 207, 0.5);
+}
+
+.dark-theme .home-card {
+  background-color: rgba(46, 57, 68, 0.8);
+  border-color: rgba(116, 141, 146, 0.2);
+}
+
+/* Today's Progress Card */
+.home-today-progress-card {
+  grid-column: span 2;
+}
+
+.home-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.home-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-theme .home-card-icon {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF);
+}
+
+.dark-theme .home-card-icon {
+  background: linear-gradient(to right, #124E66, #748D92);
+}
+
+.home-card-icon i {
+  font-size: 1.25rem;
+}
+
+.light-theme .home-card-icon i {
+  color: #2E3944;
+}
+
+.dark-theme .home-card-icon i {
+  color: #D3D9D4;
+}
+
+.home-card-title {
+  font-family: 'Merriweather', serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.light-theme .home-card-title {
+  color: #2E3944;
+}
+
+.dark-theme .home-card-title {
+  color: #D3D9D4;
+}
+
+/* Progress Content */
+.home-progress-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.home-progress-stats {
+  flex: 1;
+}
+
+.home-progress-label {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.light-theme .home-progress-label {
+  color: #5A6D74;
+}
+
+.dark-theme .home-progress-label {
+  color: #748D92;
+}
+
+.home-progress-bar-container {
+  height: 12px;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.light-theme .home-progress-bar-container {
+  background: linear-gradient(to right, #F1F0E8, #E5E1DA);
+}
+
+.dark-theme .home-progress-bar-container {
+  background: linear-gradient(to right, #212A31, #2E3944);
+}
+
+.home-progress-bar {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.9s ease;
+}
+
+.light-theme .home-progress-bar {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF, #5A6D74);
+}
+
+.dark-theme .home-progress-bar {
+  background: linear-gradient(to right, #124E66, #748D92, #D3D9D4);
+}
+
+.home-progress-percentage {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  text-align: right;
+}
+
+.light-theme .home-progress-percentage {
+  color: #2E3944;
+}
+
+.dark-theme .home-progress-percentage {
+  color: #D3D9D4;
+}
+
+/* 30 Days Progress Card */
+.home-30days-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-30days-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.home-30days-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-theme .home-30days-icon {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF);
+}
+
+.dark-theme .home-30days-icon {
+  background: linear-gradient(to right, #124E66, #748D92);
+}
+
+.home-30days-icon i {
+  font-size: 20px;
+}
+
+.light-theme .home-30days-icon i {
+  color: #2E3944;
+}
+
+.dark-theme .home-30days-icon i {
+  color: #D3D9D4;
+}
+
+.home-30days-title {
+  font-family: 'Merriweather', serif;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 0.5rem;
+}
+
+.light-theme .home-30days-title {
+  color: #2E3944;
+}
+
+.dark-theme .home-30days-title {
+  color: #D3D9D4;
+}
+
+.home-30days-subtitle {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.light-theme .home-30days-subtitle {
+  color: #5A6D74;
+}
+
+.dark-theme .home-30days-subtitle {
+  color: #748D92;
+}
+
+/* Best & Needs Focus Habits */
+.home-habits-comparison {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .home-habits-comparison {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Best Habit Card */
+.home-best-habit-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-theme .home-best-habit-icon {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF);
+}
+
+.dark-theme .home-best-habit-icon {
+  background: linear-gradient(to right, #124E66, #748D92);
+}
+
+.home-best-habit-icon i {
+  font-size: 1.25rem;
+}
+
+.light-theme .home-best-habit-icon i {
+  color: #2E3944;
+}
+
+.dark-theme .home-best-habit-icon i {
+  color: #D3D9D4;
+}
+
+/* Needs Focus Card */
+.home-focus-habit-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-theme .home-focus-habit-icon {
+  background: linear-gradient(to right, #FF9A8B, #FF6B6B);
+}
+
+.dark-theme .home-focus-habit-icon {
+  background: linear-gradient(to right, #8B0000, #B22222);
+}
+
+.home-focus-habit-icon i {
+  font-size: 1.25rem;
+}
+
+.light-theme .home-focus-habit-icon i {
+  color: #2E3944;
+}
+
+.dark-theme .home-focus-habit-icon i {
+  color: #D3D9D4;
+}
+
+/* Habit comparison content */
+.home-habit-name {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.light-theme .home-habit-name {
+  color: #2E3944;
+}
+
+.dark-theme .home-habit-name {
+  color: #D3D9D4;
+}
+
+.home-habit-percentage {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.light-theme .home-habit-percentage {
+  color: #2E3944;
+}
+
+.dark-theme .home-habit-percentage {
+  color: #D3D9D4;
+}
+
+.home-habit-progress-bar {
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.light-theme .home-habit-progress-bar {
+  background-color: #E5E1DA;
+}
+
+.dark-theme .home-habit-progress-bar {
+  background-color: #212A31;
+}
+
+.home-habit-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 1s ease;
+}
+
+.light-theme .home-habit-progress-fill {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF, #5A6D74);
+}
+
+.dark-theme .home-habit-progress-fill {
+  background: linear-gradient(to right, #124E66, #748D92, #D3D9D4);
+}
+
+.home-focus-habit-progress-fill.light-theme {
+  background: linear-gradient(to right, #FF9A8B, #FF6B6B);
+}
+
+.home-focus-habit-progress-fill.dark-theme {
+  background: linear-gradient(to right, #FF6B6B, #E74C3C);
+}
+
+/* Card subtitle */
+.home-card-subtitle {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 0.875rem;
+}
+
+.light-theme .home-card-subtitle {
+  color: #5A6D74;
+}
+
+.dark-theme .home-card-subtitle {
+  color: #748D92;
+}
+
+/* Habits List Section */
+.home-habits-section {
+  margin-bottom: 90px;
+}
+
+.home-habits-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-habits-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-theme .home-habits-icon {
+  background: linear-gradient(to right, #89A8B2, #B3C8CF);
+}
+
+.dark-theme .home-habits-icon {
+  background: linear-gradient(to right, #124E66, #748D92);
+}
+
+.home-habits-icon i {
+  font-size: 1.25rem;
+}
+
+.light-theme .home-habits-icon i {
+  color: #2E3944;
+}
+
+.dark-theme .home-habits-icon i {
+  color: #D3D9D4;
+}
+
+.home-habits-title {
+  font-family: 'Merriweather', serif;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.light-theme .home-habits-title {
+  color: #2E3944;
+}
+
+.dark-theme .home-habits-title {
+  color: #D3D9D4;
+}
+
+/* ================= RIGHT COLUMN ================= */
+.home-right-column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .home-right-column {
+    width: 380px;
+  }
+}
+
+/* AI Coach Button */
+.home-ai-coach-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 1.5rem;
+  z-index: 50;
+  background: linear-gradient(to right, #6366F1, #8B5CF6);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.home-ai-coach-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.3);
+}
+
+.home-ai-coach-btn:active {
+  transform: scale(0.95);
+}
+
+.home-ai-coach-btn span:first-child {
+  font-size: 1.125rem;
+}
+
+/* Navbar */
+.home-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+}
+
+/* Utility Classes */
+.home-flex {
+  display: flex;
+}
+
+.home-flex-col {
+  flex-direction: column;
+}
+
+.home-flex-row {
+  flex-direction: row;
+}
+
+.home-items-center {
+  align-items: center;
+}
+
+.home-justify-center {
+  justify-content: center;
+}
+
+.home-justify-between {
+  justify-content: space-between;
+}
+
+.home-gap-2 {
+  gap: 0.5rem;
+}
+
+.home-gap-3 {
+  gap: 0.75rem;
+}
+
+.home-gap-5 {
+  gap: 1.25rem;
+}
+
+.home-gap-6 {
+  gap: 1.5rem;
+}
+
+.home-mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.home-mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.home-mb-4 {
+  margin-bottom: 1rem;
+}
+
+.home-mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.home-mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.home-mt-1 {
+  margin-top: 0.25rem;
+}
+
+.home-mt-2 {
+  margin-top: 0.5rem;
+}
+
+.home-relative {
+  position: relative;
+}
+
+.home-overflow-hidden {
+  overflow: hidden;
+}
+
+.home-text-center {
+  text-align: center;
+}
+
+.home-text-right {
+  text-align: right;
+}
+
+/* Animation Classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.home-animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.home-animate-slide-up {
+  animation: slideInUp 0.5s ease forwards;
+}
+
+.home-animate-slide-left {
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.home-animate-slide-right {
+  animation: slideInRight 0.5s ease forwards;
+}
+
+/* No scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
