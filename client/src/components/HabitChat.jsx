@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 
 const HabitChat = ({ onClose, theme = 'dark' }) => {
   const [messages, setMessages] = useState([]);
@@ -10,75 +11,43 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
   // Theme colors
   const themeColors = {
     light: {
-      // Main backgrounds
-      bgGradient: "from-[#F1F0E8] to-[#E5E1DA]",
       modalBg: "bg-white",
       headerGradient: "from-[#89A8B2] to-[#B3C8CF]",
       messagesBg: "bg-gradient-to-b from-[#F1F0E8] to-[#E5E1DA]",
-
-      // Text colors
       primaryText: "text-[#2E3944]",
       secondaryText: "text-[#5A6D77]",
       whiteText: "text-white",
-
-      // Message bubbles
       userMessage: "bg-gradient-to-r from-[#89A8B2] to-[#5A6D74] text-white",
       aiMessage: "bg-gradient-to-r from-white to-[#F1F0E8] text-[#2E3944] border border-[#B3C8CF]/30",
-
-      // Input area
       inputBg: "bg-white border-[#B3C8CF]/50",
       inputFocus: "ring-[#89A8B2]/50",
       inputPlaceholder: "text-[#5A6D77]/60",
-
-      // Buttons
       sendBtn: "bg-gradient-to-r from-[#89A8B2] to-[#5A6D74] text-white",
       sendBtnHover: "hover:from-[#5A6D74] hover:to-[#89A8B2]",
       suggestionBtn: "bg-white border-[#B3C8CF]/50 text-[#2E3944] hover:bg-[#F1F0E8]",
-
-      // Loading dots
       loadingDot: "bg-[#5A6D74]",
       loadingText: "text-[#5A6D77]",
-
-      // Close button
       closeBtn: "text-white/80 hover:text-white",
-
-      // Divider
       divider: "border-[#B3C8CF]/30",
     },
     dark: {
-      // Main backgrounds
-      bgGradient: "from-[#0F1A23] to-[#1A2832]",
       modalBg: "bg-[#2E3944]",
       headerGradient: "from-[#124E66] to-[#1E3A52]",
       messagesBg: "bg-gradient-to-b from-[#212A31] to-[#2E3944]",
-
-      // Text colors
       primaryText: "text-[#D3D9D4]",
       secondaryText: "text-[#748D92]",
       whiteText: "text-white",
-
-      // Message bubbles
       userMessage: "bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white",
       aiMessage: "bg-gradient-to-r from-[#212A31] to-[#2E3944] text-[#D3D9D4] border border-[#748D92]/30",
-
-      // Input area
       inputBg: "bg-[#212A31] border-[#748D92]/30",
       inputFocus: "ring-[#124E66]/50",
       inputPlaceholder: "text-[#748D92]/60",
-
-      // Buttons
       sendBtn: "bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white",
       sendBtnHover: "hover:from-[#1E3A52] hover:to-[#124E66]",
       suggestionBtn: "bg-[#2E3944] border-[#748D92]/30 text-[#D3D9D4] hover:bg-[#212A31]",
-
-      // Loading dots
       loadingDot: "bg-[#D3D9D4]",
       loadingText: "text-[#748D92]",
-
-      // Close button
       closeBtn: "text-[#D3D9D4]/80 hover:text-white",
-
-      // Divider
       divider: "border-[#748D92]/30",
     }
   };
@@ -120,14 +89,10 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
         }
       );
 
-      // Add AI response
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "assistant",
-          content: response.data?.reply?.content || "Thanks for your message!"
-        }
-      ]);
+      const aiMessage = response.data?.reply?.content || "Thanks for your message!";
+
+      // Add AI message with Markdown support
+      setMessages(prev => [...prev, { role: "assistant", content: aiMessage }]);
 
     } catch (error) {
       console.error("Chat error:", error);
@@ -204,29 +169,25 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
         </div>
 
         {/* Messages Area */}
-        <div className={`flex-1 p-5 overflow-y-auto ${colors.messagesBg} 
-          scrollbar-none
-          -ms-overflow-style: none;  
-          scrollbar-width: none; `}
-          style={{
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-          }}
-        >
+        <div className={`flex-1 p-5 overflow-y-auto ${colors.messagesBg}`}>
           {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-5 ${msg.role === "user" ? "text-right" : "text-left"}`
-              }
-            >
-              <div
-                className={`inline-block max-w-[85%] rounded-3xl px-5 py-4 shadow-md ${msg.role === "user"
-                  ? `${colors.userMessage} rounded-br-none`
-                  : `${colors.aiMessage} rounded-bl-none`
-                  }`}
-              >
-                <div className="whitespace-pre-wrap font-['Source_Sans_Pro'] text-[15px] leading-relaxed">
-                  {msg.content}
+            <div key={index} className={`mb-5 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+              <div className={`inline-block max-w-[85%] rounded-3xl px-5 py-4 shadow-md ${msg.role === "user" ? `${colors.userMessage} rounded-br-none` : `${colors.aiMessage} rounded-bl-none`}`}>
+                <div className="whitespace-pre-wrap">
+                  {msg.role === "assistant" ? (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                        strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+                        ul: ({ node, ...props }) => <ul className="list-disc ml-5 mb-2" {...props} />,
+                        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
               <div className={`font-['Source_Sans_Pro'] text-xs ${colors.secondaryText} mt-2`}>
@@ -253,29 +214,6 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
             </div>
           )}
 
-          {/* Suggested questions */}
-          {messages.length === 1 && (
-            <div className="mt-6">
-              <p className={`font-['Merriweather'] font-medium ${colors.secondaryText} text-sm mb-3`}>
-                Quick questions to get started:
-              </p>
-              <div className="flex flex-wrap gap-2.5">
-                {suggestedQuestions.map((question, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setInput(question);
-                      document.querySelector('textarea')?.focus();
-                    }}
-                    className={`px-4 py-2.5 ${colors.suggestionBtn} rounded-xl text-sm font-['Source_Sans_Pro'] transition-all hover:scale-[1.02] active:scale-95`}
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div ref={messagesEndRef} />
         </div>
 
@@ -287,18 +225,7 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Ask about your habits, motivation, or tracking..."
-              className={`flex-1 px-4 ${colors.primaryText} py-3.5 ${colors.inputBg} 
-              rounded-xl resize-none focus:outline-none 
-              focus:ring-2 ${colors.inputFocus} 
-              font-['Source_Sans_Pro'] text-sm 
-              placeholder:${colors.inputPlaceholder}
-                scrollbar-none
-                -ms-overflow-style: none;
-                scrollbar-width: none;`}
-              style={{
-                msOverflowStyle: 'none',
-                scrollbarWidth: 'none',
-              }}
+              className={`flex-1 px-4 ${colors.primaryText} py-3.5 ${colors.inputBg} rounded-xl resize-none focus:outline-none focus:ring-2 ${colors.inputFocus} font-['Source_Sans_Pro'] text-sm`}
               rows="2"
               disabled={loading}
             />
