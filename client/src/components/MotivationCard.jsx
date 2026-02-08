@@ -4,29 +4,9 @@ import { motion } from 'framer-motion';
 const MotivationCard = ({ theme }) => {
     const [motivation, setMotivation] = useState('');
 
-    // Theme configuration
-    const themeConfig = {
-        light: {
-            cardBg: 'bg-white/90 backdrop-blur-sm',
-            cardBorder: 'border-[#B3C8CF]/50',
-            primaryText: 'text-[#2E3944]',
-            secondaryText: 'text-[#5A6D74]',
-            iconBg: 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF]',
-            iconColor: 'text-[#2E3944]',
-            innerCardBg: 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]',
-        },
-        dark: {
-            cardBg: 'bg-[#2E3944]/80 backdrop-blur-sm',
-            cardBorder: 'border-[#748D92]/20',
-            primaryText: 'text-[#D3D9D4]',
-            secondaryText: 'text-[#748D92]',
-            iconBg: 'bg-gradient-to-r from-[#124E66] to-[#748D92]',
-            iconColor: 'text-[#D3D9D4]',
-            innerCardBg: 'bg-gradient-to-r from-[#212A31] to-[#2E3944]',
-        }
-    };
-
-    const colors = themeConfig[theme];
+    // Get theme from localStorage if not provided
+    const currentTheme = theme || localStorage.getItem('userTheme') || 'dark';
+    const isLight = currentTheme === 'light';
 
     useEffect(() => {
         const fetchMotivation = async () => {
@@ -55,34 +35,32 @@ const MotivationCard = ({ theme }) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className={`${colors.cardBg} rounded-2xl p-6 border ${colors.cardBorder} shadow-lg`}
+            className={`motivation-card ${isLight ? 'motivation-card-light' : 'motivation-card-dark'}`}
         >
-            <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-full ${colors.iconBg} flex items-center justify-center`}>
-                    <i className={`ri-lightbulb-flash-fill text-xl ${colors.iconColor}`}></i>
+            <div className="motivation-header">
+                <div className={`motivation-icon-container ${isLight ? 'motivation-icon-container-light' : 'motivation-icon-container-dark'}`}>
+                    <i className={`ri-lightbulb-flash-fill motivation-icon ${isLight ? 'motivation-icon-light' : 'motivation-icon-dark'}`}></i>
                 </div>
-                <div>
-                    <h3 className={`font-['Merriweather'] text-[18px] font-bold ${colors.primaryText}`}>
+                <div className="motivation-title-section">
+                    <h3 className={`motivation-title ${isLight ? 'motivation-title-light' : 'motivation-title-dark'}`}>
                         Daily Wisdom
                     </h3>
-                    <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-xs mt-1`}>
+                    <p className={`motivation-subtitle ${isLight ? 'motivation-subtitle-light' : 'motivation-subtitle-dark'}`}>
                         Stay inspired on your journey
                     </p>
                 </div>
             </div>
 
-            <div className={`relative p-4 rounded-lg ${colors.innerCardBg} border ${colors.cardBorder}`}>
-                <div className="absolute -top-2 -left-2">
-                    <i className={`ri-double-quotes-l text-xl ${colors.secondaryText} opacity-50`}></i>
+            <div className={`quote-container ${isLight ? 'quote-container-light' : 'quote-container-dark'}`}>
+                <div className="quote-marks">
+                    <i className={`ri-double-quotes-l quote-mark-icon ${isLight ? 'quote-mark-icon-light' : 'quote-mark-icon-dark'}`}></i>
                 </div>
-                <p className={`font-['Merriweather'] italic text-[16px] ${colors.primaryText} leading-relaxed pl-4`}>
+                <p className={`quote-text ${isLight ? 'quote-text-light' : 'quote-text-dark'}`}>
                     "{motivation || 'The best time to plant a tree was 20 years ago. The second best time is now.'}"
                 </p>
-                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#748D92]/20">
-                    <i className="ri-seedling-line" style={{
-                        color: theme === 'light' ? '#89A8B2' : '#124E66'
-                    }}></i>
-                    <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-xs`}>
+                <div className={`quote-footer ${isLight ? 'quote-footer-light' : 'quote-footer-dark'}`}>
+                    <i className={`ri-seedling-line nature-icon ${isLight ? 'nature-icon-light' : 'nature-icon-dark'}`}></i>
+                    <p className={`nature-label ${isLight ? 'nature-label-light' : 'nature-label-dark'}`}>
                         Nature-inspired motivation
                     </p>
                 </div>
