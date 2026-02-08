@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import '../global.css';
 import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaLock } from "react-icons/fa";
 
-const CalendarView = ({ history = [], theme = 'dark' }) => {
+const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -13,55 +14,16 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay();
 
-  // Theme colors
-  const themeColors = {
-    dark: {
-      bgGradient: "from-[#2E3944] to-[#212A31]",
-      border: "border-[#748D92]/30",
-      textPrimary: "#D3D9D4",
-      textSecondary: "#748D92",
-      accentFrom: "#124E66",
-      accentTo: "#748D92",
-      accentBg: "from-[#124E66]/20 to-[#124E66]/10",
-      missedFrom: "#8B0000",
-      missedTo: "#B22222",
-      dayBg: "#212A31",
-      dayBorder: "border-[#748D92]/20",
-      dayHoverBorder: "border-[#748D92]/40",
-      weekendColor: "#124E66",
-      progressBg: "#212A31",
-      statBoxBg: "#212A31",
-      statBoxBorder: "border-[#748D92]/20",
-      dividerColor: "#748D92/30",
-    },
-    light: {
-      bgGradient: "from-[#F1F0E8] to-[#E5E1DA]",
-      border: "border-[#89A8B2]/40",
-      textPrimary: "#2E3944",
-      textSecondary: "#5A6D77",
-      accentFrom: "#B3C8CF",
-      accentTo: "#89A8B2",
-      accentBg: "from-[#B3C8CF]/30 to-[#B3C8CF]/10",
-      missedFrom: "#D86A6A",
-      missedTo: "#C45C5C",
-      dayBg: "#F1F0E8",
-      dayBorder: "border-[#89A8B2]/30",
-      dayHoverBorder: "border-[#89A8B2]/50",
-      weekendColor: "#89A8B2",
-      progressBg: "#E5E1DA",
-      statBoxBg: "#F1F0E8",
-      statBoxBorder: "border-[#89A8B2]/30",
-      dividerColor: "#89A8B2/30",
-    }
-  };
-
-  const colors = themeColors[theme];
-
-  // Map backend history
+  // Map backend history to date strings
   const historyMap = {};
   history.forEach(h => {
-    const dateStr = new Date(isNaN(h.date) ? h.date : parseInt(h.date)).toISOString().split('T')[0];
-    historyMap[dateStr] = h.completed ? "done" : "missed";
+    try {
+      const date = isNaN(h.date) ? new Date(h.date) : new Date(parseInt(h.date));
+      const dateStr = date.toISOString().split('T')[0];
+      historyMap[dateStr] = h.completed ? "done" : "missed";
+    } catch (error) {
+      console.error('Error parsing date:', h.date, error);
+    }
   });
 
   // Check if a specific day is today
@@ -77,30 +39,24 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
   // Check if a date is in the future
   const isFutureDate = (day) => {
     const date = new Date(year, month, day);
+    date.setHours(23, 59, 59, 999);
     return date > today;
   };
 
-  const getStatusStyle = (status, day) => {
-    const baseStyles = "h-12 w-12 flex flex-col items-center justify-center rounded-xl transition-all duration-300";
+  const getStatusClass = (status, day) => {
     const todayFlag = isToday(day);
     const futureFlag = isFutureDate(day);
 
-    if (todayFlag) {
-      return `${baseStyles} bg-gradient-to-r ${theme === 'dark' ? 'from-[#124E66] to-[#748D92]' : 'from-[#B3C8CF] to-[#89A8B2]'} text-[#D3D9D4] border-2 ${theme === 'dark' ? 'border-[#D3D9D4]' : 'border-[#2E3944]'} shadow-lg cursor-not-allowed`;
-    }
-
-    if (futureFlag) {
-      return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]/40' : 'text-[#5A6D77]/40'} border ${colors.dayBorder} opacity-50 cursor-not-allowed`;
-    }
-
-    if (status === "done") return `${baseStyles} bg-gradient-to-r ${colors.accentBg} ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} border ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/40'}`;
-    if (status === "missed") return `${baseStyles} bg-gradient-to-r from-[${colors.missedFrom}]/20 to-[${colors.missedTo}]/10 ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`;
-    return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${colors.dayBorder}`;
+    if (todayFlag) return "day-cell day-today";
+    if (futureFlag) return "day-cell day-future";
+    if (status === "done") return "day-cell day-done";
+    if (status === "missed") return "day-cell day-missed";
+    return "day-cell day-empty-state";
   };
 
-  const getDayStyle = (day) => {
-    if (day === 0 || day === 6) return `text-${theme === 'dark' ? '[#124E66]' : '[#89A8B2]'}`;
-    return `text-[${colors.textPrimary}]`;
+  const getDayClass = (dayIndex) => {
+    if (dayIndex === 0 || dayIndex === 6) return "weekday-label weekend-day";
+    return "weekday-label weekday-day";
   };
 
   const handlePrevMonth = () => {
@@ -118,6 +74,14 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
       setCurrentYear(year + 1);
     } else {
       setCurrentMonth(month + 1);
+    }
+  };
+
+  const handleDateClick = (day, status, isFuture, isTodayFlag) => {
+    if (onDateClick && !isFuture && !isTodayFlag) {
+      const date = new Date(year, month, day);
+      const dateStr = date.toISOString().split('T')[0];
+      onDateClick(dateStr, status);
     }
   };
 
@@ -142,52 +106,55 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
   };
 
   const monthStats = calculateMonthStats();
+  const completionRate = monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0;
 
   return (
-    <div className="p-1">
-      <div className={`bg-gradient-to-br ${colors.bgGradient} rounded-2xl border ${colors.border} shadow-xl p-6`}>
+    <div className="calendar-container">
+      <div className={`calendar-wrapper ${theme === 'dark' ? 'calendar-dark' : 'calendar-light'}`}>
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="calendar-header">
           <button
             onClick={handlePrevMonth}
-            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
+            className="calendar-nav-button"
+            aria-label="Previous month"
           >
             <FaChevronLeft />
           </button>
 
           <div className="text-center">
-            <h2 className={`text-xl font-['Merriweather'] font-bold text-[${colors.textPrimary}]`}>
+            <h2 className="calendar-title">
               {monthNames[month]} {year}
             </h2>
-            <div className="flex items-center justify-center gap-4 mt-2">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}]`}></div>
-                <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
+            <div className="calendar-stats">
+              <div className="calendar-stat-item">
+                <div className="calendar-stat-dot"></div>
+                <span className="calendar-stat-text">
                   {monthStats.completed} completed
                 </span>
               </div>
-              <div className={`h-4 w-px bg-${colors.dividerColor}`}></div>
-              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
-                {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}% rate
+              <div className="calendar-divider"></div>
+              <span className="calendar-stat-text">
+                {completionRate}% rate
               </span>
             </div>
           </div>
 
           <button
             onClick={handleNextMonth}
-            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
+            className="calendar-nav-button"
+            aria-label="Next month"
           >
             <FaChevronRight />
           </button>
         </div>
 
         {/* Week Days */}
-        <div className="grid grid-cols-7 gap-[20px] mr-4 text-center mb-4">
+        <div className="calendar-weekdays">
           {days.map((day, i) => (
             <span
               key={i}
-              className={`text-sm font-['Source_Sans_Pro'] font-semibold ${getDayStyle(i)}`}
+              className={getDayClass(i)}
             >
               {day}
             </span>
@@ -195,10 +162,10 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-3">
+        <div className="calendar-grid">
           {/* Empty slots before month starts */}
           {[...Array(firstDayIndex)].map((_, i) => (
-            <div key={`empty-${i}`} className="h-12" />
+            <div key={`empty-${i}`} className="day-empty" />
           ))}
 
           {/* Month days */}
@@ -212,23 +179,27 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
             return (
               <div
                 key={date}
-                className={getStatusStyle(status, day)}
+                className={getStatusClass(status, day)}
+                onClick={() => handleDateClick(day, status, futureFlag, todayFlag)}
+                aria-label={`${monthNames[month]} ${day}, ${year} - ${status === "done" ? "Completed" : status === "missed" ? "Missed" : "No data"}`}
+                role="button"
+                tabIndex={0}
               >
-                <span className={`text-xs mb-1 font-['Source_Sans_Pro'] ${todayFlag ? 'font-bold text-white' : theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'}`}>
+                <span className="day-number">
                   {day}
                 </span>
-                <div className="flex items-center justify-center">
+                <div className="day-icon">
                   {status === "done" && !todayFlag && !futureFlag && (
-                    <FaCheck className={theme === 'dark' ? "text-[#124E66]" : "text-[#B3C8CF]"} />
+                    <FaCheck className={`${theme === 'dark' ? 'icon-done' : 'icon-done'}`} />
                   )}
                   {status === "missed" && !todayFlag && !futureFlag && (
-                    <FaTimes className={theme === 'dark' ? "text-[#8B0000]" : "text-[#D86A6A]"} />
+                    <FaTimes className={`${theme === 'dark' ? 'icon-missed' : 'icon-missed'}`} />
                   )}
                   {todayFlag && (
-                    <FaLock className="text-white text-xs" />
+                    <FaLock className="icon-today" />
                   )}
                   {futureFlag && (
-                    <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                    <div className="icon-future"></div>
                   )}
                 </div>
               </div>
@@ -237,35 +208,35 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
         </div>
 
         {/* Legend & Stats */}
-        <div className={`mt-8 pt-6 border-t ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/30'}`}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center`}>
-                  <FaCheck className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
+        <div className="calendar-footer footer-divider">
+          <div className="footer-content">
+            <div className="legend-container">
+              <div className="legend-item">
+                <div className="legend-icon legend-icon-done">
+                  <FaCheck />
                 </div>
-                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Completed</span>
+                <span className="legend-text">Completed</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.missedFrom}] to-[${colors.missedTo}] flex items-center justify-center`}>
-                  <FaTimes className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
+              <div className="legend-item">
+                <div className="legend-icon legend-icon-missed">
+                  <FaTimes />
                 </div>
-                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Missed</span>
+                <span className="legend-text">Missed</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] ${theme === 'dark' ? 'border-2 border-[#D3D9D4]' : 'border-2 border-[#2E3944]'} flex items-center justify-center`}>
-                  <FaLock className="text-xs" />
+              <div className="legend-item">
+                <div className="legend-icon legend-icon-today">
+                  <FaLock />
                 </div>
-                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Today (Locked)</span>
+                <span className="legend-text">Today (Locked)</span>
               </div>
             </div>
 
             {/* Monthly Summary */}
-            <div className={`${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#F1F0E8]'} rounded-xl px-4 py-2 border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
-              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
-                Monthly: <span className={`text-[${colors.textPrimary}] font-semibold`}>
+            <div className="summary-box">
+              <span className="summary-text">
+                Monthly: <span className="summary-highlight">
                   {monthStats.completed}/{monthStats.total}
                 </span> days
               </span>
@@ -274,19 +245,19 @@ const CalendarView = ({ history = [], theme = 'dark' }) => {
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-6">
-          <div className="flex justify-between mb-2">
-            <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Monthly Progress</span>
-            <span className={`text-[${colors.textPrimary}] font-['Montserrat'] font-semibold`}>
-              {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%
-            </span>
+        <div className="progress-container">
+          <div className="progress-header">
+            <span className="progress-label">Monthly Progress</span>
+            <span className="progress-percentage">{completionRate}%</span>
           </div>
-          <div className={`h-2 ${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#E5E1DA]'} rounded-full overflow-hidden border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
+          <div className="progress-bar">
             <div
-              className={`h-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] rounded-full transition-all duration-700`}
-              style={{
-                width: `${monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%`
-              }}
+              className="progress-fill"
+              style={{ width: `${completionRate}%` }}
+              role="progressbar"
+              aria-valuenow={completionRate}
+              aria-valuemin="0"
+              aria-valuemax="100"
             />
           </div>
         </div>
