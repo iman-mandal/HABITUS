@@ -3,43 +3,25 @@ import { motion } from 'framer-motion';
 import { PieChart } from '@mui/x-charts/PieChart';
 
 const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
-    // Theme configuration
-    const themeConfig = {
-        light: {
-            cardBg: 'bg-white/90 backdrop-blur-sm',
-            cardBorder: 'border-[#B3C8CF]/50',
-            primaryText: 'text-[#2E3944]',
-            secondaryText: 'text-[#5A6D74]',
-            iconBg: 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF]',
-            iconColor: 'text-[#2E3944]',
-            innerCardBg: 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]',
-            pieColors: ['#89A8B2', '#B3C8CF', '#5A6D74', '#F1F0E8', '#E5E1DA'],
-            timeRangeActive: 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF]',
-            timeRangeInactive: 'bg-white/80',
-            timeRangeTextActive: 'text-white',
-            timeRangeTextInactive: 'text-[#5A6D74]',
-        },
-        dark: {
-            cardBg: 'bg-[#2E3944]/80 backdrop-blur-sm',
-            cardBorder: 'border-[#748D92]/20',
-            primaryText: 'text-[#D3D9D4]',
-            secondaryText: 'text-[#748D92]',
-            iconBg: 'bg-gradient-to-r from-[#124E66] to-[#748D92]',
-            iconColor: 'text-[#D3D9D4]',
-            innerCardBg: 'bg-gradient-to-r from-[#212A31] to-[#2E3944]',
-            pieColors: ['#124E66', '#748D92', '#2E3944', '#D3D9D4', '#212A31'],
-            timeRangeActive: 'bg-gradient-to-r from-[#124E66] to-[#748D92]',
-            timeRangeInactive: 'bg-[#212A31]/80',
-            timeRangeTextActive: 'text-[#D3D9D4]',
-            timeRangeTextInactive: 'text-[#748D92]',
-        }
-    };
-    const colors = themeConfig[theme];
-
-    // REMOVED the internal state for activeTimeRange
-    // Instead, use the timeRange prop directly
-
     const [pieData, setPieData] = useState([]);
+
+    // Get theme from localStorage if not provided
+    const currentTheme = theme || localStorage.getItem('userTheme') || 'dark';
+    const isLight = currentTheme === 'light';
+
+    // Set pie colors based on theme
+    const pieColors = isLight
+        ? ['#89A8B2', '#B3C8CF', '#5A6D74', '#F1F0E8', '#E5E1DA']
+        : ['#124E66', '#748D92', '#2E3944', '#D3D9D4', '#212A31'];
+
+    // Set CSS variables for legend hover
+    useEffect(() => {
+        if (isLight) {
+            document.documentElement.style.setProperty('--legend-hover-border', 'rgba(179, 200, 207, 0.4)');
+        } else {
+            document.documentElement.style.setProperty('--legend-hover-border', 'rgba(116, 141, 146, 0.4)');
+        }
+    }, [isLight]);
 
     // Function to get date range for different time periods
     const getDateRange = (range) => {
@@ -47,15 +29,14 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
 
         switch (range) {
             case 'overall':
-                // For overall, return the earliest date to today
                 return getAllTimeRange();
-            case 'week':  // Changed from 'weekly' to match Analytics component
+            case 'week':
                 return getWeeklyRange();
-            case 'month': // Changed from 'monthly' to match Analytics component
+            case 'month':
                 return getMonthlyRange();
-            case 'quarter': // Changed from 'quarterly' to match Analytics component
+            case 'quarter':
                 return getQuarterlyRange();
-            case 'year': // Changed from 'yearly' to match Analytics component
+            case 'year':
                 return getYearlyRange();
             default:
                 return { startDate: now, endDate: now };
@@ -96,6 +77,7 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
 
         return { startDate, endDate };
     };
+
     const getWeeklyRange = () => {
         const now = new Date();
         const day = now.getDay();
@@ -191,7 +173,7 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
                     label: habit.title,
                     value: Math.round(percentageOfTotal),
                     completed: completedInRange,
-                    color: colors.pieColors[index % colors.pieColors.length],
+                    color: pieColors[index % pieColors.length],
                 };
             })
             .filter(item => item.value > 0); // Only show habits with data
@@ -203,7 +185,7 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
             const data = calculatePieData(timeRange);
             setPieData(data);
         }
-    }, [timeRange, habits, theme]);
+    }, [timeRange, habits, isLight]);
 
     // Get display label for time range
     const getTimeRangeLabel = () => {
@@ -228,23 +210,23 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className={`${colors.cardBg} rounded-2xl w-full p-6 border ${colors.cardBorder} shadow-lg`}
+            className={`habit-distribution-card ${isLight ? 'habit-distribution-card-light' : 'habit-distribution-card-dark'}`}
         >
             {/* Header with time range info */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${colors.iconBg} flex items-center justify-center`}>
-                        <i className={`ri-pie-chart-2-fill text-xl ${colors.iconColor}`}></i>
+            <div className="card-header">
+                <div className="header-left">
+                    <div className={`icon-container ${isLight ? 'icon-container-light' : 'icon-container-dark'}`}>
+                        <i className={`ri-pie-chart-2-fill icon ${isLight ? 'icon-light' : 'icon-dark'}`}></i>
                     </div>
                     <div>
-                        <h3 className={`font-['Merriweather'] text-[18px] font-bold ${colors.primaryText}`}>
+                        <h3 className={`card-title ${isLight ? 'card-title-light' : 'card-title-dark'}`}>
                             Habit Distribution
                         </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-['Source_Sans_Pro'] font-medium ${colors.timeRangeActive} ${colors.timeRangeTextActive}`}>
+                        <div className="time-range-info">
+                            <span className={`time-range-badge ${isLight ? 'time-range-badge-light' : 'time-range-badge-dark'}`}>
                                 {getTimeRangeLabel()}
                             </span>
-                            <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-xs`}>
+                            <p className={`time-range-text ${isLight ? 'time-range-text-light' : 'time-range-text-dark'}`}>
                                 {getDateRangeText(timeRange || 'week')}
                             </p>
                         </div>
@@ -253,11 +235,11 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
             </div>
 
             {habits.length > 0 ? (
-                <div className="relative min-h-[260px] flex flex-col items-center">
+                <div className="content-container">
                     {/* Pie Chart - Show only if there's data */}
                     {pieData.length > 0 ? (
                         <>
-                            <div className="h-[220px] w-full -mt-2">
+                            <div className="chart-container">
                                 <PieChart
                                     series={[
                                         {
@@ -269,34 +251,34 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
                                     ]}
                                     height={250}
                                     width={250}
+                                    className="pie-chart-legend-hidden"
                                     sx={{
-                                        '& .MuiChartsLegend-root': { display: 'none' },
                                         '& .MuiChartsLegend-label': { fontSize: '16px' },
                                     }}
                                 />
                             </div>
 
                             {/* Custom Compact Legend */}
-                            <div className="mt-10 w-full">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="legend-container">
+                                <div className="legend-grid">
                                     {pieData.map((item, index) => (
                                         <div
                                             key={index}
-                                            className={`flex items-center gap-2 p-2 rounded-lg ${colors.innerCardBg} border ${colors.cardBorder} hover:border-[#748D92]/40 transition`}
+                                            className={`legend-item ${isLight ? 'legend-item-light' : 'legend-item-dark'}`}
                                         >
                                             <div
-                                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                                className="color-indicator"
                                                 style={{ backgroundColor: item.color }}
                                             />
-                                            <div className="flex-1 min-w-0">
-                                                <span className={`font-['Source_Sans_Pro'] text-xs ${colors.primaryText} truncate`}>
+                                            <div className="legend-content">
+                                                <span className={`legend-label ${isLight ? 'legend-label-light' : 'legend-label-dark'}`}>
                                                     {item.label}
                                                 </span>
-                                                <div className="flex justify-between items-center mt-0.5">
-                                                    <span className={`font-['Source_Sans_Pro'] text-xs ${colors.secondaryText}`}>
+                                                <div className="legend-stats">
+                                                    <span className={`legend-completed ${isLight ? 'legend-completed-light' : 'legend-completed-dark'}`}>
                                                         {item.completed} completed
                                                     </span>
-                                                    <span className={`font-['Source_Sans_Pro'] text-xs ${colors.primaryText} font-semibold`}>
+                                                    <span className={`legend-percentage ${isLight ? 'legend-percentage-light' : 'legend-percentage-dark'}`}>
                                                         {item.value}%
                                                     </span>
                                                 </div>
@@ -307,25 +289,25 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
                             </div>
                         </>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-10">
-                            <div className={`w-16 h-16 rounded-full ${colors.innerCardBg} flex items-center justify-center mb-4`}>
-                                <i className={`ri-line-chart-line text-2xl ${colors.secondaryText}`}></i>
+                        <div className="no-data-container">
+                            <div className={`no-data-icon-container ${isLight ? 'no-data-icon-container-light' : 'no-data-icon-container-dark'}`}>
+                                <i className={`ri-line-chart-line no-data-icon ${isLight ? 'no-data-icon-light' : 'no-data-icon-dark'}`}></i>
                             </div>
-                            <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-center max-w-xs`}>
+                            <p className={`no-data-text ${isLight ? 'no-data-text-light' : 'no-data-text-dark'}`}>
                                 No data available for {getTimeRangeLabel().toLowerCase()} period
                             </p>
-                            <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-xs text-center mt-2`}>
+                            <p className={`no-data-subtext ${isLight ? 'no-data-subtext-light' : 'no-data-subtext-dark'}`}>
                                 Complete habits to see your distribution
                             </p>
                         </div>
                     )}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-10">
-                    <div className={`w-20 h-20 rounded-full ${colors.innerCardBg} flex items-center justify-center mb-4`}>
-                        <i className={`ri-leaf-line text-3xl ${colors.secondaryText}`}></i>
+                <div className="empty-habits-container">
+                    <div className={`empty-habits-icon-container ${isLight ? 'empty-habits-icon-container-light' : 'empty-habits-icon-container-dark'}`}>
+                        <i className={`ri-leaf-line empty-habits-icon ${isLight ? 'empty-habits-icon-light' : 'empty-habits-icon-dark'}`}></i>
                     </div>
-                    <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-center`}>
+                    <p className={`empty-habits-text ${isLight ? 'empty-habits-text-light' : 'empty-habits-text-dark'}`}>
                         Start adding habits to see your progress chart!
                     </p>
                 </div>
@@ -335,4 +317,3 @@ const HabitDistributionCard = ({ habits, theme, timeRange, user }) => {
 };
 
 export default HabitDistributionCard;
-
