@@ -19,7 +19,34 @@ const Analytics = () => {
 
     const totalHabits = habits?.length || 0
     const currentTheme = localStorage.getItem('userTheme') || 'dark'
-    const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme'
+
+    // Theme colors
+    const themeColors = {
+        light: {
+            backgroundGradient: "bg-gradient-to-b from-[#F1F0E8] via-[#E5E1DA] to-[#B3C8CF]",
+            headerGradient: "from-[#89A8B2] via-[#B3C8CF] to-[#E5E1DA]",
+            categoryColors: {
+                fitness: 'linear-gradient(135deg, #89A8B2, #6E97A3)',
+                mental: 'linear-gradient(135deg, #B3C8CF, #98B7C0)',
+                study: 'linear-gradient(135deg, #E5E1DA, #C9C0B5)',
+                health: 'linear-gradient(135deg, #F1F0E8, #D5D3C5)',
+                other: 'linear-gradient(135deg, #D9E4E8, #B8D0D6)'
+            }
+        },
+        dark: {
+            backgroundGradient: "bg-gradient-to-b from-[#0F1A23] via-[#1A2832] to-[#124E66]",
+            headerGradient: "from-[#124E66] via-[#1E3A52] to-[#2E3944]",
+            categoryColors: {
+                fitness: 'linear-gradient(135deg, #124E66, #0A3A4D)',
+                mental: 'linear-gradient(135deg, #748D92, #5A757B)',
+                study: 'linear-gradient(135deg, #D3D9D4, #B8C2B9)',
+                health: 'linear-gradient(135deg, #2E3944, #1E2832)',
+                other: 'linear-gradient(135deg, #212A31, #151E25)'
+            }
+        }
+    }
+
+    const colors = themeColors[currentTheme]
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -260,6 +287,8 @@ const Analytics = () => {
         return habitsWithData[0];
     };
 
+
+
     // Update stats when habits or timeRange changes
     useEffect(() => {
         if (habits.length > 0) {
@@ -283,16 +312,12 @@ const Analytics = () => {
         return name.length > 12 ? name.substring(0, 12) + '...' : name;
     };
 
-    const capitalizeFirst = (str) => {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    };
-
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className={`analytics-container ${themeClass}`}
+            className={`min-h-screen ${colors.backgroundGradient}`}
         >
             {/* Floating Theme Toggle */}
             <motion.button
@@ -301,15 +326,23 @@ const Analytics = () => {
                 whileHover={{ scale: 1.1, rotate: 180 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={toggleTheme}
-                className={`analytics-theme-toggle ${themeClass}`}
+                className={`fixed top-6 right-6 z-50 w-12 h-12 rounded-2xl backdrop-blur-lg border 
+          ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
+          ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'}
+          flex items-center justify-center text-xl transition-all duration-300`}
+                style={{
+                    background: currentTheme === 'light'
+                        ? 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,240,240,0.7))'
+                        : 'linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.7))'
+                }}
             >
                 {currentTheme === 'light' ? '🌙' : '☀️'}
             </motion.button>
 
             {/* Enhanced HEADER */}
-            <div className={`analytics-header ${themeClass}`}>
+            <div className={`relative bg-gradient-to-r ${colors.headerGradient} px-6 pt-8 pb-8 overflow-hidden`}>
                 {/* Animated background particles */}
-                <div className="analytics-header-particles">
+                <div className="absolute inset-0 overflow-hidden">
                     {[...Array(20)].map((_, i) => (
                         <motion.div
                             key={i}
@@ -323,28 +356,32 @@ const Analytics = () => {
                                 repeat: Infinity,
                                 delay: Math.random() * 5
                             }}
-                            className={`analytics-particle ${themeClass}`}
+                            className="absolute w-[1px] h-[1px] bg-white/10 rounded-full"
                             style={{ left: `${Math.random() * 100}%` }}
                         />
                     ))}
                 </div>
 
-                <div className="analytics-header-content">
-                    <div className='analytics-flex analytics-flex-row analytics-gap-3'>
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className='flex flex-row gap-3'>
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", damping: 15 }}
-                            className={`analytics-header-icon ${themeClass}`}
+                            className={`w-20 h-20 rounded-3xl mb-4 backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'} 
+              ${currentTheme === 'light'
+                                    ? 'bg-gradient-to-br from-white/40 to-[#F1F0E8]/30'
+                                    : 'bg-gradient-to-br from-[#1E3A52]/40 to-[#124E66]/30'} flex items-center justify-center`}
                         >
-                            <i className="ri-bar-chart-2-fill"></i>
+                            <i className={`ri-bar-chart-2-fill text-4xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
                         </motion.div>
-                        <div className='analytics-flex analytics-flex-col analytics-items-center'>
+                        <div className='flex flex-col items-start'>
                             <motion.h2
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.1 }}
-                                className="analytics-title"
+                                className="font-['Merriweather'] text-4xl font-bold text-white text-center mb-2"
                             >
                                 Habit Analytics
                             </motion.h2>
@@ -353,14 +390,14 @@ const Analytics = () => {
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="analytics-subtitle"
+                                className="font-['Source_Sans_Pro'] text-white/90 text-center mb-6"
                             >
                                 Track your growth, nurture your progress
                             </motion.p>
                         </div>
                     </div>
                     {/* Enhanced Time Range Selector */}
-                    <div className="analytics-time-range-selector analytics-no-scrollbar">
+                    <div className="flex gap-3 overflow-hidden no-scrollbar">
                         {['week', 'month', 'quarter', 'year'].map((range) => (
                             <motion.button
                                 key={range}
@@ -369,9 +406,19 @@ const Analytics = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setTimeRange(range)}
-                                className={`analytics-time-range-btn ${themeClass} ${timeRange === range ? 'selected' : ''}`}
+                                className={`px-5 py-2.5 rounded-xl text-sm font-['Source_Sans_Pro'] font-semibold 
+                  transition-all duration-300 backdrop-blur-sm border 
+                  ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+                  ${timeRange === range
+                                        ? (currentTheme === 'light'
+                                            ? 'bg-gradient-to-r from-[#89A8B2] to-[#B3C8CF] text-white shadow-lg'
+                                            : 'bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white shadow-lg')
+                                        : (currentTheme === 'light'
+                                            ? 'bg-white/60 text-[#5A6D77] hover:shadow-md'
+                                            : 'bg-[#1E3A52]/40 text-[#A3B8C8] hover:shadow-md')
+                                    }`}
                             >
-                                {capitalizeFirst(range)}
+                                {range.charAt(0).toUpperCase() + range.slice(1)}
                             </motion.button>
                         ))}
                     </div>
@@ -383,32 +430,44 @@ const Analytics = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="analytics-stats-section"
+                className="px-6 py-8 -mt-6 relative z-20"
             >
                 {/* Stats Header with Time Range */}
-                <div className="analytics-stats-header">
-                    <div className="analytics-flex analytics-items-center analytics-gap-3">
-                        <div className={`analytics-stats-icon ${themeClass}`}>
-                            <i className="ri-dashboard-fill"></i>
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                                ? 'bg-gradient-to-br from-[#B3C8CF]/20 to-[#89A8B2]/20'
+                                : 'bg-gradient-to-br from-[#748D92]/30 to-[#124E66]/30'} flex items-center justify-center`}
+                        >
+                            <i className={`ri-dashboard-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
                         </div>
                         <div>
-                            <h3 className={`analytics-stats-title ${themeClass}`}>
-                                {capitalizeFirst(timeRange)} Performance
+                            <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                                {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)} Performance
                             </h3>
-                            <p className={`analytics-stats-subtitle ${themeClass}`}>
+                            <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
                                 Key metrics for the selected period
                             </p>
                         </div>
                     </div>
 
                     {/* Time Range Indicator */}
-                    <div className={`analytics-time-indicator ${themeClass}`}>
-                        <i className="ri-calendar-line"></i>
-                        <span>{capitalizeFirst(timeRange)}</span>
+                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm border 
+            ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+            ${currentTheme === 'light'
+                            ? 'bg-gradient-to-br from-white/40 to-white/20'
+                            : 'bg-gradient-to-br from-[#1E3A52]/40 to-[#0F1A23]/40'}`}
+                    >
+                        <i className={`ri-calendar-line ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}></i>
+                        <span className={`font-['Source_Sans_Pro'] font-semibold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                            {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}
+                        </span>
                     </div>
                 </div>
 
-                <div className="analytics-stats-grid">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* BEST HABIT */}
                     <StatCard
                         icon="ri-trophy-fill"
@@ -424,7 +483,7 @@ const Analytics = () => {
                         label="Completion Rate"
                         value={`${completionRate}%`}
                         progress={completionRate}
-                        subtext={`${capitalizeFirst(timeRange)} performance`}
+                        subtext={`${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)} performance`}
                         color={completionRate >= 70 ? 'success' : completionRate >= 40 ? 'warning' : 'danger'}
                         theme={currentTheme}
                     />
@@ -450,7 +509,7 @@ const Analytics = () => {
                 </div>
 
                 {/* Habit Distribution Card */}
-                <div className="analytics-distribution-container">
+                <div className="flex flex-col mb-8 items-center">
                     <HabitDistributionCard timeRange={timeRange} user={user} habits={habits} theme={currentTheme} />
                 </div>
 
@@ -459,30 +518,48 @@ const Analytics = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="analytics-performance-graph"
+                    className="mb-8"
                 >
-                    <div className="analytics-flex analytics-items-center analytics-justify-between analytics-mb-6">
-                        <div className="analytics-flex analytics-items-center analytics-gap-4">
-                            <div className={`analytics-graph-icon ${themeClass}`}>
-                                <i className="ri-line-chart-fill"></i>
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+                ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+                ${currentTheme === 'light'
+                                    ? 'bg-gradient-to-br from-[#B3C8CF]/20 to-[#89A8B2]/20'
+                                    : 'bg-gradient-to-br from-[#748D92]/30 to-[#124E66]/30'} flex items-center justify-center`}
+                            >
+                                <i className={`ri-line-chart-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
                             </div>
                             <div>
-                                <h3 className={`analytics-stats-title ${themeClass}`}>
+                                <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
                                     Performance Trend
                                 </h3>
-                                <p className={`analytics-stats-subtitle ${themeClass}`}>
+                                <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
                                     Visualize your habit completion over time
                                 </p>
                             </div>
                         </div>
 
-                        <div className={`analytics-time-indicator ${themeClass}`}>
-                            <i className="ri-calendar-line"></i>
-                            <span>{capitalizeFirst(timeRange)}</span>
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                                ? 'bg-gradient-to-br from-white/40 to-white/20'
+                                : 'bg-gradient-to-br from-[#1E3A52]/40 to-[#0F1A23]/40'}`}
+                        >
+                            <i className={`ri-calendar-line ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'}`}></i>
+                            <span className={`font-['Source_Sans_Pro'] font-semibold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
+                                {timeRange.charAt(0).toUpperCase() + timeRange.slice(1)}
+                            </span>
                         </div>
                     </div>
 
-                    <div className={`analytics-graph-container ${themeClass}`}>
+                    <div className={`rounded-3xl p-6 backdrop-blur-sm 
+            ${currentTheme === 'light' ? 'shadow-lg shadow-[#89A8B2]/10' : 'shadow-xl shadow-[#124E66]/15'} 
+            border ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+            ${currentTheme === 'light'
+                            ? 'bg-gradient-to-br from-white/40 to-white/20'
+                            : 'bg-gradient-to-br from-[#1A2832]/80 to-[#0F1A23]/80'}`}
+                    >
                         <HabitAreaChatGraph
                             habits={habits}
                             setHabits={setHabits}
@@ -497,26 +574,30 @@ const Analytics = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="analytics-insights-section"
                 >
-                    <div className="analytics-flex analytics-items-center analytics-gap-4 analytics-mb-6">
-                        <div className={`analytics-insights-icon ${themeClass}`}>
-                            <i className="ri-lightbulb-flash-fill"></i>
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className={`w-12 h-12 rounded-2xl backdrop-blur-sm border 
+              ${currentTheme === 'light' ? 'border-white/40' : 'border-[#2E3944]/40'}
+              ${currentTheme === 'light'
+                                ? 'bg-gradient-to-br from-[#89A8B2]/20 to-[#F1F0E8]/20'
+                                : 'bg-gradient-to-br from-[#124E66]/30 to-[#212A31]/30'} flex items-center justify-center`}
+                        >
+                            <i className={`ri-lightbulb-flash-fill text-xl ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}></i>
                         </div>
                         <div>
-                            <h3 className={`analytics-stats-title ${themeClass}`}>
+                            <h3 className={`font-['Merriweather'] text-2xl font-bold ${currentTheme === 'light' ? 'text-[#2E3944]' : 'text-white'}`}>
                                 Growth Insights
                             </h3>
-                            <p className={`analytics-stats-subtitle ${themeClass}`}>
+                            <p className={`font-['Source_Sans_Pro'] ${currentTheme === 'light' ? 'text-[#5A6D77]' : 'text-[#A3B8C8]'} text-sm`}>
                                 Personalized recommendations based on your {timeRange} data
                             </p>
                         </div>
                     </div>
 
-                    <div className="analytics-insights-grid">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-[100px]">
                         <InsightCard
                             icon="ri-bar-chart-line"
-                            title={`${capitalizeFirst(timeRange)} Consistency`}
+                            title={`${timeRange.charAt(0).toUpperCase() + timeRange.slice(1)} Consistency`}
                             description={`You've maintained ${activeStreaks} active streaks this ${timeRange}. Try to keep at least 3 habits consistently active.`}
                             color="green"
                             theme={currentTheme}
@@ -542,7 +623,7 @@ const Analytics = () => {
             </motion.div>
 
             {/* NAVBAR */}
-            <div className="analytics-navbar">
+            <div className="fixed bottom-0 left-0 right-0 z-40">
                 <Navbar />
             </div>
         </motion.div>

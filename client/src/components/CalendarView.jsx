@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import '../global.css';
 import { FaChevronLeft, FaChevronRight, FaCheck, FaTimes, FaLock } from "react-icons/fa";
 
-const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
+const CalendarView = ({ history = [], theme = 'dark' }) => {
   const days = ["S", "M", "T", "W", "T", "F", "S"];
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -14,16 +13,55 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay();
 
-  // Map backend history to date strings
+  // Theme colors
+  const themeColors = {
+    dark: {
+      bgGradient: "from-[#2E3944] to-[#212A31]",
+      border: "border-[#748D92]/30",
+      textPrimary: "#D3D9D4",
+      textSecondary: "#748D92",
+      accentFrom: "#124E66",
+      accentTo: "#748D92",
+      accentBg: "from-[#124E66]/20 to-[#124E66]/10",
+      missedFrom: "#8B0000",
+      missedTo: "#B22222",
+      dayBg: "#212A31",
+      dayBorder: "border-[#748D92]/20",
+      dayHoverBorder: "border-[#748D92]/40",
+      weekendColor: "#124E66",
+      progressBg: "#212A31",
+      statBoxBg: "#212A31",
+      statBoxBorder: "border-[#748D92]/20",
+      dividerColor: "#748D92/30",
+    },
+    light: {
+      bgGradient: "from-[#F1F0E8] to-[#E5E1DA]",
+      border: "border-[#89A8B2]/40",
+      textPrimary: "#2E3944",
+      textSecondary: "#5A6D77",
+      accentFrom: "#B3C8CF",
+      accentTo: "#89A8B2",
+      accentBg: "from-[#B3C8CF]/30 to-[#B3C8CF]/10",
+      missedFrom: "#D86A6A",
+      missedTo: "#C45C5C",
+      dayBg: "#F1F0E8",
+      dayBorder: "border-[#89A8B2]/30",
+      dayHoverBorder: "border-[#89A8B2]/50",
+      weekendColor: "#89A8B2",
+      progressBg: "#E5E1DA",
+      statBoxBg: "#F1F0E8",
+      statBoxBorder: "border-[#89A8B2]/30",
+      dividerColor: "#89A8B2/30",
+    }
+  };
+
+  const colors = themeColors[theme];
+
+  // Map backend history
   const historyMap = {};
   history.forEach(h => {
-    try {
-      const date = isNaN(h.date) ? new Date(h.date) : new Date(parseInt(h.date));
-      const dateStr = date.toISOString().split('T')[0];
-      historyMap[dateStr] = h.completed ? "done" : "missed";
-    } catch (error) {
-      console.error('Error parsing date:', h.date, error);
-    }
+    const dateStr = new Date(isNaN(h.date) ? h.date : parseInt(h.date)).toISOString().split('T')[0];
+    historyMap[dateStr] = h.completed ? "done" : "missed";
   });
 
   // Check if a specific day is today
@@ -39,24 +77,30 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
   // Check if a date is in the future
   const isFutureDate = (day) => {
     const date = new Date(year, month, day);
-    date.setHours(23, 59, 59, 999);
     return date > today;
   };
 
-  const getStatusClass = (status, day) => {
+  const getStatusStyle = (status, day) => {
+    const baseStyles = "h-12 w-12 flex flex-col items-center justify-center rounded-xl transition-all duration-300";
     const todayFlag = isToday(day);
     const futureFlag = isFutureDate(day);
 
-    if (todayFlag) return "day-cell day-today";
-    if (futureFlag) return "day-cell day-future";
-    if (status === "done") return "day-cell day-done";
-    if (status === "missed") return "day-cell day-missed";
-    return "day-cell day-empty-state";
+    if (todayFlag) {
+      return `${baseStyles} bg-gradient-to-r ${theme === 'dark' ? 'from-[#124E66] to-[#748D92]' : 'from-[#B3C8CF] to-[#89A8B2]'} text-[#D3D9D4] border-2 ${theme === 'dark' ? 'border-[#D3D9D4]' : 'border-[#2E3944]'} shadow-lg cursor-not-allowed`;
+    }
+
+    if (futureFlag) {
+      return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]/40' : 'text-[#5A6D77]/40'} border ${colors.dayBorder} opacity-50 cursor-not-allowed`;
+    }
+
+    if (status === "done") return `${baseStyles} bg-gradient-to-r ${colors.accentBg} ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} border ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/40'}`;
+    if (status === "missed") return `${baseStyles} bg-gradient-to-r from-[${colors.missedFrom}]/20 to-[${colors.missedTo}]/10 ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`;
+    return `${baseStyles} bg-${theme === 'dark' ? '[#212A31]' : '[#F1F0E8]'} ${theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'} border ${colors.dayBorder}`;
   };
 
-  const getDayClass = (dayIndex) => {
-    if (dayIndex === 0 || dayIndex === 6) return "weekday-label weekend-day";
-    return "weekday-label weekday-day";
+  const getDayStyle = (day) => {
+    if (day === 0 || day === 6) return `text-${theme === 'dark' ? '[#124E66]' : '[#89A8B2]'}`;
+    return `text-[${colors.textPrimary}]`;
   };
 
   const handlePrevMonth = () => {
@@ -74,14 +118,6 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
       setCurrentYear(year + 1);
     } else {
       setCurrentMonth(month + 1);
-    }
-  };
-
-  const handleDateClick = (day, status, isFuture, isTodayFlag) => {
-    if (onDateClick && !isFuture && !isTodayFlag) {
-      const date = new Date(year, month, day);
-      const dateStr = date.toISOString().split('T')[0];
-      onDateClick(dateStr, status);
     }
   };
 
@@ -106,55 +142,52 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
   };
 
   const monthStats = calculateMonthStats();
-  const completionRate = monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0;
 
   return (
-    <div className="calendar-container">
-      <div className={`calendar-wrapper ${theme === 'dark' ? 'calendar-dark' : 'calendar-light'}`}>
+    <div className="p-1">
+      <div className={`bg-gradient-to-br ${colors.bgGradient} rounded-2xl border ${colors.border} shadow-xl p-6`}>
 
         {/* Header */}
-        <div className="calendar-header">
+        <div className="flex items-center justify-between mb-8">
           <button
             onClick={handlePrevMonth}
-            className="calendar-nav-button"
-            aria-label="Previous month"
+            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
           >
             <FaChevronLeft />
           </button>
 
           <div className="text-center">
-            <h2 className="calendar-title">
+            <h2 className={`text-xl font-['Merriweather'] font-bold text-[${colors.textPrimary}]`}>
               {monthNames[month]} {year}
             </h2>
-            <div className="calendar-stats">
-              <div className="calendar-stat-item">
-                <div className="calendar-stat-dot"></div>
-                <span className="calendar-stat-text">
+            <div className="flex items-center justify-center gap-4 mt-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}]`}></div>
+                <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
                   {monthStats.completed} completed
                 </span>
               </div>
-              <div className="calendar-divider"></div>
-              <span className="calendar-stat-text">
-                {completionRate}% rate
+              <div className={`h-4 w-px bg-${colors.dividerColor}`}></div>
+              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
+                {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}% rate
               </span>
             </div>
           </div>
 
           <button
             onClick={handleNextMonth}
-            className="calendar-nav-button"
-            aria-label="Next month"
+            className={`w-10 h-10 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center ${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} hover:opacity-90 transition active:scale-95`}
           >
             <FaChevronRight />
           </button>
         </div>
 
         {/* Week Days */}
-        <div className="calendar-weekdays">
+        <div className="grid grid-cols-7 gap-[20px] mr-4 text-center mb-4">
           {days.map((day, i) => (
             <span
               key={i}
-              className={getDayClass(i)}
+              className={`text-sm font-['Source_Sans_Pro'] font-semibold ${getDayStyle(i)}`}
             >
               {day}
             </span>
@@ -162,10 +195,10 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
         </div>
 
         {/* Calendar Grid */}
-        <div className="calendar-grid">
+        <div className="grid grid-cols-7 gap-3">
           {/* Empty slots before month starts */}
           {[...Array(firstDayIndex)].map((_, i) => (
-            <div key={`empty-${i}`} className="day-empty" />
+            <div key={`empty-${i}`} className="h-12" />
           ))}
 
           {/* Month days */}
@@ -179,27 +212,23 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
             return (
               <div
                 key={date}
-                className={getStatusClass(status, day)}
-                onClick={() => handleDateClick(day, status, futureFlag, todayFlag)}
-                aria-label={`${monthNames[month]} ${day}, ${year} - ${status === "done" ? "Completed" : status === "missed" ? "Missed" : "No data"}`}
-                role="button"
-                tabIndex={0}
+                className={getStatusStyle(status, day)}
               >
-                <span className="day-number">
+                <span className={`text-xs mb-1 font-['Source_Sans_Pro'] ${todayFlag ? 'font-bold text-white' : theme === 'dark' ? 'text-[#748D92]' : 'text-[#5A6D77]'}`}>
                   {day}
                 </span>
-                <div className="day-icon">
+                <div className="flex items-center justify-center">
                   {status === "done" && !todayFlag && !futureFlag && (
-                    <FaCheck className={`${theme === 'dark' ? 'icon-done' : 'icon-done'}`} />
+                    <FaCheck className={theme === 'dark' ? "text-[#124E66]" : "text-[#B3C8CF]"} />
                   )}
                   {status === "missed" && !todayFlag && !futureFlag && (
-                    <FaTimes className={`${theme === 'dark' ? 'icon-missed' : 'icon-missed'}`} />
+                    <FaTimes className={theme === 'dark' ? "text-[#8B0000]" : "text-[#D86A6A]"} />
                   )}
                   {todayFlag && (
-                    <FaLock className="icon-today" />
+                    <FaLock className="text-white text-xs" />
                   )}
                   {futureFlag && (
-                    <div className="icon-future"></div>
+                    <div className="w-2 h-2 rounded-full bg-gray-500"></div>
                   )}
                 </div>
               </div>
@@ -208,35 +237,35 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
         </div>
 
         {/* Legend & Stats */}
-        <div className="calendar-footer footer-divider">
-          <div className="footer-content">
-            <div className="legend-container">
-              <div className="legend-item">
-                <div className="legend-icon legend-icon-done">
-                  <FaCheck />
+        <div className={`mt-8 pt-6 border-t ${theme === 'dark' ? 'border-[#748D92]/30' : 'border-[#89A8B2]/30'}`}>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] flex items-center justify-center`}>
+                  <FaCheck className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
                 </div>
-                <span className="legend-text">Completed</span>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Completed</span>
               </div>
 
-              <div className="legend-item">
-                <div className="legend-icon legend-icon-missed">
-                  <FaTimes />
+              <div className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.missedFrom}] to-[${colors.missedTo}] flex items-center justify-center`}>
+                  <FaTimes className={`${theme === 'dark' ? 'text-[#D3D9D4]' : 'text-[#2E3944]'} text-xs`} />
                 </div>
-                <span className="legend-text">Missed</span>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Missed</span>
               </div>
 
-              <div className="legend-item">
-                <div className="legend-icon legend-icon-today">
-                  <FaLock />
+              <div className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] ${theme === 'dark' ? 'border-2 border-[#D3D9D4]' : 'border-2 border-[#2E3944]'} flex items-center justify-center`}>
+                  <FaLock className="text-xs" />
                 </div>
-                <span className="legend-text">Today (Locked)</span>
+                <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Today (Locked)</span>
               </div>
             </div>
 
             {/* Monthly Summary */}
-            <div className="summary-box">
-              <span className="summary-text">
-                Monthly: <span className="summary-highlight">
+            <div className={`${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#F1F0E8]'} rounded-xl px-4 py-2 border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
+              <span className={`text-[${colors.textSecondary}] text-sm font-['Source_Sans_Pro']`}>
+                Monthly: <span className={`text-[${colors.textPrimary}] font-semibold`}>
                   {monthStats.completed}/{monthStats.total}
                 </span> days
               </span>
@@ -245,19 +274,19 @@ const CalendarView = ({ history = [], theme = 'dark', onDateClick }) => {
         </div>
 
         {/* Progress Bar */}
-        <div className="progress-container">
-          <div className="progress-header">
-            <span className="progress-label">Monthly Progress</span>
-            <span className="progress-percentage">{completionRate}%</span>
+        <div className="mt-6">
+          <div className="flex justify-between mb-2">
+            <span className={`text-[${colors.textPrimary}] text-sm font-['Source_Sans_Pro']`}>Monthly Progress</span>
+            <span className={`text-[${colors.textPrimary}] font-['Montserrat'] font-semibold`}>
+              {monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%
+            </span>
           </div>
-          <div className="progress-bar">
+          <div className={`h-2 ${theme === 'dark' ? 'bg-[#212A31]' : 'bg-[#E5E1DA]'} rounded-full overflow-hidden border ${theme === 'dark' ? 'border-[#748D92]/20' : 'border-[#89A8B2]/30'}`}>
             <div
-              className="progress-fill"
-              style={{ width: `${completionRate}%` }}
-              role="progressbar"
-              aria-valuenow={completionRate}
-              aria-valuemin="0"
-              aria-valuemax="100"
+              className={`h-full bg-gradient-to-r from-[${colors.accentFrom}] to-[${colors.accentTo}] rounded-full transition-all duration-700`}
+              style={{
+                width: `${monthStats.total > 0 ? Math.round((monthStats.completed / monthStats.total) * 100) : 0}%`
+              }}
             />
           </div>
         </div>

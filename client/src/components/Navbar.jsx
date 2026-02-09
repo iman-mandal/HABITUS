@@ -10,20 +10,81 @@ const Navbar = () => {
 
   // Get theme from localStorage or use default
   useEffect(() => {
-    const userTheme = localStorage.getItem('userTheme') || 'dark'
+    const userTheme = localStorage.getItem('userTheme') || 'light'
     setCurrentTheme(userTheme)
   }, [])
 
-  // Set CSS variables for hover borders
-  useEffect(() => {
-    if (currentTheme === 'light') {
-      document.documentElement.style.setProperty('--nav-icon-hover-border', 'rgba(137, 168, 178, 0.4)');
-    } else {
-      document.documentElement.style.setProperty('--nav-icon-hover-border', 'rgba(116, 141, 146, 0.4)');
-    }
-  }, [currentTheme]);
+  // Theme configuration - BOTH LIGHT AND DARK MODES
+  const themeConfig = {
+    // LIGHT MODE COLORS (using your specified palette: F1F0E8, E5E1DA, B3C8CF, 89A8B2)
+    light: {
+      // Active state colors
+      activeBg: 'from-[#89A8B2] to-[#B3C8CF]', // Soft blue gradient
+      activeIcon: 'text-[#2E3944]', // Dark blue-gray text
+      activeText: 'text-[#2E3944]', // Dark blue-gray text
 
-  const isLight = currentTheme === 'light';
+      // Inactive state colors
+      inactiveIcon: 'text-[#5A6D74]', // Muted blue-gray
+      inactiveText: 'text-[#5A6D74]', // Muted blue-gray
+
+      // Background colors
+      background: 'from-[#F1F0E8] to-[#E5E1DA]', // Cream gradient
+      navBorder: 'border-t border-[#B3C8CF]/50', // Light blue border
+
+      // Card backgrounds
+      cardBg: 'from-[#F1F0E8]/80 to-[#E5E1DA]/80', // Semi-transparent cream
+      cardBorder: 'border-[#B3C8CF]/30', // Light blue border
+
+      // FAB (Floating Action Button) colors
+      fabBg: 'from-[#89A8B2] to-[#B3C8CF]', // Soft blue gradient
+      fabIcon: 'text-[#2E3944]', // Dark blue-gray icon
+      fabBorder: 'border-[#F1F0E8]', // Cream border
+
+      // Indicator colors
+      activeIndicator: 'from-[#89A8B2] to-[#B3C8CF]', // Soft blue gradient
+
+      // Pattern colors (for decorative elements)
+      pattern1: 'from-[#89A8B2] to-[#B3C8CF]', // Blue gradient
+      pattern2: 'from-[#F1F0E8] to-[#E5E1DA]', // Cream gradient
+      pattern3: 'from-[#B3C8CF] to-[#89A8B2]', // Reversed blue gradient
+    },
+
+    // DARK MODE COLORS (original colors)
+    dark: {
+      // Active state colors
+      activeBg: 'from-[#124E66] to-[#748D92]', // Deep blue gradient
+      activeIcon: 'text-[#D3D9D4]', // Off-white text
+      activeText: 'text-[#D3D9D4]', // Off-white text
+
+      // Inactive state colors
+      inactiveIcon: 'text-[#748D92]', // Muted slate blue
+      inactiveText: 'text-[#748D92]', // Muted slate blue
+
+      // Background colors
+      background: 'from-[#212A31] to-[#2E3944]', // Dark blue gradient
+      navBorder: 'border-t border-[#748D92]/30', // Slate blue border
+
+      // Card backgrounds
+      cardBg: 'from-[#2E3944]/60 to-[#212A31]/60', // Semi-transparent dark blue
+      cardBorder: 'border-[#748D92]/20', // Slate blue border
+
+      // FAB (Floating Action Button) colors
+      fabBg: 'from-[#124E66] to-[#748D92]', // Deep blue gradient
+      fabIcon: 'text-[#D3D9D4]', // Off-white icon
+      fabBorder: 'border-[#212A31]', // Dark blue border
+
+      // Indicator colors
+      activeIndicator: 'from-[#124E66] to-[#748D92]', // Deep blue gradient
+
+      // Pattern colors (for decorative elements)
+      pattern1: 'from-[#124E66] to-[#748D92]', // Blue gradient
+      pattern2: 'from-[#212A31] to-[#2E3944]', // Dark blue gradient
+      pattern3: 'from-[#748D92] to-[#124E66]', // Reversed blue gradient
+    }
+  }
+  const theme = themeConfig[currentTheme] || themeConfig.dark
+
+
 
   // Navigation items with nature-themed icons
   const navItems = [
@@ -91,20 +152,20 @@ const Navbar = () => {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={`navbar-container ${isLight ? 'navbar-container-light' : 'navbar-container-dark'}`}
+      className={`fixed w-full bottom-0 z-40 ${theme.navBorder}`}
     >
       {/* Background with subtle nature pattern */}
-      <div className={`navbar-background ${isLight ? 'navbar-background-light' : 'navbar-background-dark'}`}>
+      <div className={`absolute inset-0 bg-gradient-to-b ${theme.background} backdrop-blur-sm`}>
         {/* Subtle decorative pattern overlay */}
-        <div className="decorative-pattern">
-          <div className={`pattern-circle-1 ${isLight ? 'pattern-circle-1-light' : 'pattern-circle-1-dark'}`}></div>
-          <div className={`pattern-circle-2 ${isLight ? 'pattern-circle-2-light' : 'pattern-circle-2-dark'}`}></div>
-          <div className={`pattern-circle-3 ${isLight ? 'pattern-circle-3-light' : 'pattern-circle-3-dark'}`}></div>
+        <div className="absolute inset-0 opacity-5">
+          <div className={`absolute top-2 left-4 w-6 h-6 rounded-full bg-gradient-to-r ${theme.pattern1}`}></div>
+          <div className={`absolute top-4 right-8 w-4 h-4 rounded-full bg-gradient-to-r ${theme.pattern2}`}></div>
+          <div className={`absolute bottom-6 left-10 w-5 h-5 rounded-full bg-gradient-to-r ${theme.pattern3}`}></div>
         </div>
       </div>
 
       {/* Navigation Items */}
-      <div className="navigation-items">
+      <div className="relative flex items-center justify-evenly py-1 px-2">
         {navItems.map((item, index) => {
           const isActive = activeTab === item.path
 
@@ -114,37 +175,43 @@ const Navbar = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.05, type: "spring" }}
-              className="nav-item"
+              className="relative"
             >
               <Link
                 to={item.path}
-                className="nav-link"
+                className="flex flex-col items-center justify-center w-14"
                 onClick={() => setActiveTab(item.path)}
               >
                 {/* Active indicator background */}
                 {isActive && (
                   <motion.div
                     layoutId="activeNavIndicator"
-                    className={`active-indicator ${isLight ? 'active-indicator-light' : 'active-indicator-dark'}`}
+                    className={`absolute -top-4 w-16 h-1 bg-gradient-to-r ${theme.activeIndicator} rounded-b-full`}
                     initial={false}
                   />
                 )}
 
                 {/* Icon container with gradient background when active */}
-                <div className={`icon-container ${isActive
-                  ? (isLight ? 'icon-container-active-light' : 'icon-container-active-dark')
-                  : (isLight ? 'icon-container-inactive-light' : 'icon-container-inactive-dark')
-                  }`}>
-
+                <div className={`relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center mb-1 transition-all duration-300 ${isActive
+                  ? `bg-gradient-to-r ${theme.activeBg} shadow-lg scale-110 border ${theme.cardBorder}`
+                  : `bg-gradient-to-br ${theme.cardBg} backdrop-blur-sm border ${theme.cardBorder} shadow-md hover:scale-105 hover:border-opacity-40`
+                  }`} style={{
+                    borderColor: isActive
+                      ? 'inherit'
+                      : currentTheme === 'light'
+                        ? 'rgba(179, 200, 207, 0.3)'
+                        : 'rgba(116, 141, 146, 0.2)',
+                    hoverBorderColor: currentTheme === 'light'
+                      ? 'rgba(137, 168, 178, 0.4)'
+                      : 'rgba(116, 141, 146, 0.4)'
+                  }}>
                   {/* Glow effect for active items */}
                   {isActive && (
-                    <div className={`icon-glow ${isLight ? 'icon-glow-light' : 'icon-glow-dark'}`}></div>
+                    <div className={`absolute -inset-1 bg-gradient-to-r ${theme.activeBg} rounded-2xl blur-md opacity-20`}></div>
                   )}
 
                   {/* Icon */}
-                  <i className={`nav-icon ${isActive
-                    ? (isLight ? 'icon-active-light' : 'icon-active-dark')
-                    : (isLight ? 'icon-inactive-light' : 'icon-inactive-dark')
+                  <i className={`text-xl transition-all duration-300 ${isActive ? theme.activeIcon : theme.inactiveIcon
                     }`}>
                     {isActive ? item.activeIcon : item.icon}
                   </i>
@@ -152,9 +219,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Label */}
-                <span className={`nav-label ${isActive
-                  ? (isLight ? 'label-active-light' : 'label-active-dark')
-                  : (isLight ? 'label-inactive-light' : 'label-inactive-dark')
+                <span className={`font-['Source_Sans_Pro'] font-semibold text-xs transition-all duration-300 ${isActive ? theme.activeText : theme.inactiveText
                   }`}>
                   {item.label}
                 </span>
@@ -168,20 +233,31 @@ const Navbar = () => {
       {/* Floating action button for adding habits - positioned above navbar */}
       <Link
         to="/add-habit"
-        className="fab-container"
+        className="absolute -top-7 left-1/2 transform -translate-x-1/2 z-50"
       >
         <motion.div
           whileHover={{ scale: 1.15, rotate: 5 }}
           whileTap={{ scale: 0.9 }}
-          className="relative hover-scale"
+          className="relative"
         >
-          <div className={`fab-glow ${isLight ? 'fab-glow-light' : 'fab-glow-dark'}`}></div>
-          <div className={`fab-button ${isLight ? 'fab-button-light' : 'fab-button-dark'}`}>
-            <i className={`ri-add-large-line fab-icon ${isLight ? 'fab-icon-light' : 'fab-icon-dark'}`}></i>
+          <div className={`absolute -inset-4 bg-gradient-to-r ${theme.fabBg} rounded-full opacity-20 blur-md`}></div>
+          <div className={`relative w-16 h-16 rounded-full bg-gradient-to-r ${theme.fabBg} flex items-center justify-center shadow-xl border-4 ${theme.fabBorder}`}>
+            <i className={`ri-add-large-line text-2xl ${theme.fabIcon}`}></i>
             {/* Floating leaves animation */}
-            <div className="floating-leaf leaf-float">
-              <i className={`ri-leaf-fill leaf-icon ${isLight ? 'leaf-icon-light' : 'leaf-icon-dark'}`}></i>
-            </div>
+            <motion.div
+              animate={{
+                y: [0, -5, 0],
+                rotate: [0, 10, 0]
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2,
+                ease: "easeInOut"
+              }}
+              className="absolute -top-2 -right-2"
+            >
+              <i className={`ri-leaf-fill text-lg ${theme.fabIcon}`}></i>
+            </motion.div>
           </div>
         </motion.div>
       </Link>

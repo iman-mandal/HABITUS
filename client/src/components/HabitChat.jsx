@@ -8,22 +8,51 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Get theme from localStorage if not provided
-  const currentTheme = theme || localStorage.getItem('userTheme') || 'dark';
-  const isLight = currentTheme === 'light';
-
-  // Set CSS variables based on theme
-  useEffect(() => {
-    if (isLight) {
-      document.documentElement.style.setProperty('--textarea-focus-border', '#89A8B2');
-      document.documentElement.style.setProperty('--textarea-focus-ring', 'rgba(137, 168, 178, 0.5)');
-      document.documentElement.style.setProperty('--textarea-placeholder', 'rgba(90, 109, 119, 0.6)');
-    } else {
-      document.documentElement.style.setProperty('--textarea-focus-border', '#124E66');
-      document.documentElement.style.setProperty('--textarea-focus-ring', 'rgba(18, 78, 102, 0.5)');
-      document.documentElement.style.setProperty('--textarea-placeholder', 'rgba(116, 141, 146, 0.6)');
+  // Theme colors
+  const themeColors = {
+    light: {
+      modalBg: "bg-white",
+      headerGradient: "from-[#89A8B2] to-[#B3C8CF]",
+      messagesBg: "bg-gradient-to-b from-[#F1F0E8] to-[#E5E1DA]",
+      primaryText: "text-[#2E3944]",
+      secondaryText: "text-[#5A6D77]",
+      whiteText: "text-white",
+      userMessage: "bg-gradient-to-r from-[#89A8B2] to-[#5A6D74] text-white",
+      aiMessage: "bg-gradient-to-r from-white to-[#F1F0E8] text-[#2E3944] border border-[#B3C8CF]/30",
+      inputBg: "bg-white border-[#B3C8CF]/50",
+      inputFocus: "ring-[#89A8B2]/50",
+      inputPlaceholder: "text-[#5A6D77]/60",
+      sendBtn: "bg-gradient-to-r from-[#89A8B2] to-[#5A6D74] text-white",
+      sendBtnHover: "hover:from-[#5A6D74] hover:to-[#89A8B2]",
+      suggestionBtn: "bg-white border-[#B3C8CF]/50 text-[#2E3944] hover:bg-[#F1F0E8]",
+      loadingDot: "bg-[#5A6D74]",
+      loadingText: "text-[#5A6D77]",
+      closeBtn: "text-white/80 hover:text-white",
+      divider: "border-[#B3C8CF]/30",
+    },
+    dark: {
+      modalBg: "bg-[#2E3944]",
+      headerGradient: "from-[#124E66] to-[#1E3A52]",
+      messagesBg: "bg-gradient-to-b from-[#212A31] to-[#2E3944]",
+      primaryText: "text-[#D3D9D4]",
+      secondaryText: "text-[#748D92]",
+      whiteText: "text-white",
+      userMessage: "bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white",
+      aiMessage: "bg-gradient-to-r from-[#212A31] to-[#2E3944] text-[#D3D9D4] border border-[#748D92]/30",
+      inputBg: "bg-[#212A31] border-[#748D92]/30",
+      inputFocus: "ring-[#124E66]/50",
+      inputPlaceholder: "text-[#748D92]/60",
+      sendBtn: "bg-gradient-to-r from-[#124E66] to-[#1E3A52] text-white",
+      sendBtnHover: "hover:from-[#1E3A52] hover:to-[#124E66]",
+      suggestionBtn: "bg-[#2E3944] border-[#748D92]/30 text-[#D3D9D4] hover:bg-[#212A31]",
+      loadingDot: "bg-[#D3D9D4]",
+      loadingText: "text-[#748D92]",
+      closeBtn: "text-[#D3D9D4]/80 hover:text-white",
+      divider: "border-[#748D92]/30",
     }
-  }, [isLight]);
+  };
+
+  const colors = themeColors[theme];
 
   // Initial greeting
   useEffect(() => {
@@ -86,6 +115,14 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
     }
   };
 
+  // Suggested questions
+  const suggestedQuestions = [
+    "How can I build consistency?",
+    "Tips for morning routines?",
+    "How to track progress?",
+    "Best habit stacking methods?"
+  ];
+
   const clearChat = () => {
     setMessages([{
       role: "assistant",
@@ -94,36 +131,36 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
   };
 
   return (
-    <div className={`chat-overlay ${isLight ? 'chat-overlay-light' : 'chat-overlay-dark'}`}>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${theme === 'light' ? 'bg-black/30' : 'bg-black/70'} p-4 backdrop-blur-sm`}>
       {/* Chat Container */}
-      <div className={`chat-container ${isLight ? 'chat-container-light' : 'chat-container-dark'}`}>
+      <div className={`relative w-full max-w-md h-[600px] ${colors.modalBg} rounded-3xl shadow-2xl flex flex-col overflow-hidden border ${theme === 'light' ? 'border-[#B3C8CF]/20' : 'border-[#748D92]/20'}`}>
 
         {/* Header */}
-        <div className={`chat-header ${isLight ? 'chat-header-light' : 'chat-header-dark'}`}>
-          <div className="header-content">
-            <div className="header-left">
-              <div className={`header-avatar ${isLight ? 'header-avatar-light' : 'header-avatar-dark'}`}>
-                <span className="header-avatar-text">🤖</span>
+        <div className={`bg-gradient-to-r ${colors.headerGradient} p-5`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 ${theme === 'light' ? 'bg-white/30' : 'bg-white/20'} rounded-full flex items-center justify-center backdrop-blur-sm`}>
+                <span className="text-2xl">🤖</span>
               </div>
               <div>
-                <h2 className={`header-title ${isLight ? 'header-title-light' : 'header-title-dark'}`}>
+                <h2 className={`font-['Merriweather'] font-bold ${colors.whiteText} text-xl`}>
                   Habit AI Coach
                 </h2>
-                <p className={`header-subtitle ${isLight ? 'header-subtitle-light' : 'header-subtitle-dark'}`}>
+                <p className={`font-['Source_Sans_Pro'] ${colors.whiteText}/80 text-sm`}>
                   Your personal habit assistant
                 </p>
               </div>
             </div>
-            <div className="header-right">
+            <div className="flex items-center gap-2">
               <button
                 onClick={clearChat}
-                className={`clear-button ${isLight ? 'clear-button-light' : 'clear-button-dark'}`}
+                className={`px-3 py-1.5 ${theme === 'light' ? 'bg-white/20' : 'bg-white/10'} ${colors.whiteText} rounded-lg text-xs font-medium hover:bg-white/30 transition`}
               >
                 Clear
               </button>
               <button
                 onClick={onClose}
-                className={`close-button ${isLight ? 'close-button-light' : 'close-button-dark'}`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center ${colors.closeBtn} hover:bg-white/10 transition`}
               >
                 <span><i className="ri-close-fill text-2xl"></i></span>
               </button>
@@ -132,27 +169,18 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
         </div>
 
         {/* Messages Area */}
-        <div className={`messages-area ${isLight ? 'messages-area-light' : 'messages-area-dark'}`}>
+        <div className={`flex-1 p-5 overflow-y-auto ${colors.messagesBg}`}>
           {messages.map((msg, index) => (
-            <div 
-              key={index} 
-              className={`message-container ${msg.role === "user" ? "message-container-user" : "message-container-ai"}`}
-            >
-              <div 
-                className={`message-bubble ${
-                  msg.role === "user" 
-                    ? (isLight ? "message-bubble-user-light" : "message-bubble-user-dark")
-                    : (isLight ? "message-bubble-ai-light" : "message-bubble-ai-dark")
-                }`}
-              >
-                <div className="message-content">
+            <div key={index} className={`mb-5 ${msg.role === "user" ? "text-right" : "text-left"}`}>
+              <div className={`inline-block max-w-[85%] rounded-3xl px-5 py-4 shadow-md ${msg.role === "user" ? `${colors.userMessage} rounded-br-none` : `${colors.aiMessage} rounded-bl-none`}`}>
+                <div className="whitespace-pre-wrap">
                   {msg.role === "assistant" ? (
                     <ReactMarkdown
                       components={{
-                        p: ({ node, ...props }) => <p className="markdown-paragraph" {...props} />,
-                        strong: ({ node, ...props }) => <strong className="markdown-strong" {...props} />,
-                        ul: ({ node, ...props }) => <ul className="markdown-list" {...props} />,
-                        li: ({ node, ...props }) => <li className="markdown-list-item" {...props} />,
+                        p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+                        strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+                        ul: ({ node, ...props }) => <ul className="list-disc ml-5 mb-2" {...props} />,
+                        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
                       }}
                     >
                       {msg.content}
@@ -162,7 +190,7 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
                   )}
                 </div>
               </div>
-              <div className={`message-sender ${isLight ? 'message-sender-light' : 'message-sender-dark'}`}>
+              <div className={`font-['Source_Sans_Pro'] text-xs ${colors.secondaryText} mt-2`}>
                 {msg.role === "user" ? "You" : "AI Coach"}
               </div>
             </div>
@@ -170,15 +198,15 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
 
           {/* Loading indicator */}
           {loading && (
-            <div className="loading-container">
-              <div className={`loading-bubble ${isLight ? 'loading-bubble-light' : 'loading-bubble-dark'}`}>
-                <div className="loading-content">
-                  <div className="loading-dots">
-                    <div className={`loading-dot ${isLight ? 'loading-dot-light' : 'loading-dot-dark'}`} />
-                    <div className={`loading-dot ${isLight ? 'loading-dot-light' : 'loading-dot-dark'}`} />
-                    <div className={`loading-dot ${isLight ? 'loading-dot-light' : 'loading-dot-dark'}`} />
+            <div className="text-left mb-5">
+              <div className={`inline-block ${colors.aiMessage} rounded-3xl rounded-bl-none px-5 py-4 shadow-md`}>
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <div className={`w-2.5 h-2.5 rounded-full ${colors.loadingDot} animate-bounce`} />
+                    <div className={`w-2.5 h-2.5 rounded-full ${colors.loadingDot} animate-bounce delay-150`} />
+                    <div className={`w-2.5 h-2.5 rounded-full ${colors.loadingDot} animate-bounce delay-300`} />
                   </div>
-                  <span className={`loading-text ${isLight ? 'loading-text-light' : 'loading-text-dark'}`}>
+                  <span className={`font-['Source_Sans_Pro'] text-sm ${colors.loadingText}`}>
                     Crafting response...
                   </span>
                 </div>
@@ -186,35 +214,35 @@ const HabitChat = ({ onClose, theme = 'dark' }) => {
             </div>
           )}
 
-          <div ref={messagesEndRef} className="message-end-ref" />
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
-        <div className={`input-area ${isLight ? 'input-area-light' : 'input-area-dark'}`}>
-          <div className="input-wrapper">
+        <div className={`p-5 border-t ${colors.divider}`}>
+          <div className="flex gap-3">
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Ask about your habits, motivation, or tracking..."
-              className={`chat-textarea ${isLight ? 'chat-textarea-light' : 'chat-textarea-dark'}`}
+              className={`flex-1 px-4 ${colors.primaryText} py-3.5 ${colors.inputBg} rounded-xl resize-none focus:outline-none focus:ring-2 ${colors.inputFocus} font-['Source_Sans_Pro'] text-sm`}
               rows="2"
               disabled={loading}
             />
             <button
               onClick={sendMessage}
               disabled={!input.trim() || loading}
-              className={`send-button ${isLight ? 'send-button-light' : 'send-button-dark'}`}
+              className={`self-end px-5 py-3.5 ${colors.sendBtn} ${colors.sendBtnHover} rounded-xl font-['Source_Sans_Pro'] font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95`}
             >
               {loading ? (
-                <div className={`spinner-small ${isLight ? 'spinner-light' : 'spinner-dark'}`} />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <span>Send</span>
               )}
             </button>
           </div>
-          <p className={`instructions ${isLight ? 'instructions-light' : 'instructions-dark'}`}>
-            Press <span className="instructions-key">Enter</span> to send • <span className="instructions-key">Shift+Enter</span> for new line
+          <p className={`font-['Source_Sans_Pro'] ${colors.secondaryText} text-xs mt-3 text-center`}>
+            Press <span className="font-bold">Enter</span> to send • <span className="font-bold">Shift+Enter</span> for new line
           </p>
         </div>
       </div>

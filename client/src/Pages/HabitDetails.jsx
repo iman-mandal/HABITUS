@@ -15,20 +15,90 @@ const HabitDetails = () => {
 
     // Get current theme
     const currentTheme = localStorage.getItem('userTheme') || user?.theme || 'dark'
-    const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme'
+
+    // Theme configuration
+    const themeConfig = {
+        light: {
+            // Backgrounds
+            bgGradient: 'bg-gradient-to-br from-[#F1F0E8] to-[#E5E1DA]',
+            cardBg: 'bg-gradient-to-br from-white to-[#F1F0E8]',
+            innerCardBg: 'bg-gradient-to-br from-[#F1F0E8] to-[#E5E1DA]',
+
+            // Text colors
+            primaryText: 'text-[#2E3944]',
+            secondaryText: 'text-[#5A6D74]',
+            accentText: 'text-[#89A8B2]',
+
+            // Borders
+            cardBorder: 'border-[#B3C8CF]/40',
+            innerBorder: 'border-[#B3C8CF]/30',
+
+            // Gradients
+            headerGradient: 'from-[#89A8B2] to-[#B3C8CF]',
+            iconGradient: 'from-[#89A8B2] to-[#B3C8CF]',
+            progressGradient: 'from-[#89A8B2] to-[#B3C8CF]',
+            warningGradient: 'from-[#FF9A8B] to-[#FF6B6B]',
+
+            // Backgrounds for elements
+            statsBg: 'bg-[#F1F0E8]',
+            detailsBg: 'bg-[#F1F0E8]',
+
+            // Modal
+            modalBg: 'bg-gradient-to-br from-white to-[#F1F0E8]',
+            cancelBtn: 'bg-[#F1F0E8] text-[#5A6D74] border-[#B3C8CF]/40',
+
+            // Progress bar
+            progressBg: 'bg-[#E5E1DA]',
+        },
+        dark: {
+            // Backgrounds
+            bgGradient: 'bg-gradient-to-br from-[#212A31] to-[#2E3944]',
+            cardBg: 'bg-gradient-to-br from-[#2E3944] to-[#212A31]',
+            innerCardBg: 'bg-gradient-to-br from-[#212A31] to-[#2E3944]',
+
+            // Text colors
+            primaryText: 'text-[#D3D9D4]',
+            secondaryText: 'text-[#748D92]',
+            accentText: 'text-[#748D92]',
+
+            // Borders
+            cardBorder: 'border-[#748D92]/30',
+            innerBorder: 'border-[#748D92]/20',
+
+            // Gradients
+            headerGradient: 'from-[#124E66] to-[#748D92]',
+            iconGradient: 'from-[#124E66] to-[#748D92]',
+            progressGradient: 'from-[#124E66] to-[#748D92]',
+            warningGradient: 'from-[#8B0000] to-[#B22222]',
+
+            // Backgrounds for elements
+            statsBg: 'bg-[#212A31]',
+            detailsBg: 'bg-[#212A31]',
+
+            // Modal
+            modalBg: 'bg-gradient-to-br from-[#2E3944] to-[#212A31]',
+            cancelBtn: 'bg-[#212A31] text-[#748D92] border-[#748D92]/30',
+
+            // Progress bar
+            progressBg: 'bg-[#212A31]',
+        }
+    }
+
+    // Get the theme styles based on currentTheme
+    const theme = themeConfig[currentTheme] || themeConfig.dark
 
     const habit = habits.find(h => h._id === id)
 
     if (!habit) {
         return (
-            <div className={`habit-details-not-found ${themeClass}`}>
-                <div className={`habit-details-not-found-icon ${themeClass}`}>
-                    <i className="ri-search-eye-line habit-details-text-xl"></i>
+            <div className={`h-screen flex flex-col items-center justify-center ${theme.bgGradient}`}>
+                <div className={`w-24 h-24 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center mb-4`}>
+                    <i className={`ri-search-eye-line text-3xl ${theme.primaryText}`}></i>
                 </div>
-                <p className={`habit-details-not-found-text ${themeClass}`}>Habit not found</p>
+                <p className={`${theme.primaryText} text-lg font-['Merriweather']`}>Habit not found</p>
                 <button
                     onClick={() => navigate(-1)}
-                    className={`habit-details-not-found-btn ${themeClass}`}
+                    className={`mt-4 px-6 py-2 bg-gradient-to-r ${theme.iconGradient} ${theme.primaryText} rounded-lg hover:opacity-90 transition`}
                 >
                     Go Back
                 </button>
@@ -46,7 +116,7 @@ const HabitDetails = () => {
                     },
                 }
             );
-            if(response.status===200){
+            if (response.status === 200) {
                 await fetchHabits();
                 console.log('Habit deleted successfully:', response.data);
             }
@@ -82,120 +152,110 @@ const HabitDetails = () => {
 
     const completionPercentage = calculateCompletion();
 
-    // Capitalize first letter
-    const capitalizeFirst = (str) => {
-        if (!str) return '';
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    };
-
-    // Format date for display
-    const formatDate = (date) => {
-        const dateObj = new Date(Number(date));
-        return dateObj.toLocaleDateString('en-IN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+    // Helper function to get border color for divider
+    const getDividerColor = () => {
+        if (currentTheme === 'light') return 'via-[#B3C8CF]/30';
+        return 'via-[#748D92]/30';
     };
 
     return (
-        <div className={`habit-details-container ${themeClass}`}>
+        <div className={`flex flex-col h-screen ${theme.bgGradient}`}>
 
             {/* Header (Fixed) */}
-            <div className={`habit-details-header ${themeClass}`}>
+            <div className={`fixed top-0 left-0 w-full bg-gradient-to-r ${theme.headerGradient} z-50 flex items-center justify-center py-4 shadow-lg`}>
                 <button
                     onClick={() => navigate(-1)}
-                    className={`habit-details-back-btn ${themeClass}`}
+                    className={`absolute left-5 w-10 h-10 rounded-full ${currentTheme === 'light' ? 'bg-white/20' : 'bg-white/10'} backdrop-blur-sm flex items-center justify-center ${currentTheme === 'light' ? 'hover:bg-white/30' : 'hover:bg-white/20'} transition`}
                 >
-                    <i className="ri-arrow-left-line"></i>
+                    <i className={`ri-arrow-left-line text-[20px] ${theme.primaryText}`}></i>
                 </button>
-                <h2 className={`habit-details-header-title ${themeClass}`}>
+                <h2 className={`text-[22px] font-bold ${theme.primaryText} font-['Merriweather'] tracking-wide`}>
                     Habit Details
                 </h2>
             </div>
 
             {/* Scrollable Content */}
-            <div className="habit-details-content">
+            <div className="flex-1 mt-[70px] mb-[80px] overflow-y-auto px-6">
 
                 {/* Main Habit Card */}
-                <div className={`habit-details-main-card ${themeClass}`}>
-                    <div className="habit-details-card-header">
-                        <div className="habit-details-flex habit-details-items-center habit-details-gap-4">
-                            <div className={`habit-details-title-icon ${themeClass}`}>
-                                <i className={`${getCategoryIcon(habit.title)}`}></i>
+                <div className={`${theme.cardBg} rounded-2xl p-6 border ${theme.cardBorder} shadow-xl mb-6`}>
+                    <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-center gap-4">
+                            <div className={`w-16 h-16 rounded-xl bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center shadow-lg`}>
+                                <i className={`${getCategoryIcon(habit.title)} text-2xl ${theme.primaryText}`}></i>
                             </div>
                             <div>
-                                <h2 className={`habit-details-title ${themeClass}`}>
+                                <h2 className={`text-[26px] font-['Merriweather'] font-bold ${theme.primaryText}`}>
                                     {habit.title}
                                 </h2>
-                                <p className={`habit-details-description ${themeClass} habit-details-mt-1`}>
+                                <p className={`${theme.secondaryText} mt-1 font-['Source_Sans_Pro']`}>
                                     {habit.description || "No description provided"}
                                 </p>
                             </div>
                         </div>
 
                         {/* Completion Badge */}
-                        <div className="habit-details-flex habit-details-flex-col habit-details-items-center">
-                            <div className={`habit-details-completion-badge ${themeClass}`}>
-                                <span className={`habit-details-completion-percent ${themeClass}`}>
+                        <div className="flex flex-col items-end">
+                            <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                <span className={`font-['Montserrat'] font-bold ${theme.primaryText} text-xl`}>
                                     {completionPercentage}%
                                 </span>
                             </div>
-                            <span className={`habit-details-completion-label ${themeClass}`}>Completion</span>
+                            <span className={`${theme.secondaryText} text-xs mt-2`}>Completion</span>
                         </div>
                     </div>
 
                     {/* Divider */}
-                    <div className={`habit-details-divider ${themeClass}`}></div>
+                    <div className={`h-px bg-gradient-to-r from-transparent ${getDividerColor()} to-transparent my-6`}></div>
 
                     {/* Stats Grid */}
-                    <div className="habit-details-stats-grid">
-                        <div className={`habit-details-stat-card ${themeClass}`}>
-                            <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                <div className={`habit-details-stat-icon ${themeClass}`}>
-                                    <i className="ri-fire-line"></i>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className={`${theme.statsBg} rounded-xl p-4 border ${theme.innerBorder}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                    <i className={`ri-fire-line text-lg ${theme.primaryText}`}></i>
                                 </div>
                                 <div>
-                                    <p className={`habit-details-stat-label ${themeClass}`}>Current Streak</p>
-                                    <p className={`habit-details-stat-value ${themeClass}`}>{habit.streak} days</p>
+                                    <p className={`${theme.secondaryText} text-xs`}>Current Streak</p>
+                                    <p className={`font-['Montserrat'] font-bold ${theme.primaryText} text-xl`}>{habit.streak} days</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={`habit-details-stat-card ${themeClass}`}>
-                            <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                <div className={`habit-details-stat-icon ${themeClass}`}>
-                                    <i className="ri-trophy-line"></i>
+                        <div className={`${theme.statsBg} rounded-xl p-4 border ${theme.innerBorder}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                    <i className={`ri-trophy-line text-lg ${theme.primaryText}`}></i>
                                 </div>
                                 <div>
-                                    <p className={`habit-details-stat-label ${themeClass}`}>Longest Streak</p>
-                                    <p className={`habit-details-stat-value ${themeClass}`}>{habit.longestStreak} days</p>
+                                    <p className={`${theme.secondaryText} text-xs`}>Longest Streak</p>
+                                    <p className={`font-['Montserrat'] font-bold ${theme.primaryText} text-xl`}>{habit.longestStreak} days</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={`habit-details-stat-card ${themeClass}`}>
-                            <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                <div className={`habit-details-stat-icon ${themeClass}`}>
-                                    <i className="ri-repeat-line"></i>
+                        <div className={`${theme.statsBg} rounded-xl p-4 border ${theme.innerBorder}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                    <i className={`ri-repeat-line text-lg ${theme.primaryText}`}></i>
                                 </div>
                                 <div>
-                                    <p className={`habit-details-stat-label ${themeClass}`}>Frequency</p>
-                                    <p className={`habit-details-stat-value ${themeClass}`}>
-                                        {capitalizeFirst(habit.frequency)}
+                                    <p className={`${theme.secondaryText} text-xs`}>Frequency</p>
+                                    <p className={`font-['Montserrat'] font-bold ${theme.primaryText} text-lg`}>
+                                        {habit.frequency.charAt(0).toUpperCase() + habit.frequency?.slice(1)}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className={`habit-details-stat-card ${themeClass}`}>
-                            <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                <div className={`habit-details-stat-icon ${themeClass}`}>
-                                    <i className="ri-flag-line"></i>
+                        <div className={`${theme.statsBg} rounded-xl p-4 border ${theme.innerBorder}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                    <i className={`ri-flag-line text-lg ${theme.primaryText}`}></i>
                                 </div>
                                 <div>
-                                    <p className={`habit-details-stat-label ${themeClass}`}>Weekly Target</p>
-                                    <p className={`habit-details-stat-value ${themeClass}`}>
+                                    <p className={`${theme.secondaryText} text-xs`}>Weekly Target</p>
+                                    <p className={`font-['Montserrat'] font-bold ${theme.primaryText} text-xl`}>
                                         {habit.targetPerWeek}/week
                                     </p>
                                 </div>
@@ -205,33 +265,33 @@ const HabitDetails = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="habit-details-action-buttons">
+                <div className="flex gap-4 mb-8">
                     <button
                         onClick={() => navigate(`/habit/update/${habit._id}`)}
-                        className={`habit-details-action-btn habit-details-edit-btn ${themeClass}`}
+                        className={`flex-1 flex items-center justify-center gap-3 bg-gradient-to-r ${theme.iconGradient} ${theme.primaryText} py-4 rounded-xl hover:opacity-90 transition active:scale-95 font-['Source_Sans_Pro'] font-semibold`}
                     >
-                        <i className="ri-edit-2-line"></i>
+                        <i className="ri-edit-2-line text-lg"></i>
                         Edit Habit
                     </button>
 
                     <button
                         onClick={() => setDeleteConfirmTost(true)}
-                        className={`habit-details-action-btn habit-details-delete-btn ${themeClass}`}
+                        className={`flex-1 flex items-center justify-center gap-3 bg-gradient-to-r ${theme.warningGradient} ${theme.primaryText} py-4 rounded-xl hover:opacity-90 transition active:scale-95 font-['Source_Sans_Pro'] font-semibold`}
                     >
-                        <i className="ri-delete-bin-5-line"></i>
+                        <i className="ri-delete-bin-5-line text-lg"></i>
                         Delete Habit
                     </button>
                 </div>
 
                 {/* Details Grid */}
-                <div className="habit-details-details-grid">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Calendar Section */}
-                    <div className={`habit-details-calendar-section ${themeClass}`}>
-                        <div className="habit-details-flex habit-details-items-center habit-details-gap-2 habit-details-mb-6">
-                            <div className={`habit-details-section-icon ${themeClass}`}>
-                                <i className="ri-calendar-2-line"></i>
+                    <div className={`${theme.cardBg} rounded-2xl p-6 mb-5 border ${theme.cardBorder} shadow-xl`}>
+                        <div className="flex items-center gap-2 mb-6">
+                            <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                <i className={`ri-calendar-2-line text-lg ${theme.primaryText}`}></i>
                             </div>
-                            <h3 className={`habit-details-section-title ${themeClass}`}>
+                            <h3 className={`font-['Merriweather'] font-bold ${theme.primaryText} text-lg`}>
                                 Habit Calendar
                             </h3>
                         </div>
@@ -239,69 +299,69 @@ const HabitDetails = () => {
                     </div>
 
                     {/* Additional Details */}
-                    <div className={`habit-details-additional-section ${themeClass}`}>
-                        <div className="habit-details-flex habit-details-items-center habit-details-gap-3 habit-details-mb-6">
-                            <div className={`habit-details-section-icon ${themeClass}`}>
-                                <i className="ri-information-line"></i>
+                    <div className={`${theme.cardBg} rounded-2xl p-4 border h-[550px] ${theme.cardBorder} shadow-xl`}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${theme.iconGradient} flex items-center justify-center`}>
+                                <i className={`ri-information-line text-lg ${theme.primaryText}`}></i>
                             </div>
-                            <h3 className={`habit-details-section-title ${themeClass}`}>
+                            <h3 className={`font-['Merriweather'] font-bold ${theme.primaryText} text-lg`}>
                                 Additional Details
                             </h3>
                         </div>
 
-                        <div className="habit-details-space-y-4">
-                            <div className={`habit-details-detail-item ${themeClass}`}>
-                                <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                    <i className={`ri-calendar-event-line habit-details-detail-icon ${themeClass}`}></i>
-                                    <span className={`habit-details-detail-label ${themeClass}`}>Start Date</span>
+                        <div className="space-y-4">
+                            <div className={`flex items-center justify-between p-4 rounded-xl ${theme.detailsBg} border ${theme.innerBorder}`}>
+                                <div className="flex items-center gap-3">
+                                    <i className={`ri-calendar-event-line ${theme.secondaryText}`}></i>
+                                    <span className={`${theme.primaryText} font-['Source_Sans_Pro']`}>Start Date</span>
                                 </div>
-                                <span className={`habit-details-detail-value ${themeClass}`}>
-                                    {formatDate(habit.startDate)}
+                                <span className={`${theme.primaryText} font-['Montserrat'] font-semibold`}>
+                                    {new Date(Number(habit.startDate)).toLocaleDateString('en-IN')}
                                 </span>
                             </div>
 
-                            <div className={`habit-details-detail-item ${themeClass}`}>
-                                <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                    <i className={`ri-history-line habit-details-detail-icon ${themeClass}`}></i>
-                                    <span className={`habit-details-detail-label ${themeClass}`}>Total Days</span>
+                            <div className={`flex items-center justify-between p-4 rounded-xl ${theme.detailsBg} border ${theme.innerBorder}`}>
+                                <div className="flex items-center gap-3">
+                                    <i className={`ri-history-line ${theme.secondaryText}`}></i>
+                                    <span className={`${theme.primaryText} font-['Source_Sans_Pro']`}>Total Days</span>
                                 </div>
-                                <span className={`habit-details-detail-value ${themeClass}`}>
+                                <span className={`${theme.primaryText} font-['Montserrat'] font-semibold`}>
                                     {habit.history?.length || 0}
                                 </span>
                             </div>
 
-                            <div className={`habit-details-detail-item ${themeClass}`}>
-                                <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                    <i className={`ri-check-double-line habit-details-detail-icon ${themeClass}`}></i>
-                                    <span className={`habit-details-detail-label ${themeClass}`}>Completed Days</span>
+                            <div className={`flex items-center justify-between p-4 rounded-xl ${theme.detailsBg} border ${theme.innerBorder}`}>
+                                <div className="flex items-center gap-3">
+                                    <i className={`ri-check-double-line ${theme.secondaryText}`}></i>
+                                    <span className={`${theme.primaryText} font-['Source_Sans_Pro']`}>Completed Days</span>
                                 </div>
-                                <span className={`habit-details-detail-value ${themeClass}`}>
+                                <span className={`${theme.primaryText} font-['Montserrat'] font-semibold`}>
                                     {habit.history?.filter(h => h.completed).length || 0}
                                 </span>
                             </div>
 
-                            <div className={`habit-details-detail-item ${themeClass}`}>
-                                <div className="habit-details-flex habit-details-items-center habit-details-gap-3">
-                                    <i className={`ri-trending-up-line habit-details-detail-icon ${themeClass}`}></i>
-                                    <span className={`habit-details-detail-label ${themeClass}`}>Consistency Rate</span>
+                            <div className={`flex items-center justify-between p-4 rounded-xl ${theme.detailsBg} border ${theme.innerBorder}`}>
+                                <div className="flex items-center gap-3">
+                                    <i className={`ri-trending-up-line ${theme.secondaryText}`}></i>
+                                    <span className={`${theme.primaryText} font-['Source_Sans_Pro']`}>Consistency Rate</span>
                                 </div>
-                                <span className={`habit-details-detail-value ${themeClass}`}>
+                                <span className={`${theme.primaryText} font-['Montserrat'] font-semibold`}>
                                     {completionPercentage}%
                                 </span>
                             </div>
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="habit-details-progress-container habit-details-mt-8">
-                            <div className="habit-details-progress-header">
-                                <span className={`habit-details-progress-label ${themeClass}`}>Overall Progress</span>
-                                <span className={`habit-details-detail-value ${themeClass}`}>
+                        <div className="mt-8">
+                            <div className="flex justify-between mb-2">
+                                <span className={`${theme.primaryText} text-sm`}>Overall Progress</span>
+                                <span className={`${theme.primaryText} font-['Montserrat'] font-semibold`}>
                                     {completionPercentage}%
                                 </span>
                             </div>
-                            <div className={`habit-details-progress-track ${themeClass}`}>
+                            <div className={`h-3 ${theme.progressBg} rounded-full overflow-hidden border ${theme.innerBorder}`}>
                                 <div
-                                    className={`habit-details-progress-fill ${themeClass}`}
+                                    className={`h-full bg-gradient-to-r ${theme.progressGradient} rounded-full transition-all duration-500`}
                                     style={{ width: `${completionPercentage}%` }}
                                 />
                             </div>
@@ -312,25 +372,25 @@ const HabitDetails = () => {
 
             {/* Delete Confirmation Modal */}
             {deleteConfirmTost && (
-                <div className="habit-details-modal-overlay">
-                    <div className={`habit-details-modal ${themeClass}`}>
-                        <div className="habit-details-modal-content">
-                            <div className={`habit-details-modal-icon ${themeClass}`}>
-                                <i className="ri-delete-bin-5-line"></i>
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
+                    <div className={`${theme.modalBg} rounded-2xl w-[90%] max-w-md p-8 border ${theme.cardBorder} shadow-2xl`}>
+                        <div className="flex flex-col items-center text-center">
+                            <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${theme.warningGradient} flex items-center justify-center mb-6`}>
+                                <i className={`ri-delete-bin-5-line text-[30px] ${theme.primaryText}`}></i>
                             </div>
 
-                            <h3 className={`habit-details-modal-title ${themeClass}`}>
+                            <h3 className={`font-['Merriweather'] font-bold ${theme.primaryText} text-2xl mb-3`}>
                                 Delete Habit
                             </h3>
 
-                            <p className={`habit-details-modal-text ${themeClass} habit-details-leading-relaxed`}>
+                            <p className={`${theme.secondaryText} mb-8 font-['Source_Sans_Pro'] leading-relaxed`}>
                                 Are you sure you want to delete "{habit.title}"? This action cannot be undone and all progress will be lost.
                             </p>
 
-                            <div className="habit-details-modal-buttons">
+                            <div className="flex gap-4 w-full">
                                 <button
                                     onClick={() => setDeleteConfirmTost(false)}
-                                    className={`habit-details-modal-btn habit-details-modal-cancel ${themeClass}`}
+                                    className={`flex-1 py-3 ${theme.cancelBtn} rounded-xl hover:opacity-90 transition font-['Source_Sans_Pro'] font-semibold`}
                                 >
                                     Cancel
                                 </button>
@@ -341,7 +401,7 @@ const HabitDetails = () => {
                                         deleteHabit()
                                         navigate(-1)
                                     }}
-                                    className={`habit-details-modal-btn habit-details-modal-delete ${themeClass}`}
+                                    className={`flex-1 py-3 bg-gradient-to-r ${theme.warningGradient} ${theme.primaryText} rounded-xl hover:opacity-90 transition font-['Source_Sans_Pro'] font-semibold`}
                                 >
                                     Delete
                                 </button>
@@ -352,7 +412,7 @@ const HabitDetails = () => {
             )}
 
             {/* Bottom Navbar */}
-            <div className="habit-details-navbar">
+            <div className="fixed bottom-0 w-full">
                 <Navbar />
             </div>
         </div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import '../global.css'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
@@ -20,21 +19,72 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-    // Get theme from localStorage or user
-    const theme = localStorage.getItem('userTheme') || user?.theme || 'dark'
-
-    // Set CSS variables based on theme
-    useEffect(() => {
-        if (theme === 'dark') {
-            document.documentElement.style.setProperty('--input-focus-border', '#124E66')
-            document.documentElement.style.setProperty('--input-focus-ring', 'rgba(18, 78, 102, 0.5)')
-            document.documentElement.style.setProperty('--placeholder-color', 'rgba(116, 141, 146, 0.6)')
-        } else {
-            document.documentElement.style.setProperty('--input-focus-border', '#89A8B2')
-            document.documentElement.style.setProperty('--input-focus-ring', 'rgba(137, 168, 178, 0.3)')
-            document.documentElement.style.setProperty('--placeholder-color', 'rgba(137, 168, 178, 0.6)')
+    // Theme colors
+    const themeColors = {
+        light: {
+            containerBg: "bg-[#F1F0E8]/90",
+            containerBorder: "border-[#B3C8CF]/20",
+            cardBg: "from-[#E5E1DA]/50 to-[#F1F0E8]/50",
+            cardBorder: "border-[#B3C8CF]/20",
+            textPrimary: "text-[#2E3944]",
+            textSecondary: "text-[#89A8B2]",
+            inputBg: "bg-white",
+            inputBorder: "border-[#B3C8CF]/30",
+            inputFocusBorder: "border-[#89A8B2]",
+            inputFocusRing: "ring-[#89A8B2]/30",
+            placeholder: "placeholder:text-[#89A8B2]/60",
+            buttonBg: "from-[#89A8B2] to-[#B3C8CF]",
+            buttonText: "text-white",
+            buttonDisabled: "from-[#F1F0E8] to-[#E5E1DA]",
+            buttonDisabledText: "text-[#89A8B2]",
+            successBg: "from-[#B3C8CF]/10 to-[#89A8B2]/10",
+            successBorder: "border-[#B3C8CF]/30",
+            successText: "text-[#2E3944]",
+            errorBg: "from-[#FFB6B6]/10 to-[#FF6B6B]/10",
+            errorBorder: "border-[#FFB6B6]/30",
+            errorText: "text-[#FF6B6B]",
+            iconBg: "from-[#89A8B2] to-[#B3C8CF]",
+            iconText: "text-white",
+            iconBgAlt: "from-[#B3C8CF] to-[#89A8B2]",
+            iconTextAlt: "text-[#2E3944]",
+            iconHover: "hover:scale-105",
+            requirementMet: "text-[#89A8B2]",
+            requirementUnmet: "text-[#89A8B2]/30"
+        },
+        dark: {
+            containerBg: "bg-[#2E3944]/90",
+            containerBorder: "border-[#748D92]/20",
+            cardBg: "from-[#212A31]/50 to-[#2E3944]/50",
+            cardBorder: "border-[#748D92]/20",
+            textPrimary: "text-[#D3D9D4]",
+            textSecondary: "text-[#748D92]",
+            inputBg: "bg-[#212A31]",
+            inputBorder: "border-[#748D92]/30",
+            inputFocusBorder: "border-[#124E66]",
+            inputFocusRing: "ring-[#124E66]/50",
+            placeholder: "placeholder:text-[#748D92]/60",
+            buttonBg: "from-[#124E66] to-[#212A31]",
+            buttonText: "text-[#D3D9D4]",
+            buttonDisabled: "from-[#2E3944] to-[#212A31]",
+            buttonDisabledText: "text-[#748D92]",
+            successBg: "from-[#748D92]/10 to-[#124E66]/10",
+            successBorder: "border-[#748D92]/30",
+            successText: "text-[#D3D9D4]",
+            errorBg: "from-[#FF6B6B]/10 to-[#E74C3C]/10",
+            errorBorder: "border-[#FF6B6B]/30",
+            errorText: "text-[#FF6B6B]",
+            iconBg: "from-[#124E66] to-[#212A31]",
+            iconText: "text-[#D3D9D4]",
+            iconBgAlt: "from-[#748D92] to-[#124E66]",
+            iconTextAlt: "text-[#D3D9D4]",
+            iconHover: "hover:scale-105",
+            requirementMet: "text-[#748D92]",
+            requirementUnmet: "text-[#748D92]/50"
         }
-    }, [theme])
+    }
+
+    let theme = localStorage.getItem('userTheme') || user.theme;
+    const colors = themeColors[theme]
 
     useEffect(() => {
         if (toast.show) {
@@ -128,7 +178,7 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
     }
 
     return (
-        <div className={`edit-profile-container ${theme === 'dark' ? 'edit-profile-dark' : 'edit-profile-light'}`}>
+        <div className={`${colors.containerBg} backdrop-blur-sm flex flex-col rounded-xl border ${colors.containerBorder}`}>
 
             {/* Toast Notification */}
             <AnimatePresence>
@@ -137,51 +187,50 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
-                        className={`toast-notification ${toast.type === 'success'
-                            ? `${theme === 'dark' ? 'toast-success-dark' : 'toast-success-light'}`
-                            : `${theme === 'dark' ? 'toast-error-dark' : 'toast-error-light'}`
+                        className={`fixed bottom-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl z-50 shadow-lg backdrop-blur-sm ${toast.type === 'success'
+                            ? `bg-gradient-to-r ${colors.successBg} border ${colors.successBorder}`
+                            : `bg-gradient-to-r ${colors.errorBg} border ${colors.errorBorder}`
                             }`}
                     >
-                        <div className={`toast-icon ${toast.type === 'success'
-                            ? `${theme === 'dark' ? 'toast-icon-success-dark' : 'toast-icon-success-light'}`
-                            : `${theme === 'dark' ? 'toast-icon-error-dark' : 'toast-icon-error-light'}`
-                            }`}>
-                            <i className={`toast-icon-text ri-${toast.type === 'success' ? 'check' : 'close'}-line ${theme === 'light' && toast.type === 'success' ? 'text-[#2E3944]' : 'text-white'}`}></i>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === 'success'
+                                ? `${colors.iconBgAlt}`
+                                : theme === 'light' ? 'bg-gradient-to-r from-[#FFB6B6] to-[#FF6B6B]' : 'bg-gradient-to-r from-[#FF6B6B] to-[#E74C3C]'
+                                }`}>
+                                <i className={`ri-${toast.type === 'success' ? 'check' : 'close'}-line ${toast.type === 'success' ? (theme === 'light' ? 'text-[#2E3944]' : 'text-white') : 'text-white'} text-sm`}></i>
+                            </div>
+                            <span className={`font-['Source_Sans_Pro'] font-semibold ${toast.type === 'success' ? colors.successText : colors.errorText}`}>
+                                {toast.text}
+                            </span>
                         </div>
-                        <span className={`toast-text ${toast.type === 'success'
-                            ? `${theme === 'dark' ? 'toast-text-success-dark' : 'toast-text-success-light'}`
-                            : 'toast-text-error'
-                            }`}>
-                            {toast.text}
-                        </span>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* CONTENT */}
-            <div className="edit-profile-content">
+            <div className="my-5 mx-4 flex flex-col gap-5">
 
                 {/* CHANGE NAME */}
-                <div className={`edit-profile-card ${theme === 'dark' ? 'edit-profile-card-dark' : 'edit-profile-card-light'}`}>
+                <div className={`flex flex-col py-4 px-4 bg-gradient-to-b ${colors.cardBg} rounded-xl border ${colors.cardBorder} shadow-lg`}>
                     <div
                         onClick={() => setShowNamePanel(!showNamePanel)}
-                        className='card-header'
+                        className='flex flex-row items-center justify-between cursor-pointer group'
                     >
-                        <div className='card-header-group'>
-                            <div className={`icon-container ${theme === 'dark' ? 'icon-container-primary-dark' : 'icon-container-primary-light'}`}>
-                                <i className={`ri-edit-box-line text-[22px] ${theme === 'dark' ? 'icon-text-dark' : 'icon-text-light'}`}></i>
+                        <div className='flex gap-4 items-center'>
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${colors.iconBg} flex items-center justify-center ${colors.iconHover} transition`}>
+                                <i className={`ri-edit-box-line text-[22px] ${colors.iconText}`}></i>
                             </div>
                             <div>
-                                <h3 className={`card-title ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <h3 className={`text-[17px] font-bold font-["Merriweather"] ${colors.textPrimary}`}>
                                     Change your Name
                                 </h3>
-                                <p className={`card-subtitle ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}>
+                                <p className={`font-["Source_Sans_Pro"] ${colors.textSecondary} text-sm`}>
                                     Update your first and last name
                                 </p>
                             </div>
                         </div>
                         <i
-                            className={`arrow-icon ri-arrow-right-s-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'} ${showNamePanel ? 'arrow-rotated' : ''
+                            className={`ri-arrow-right-s-line text-2xl ${colors.textSecondary} transition-transform duration-300 ${showNamePanel ? 'rotate-90' : ''
                                 }`}
                         ></i>
                     </div>
@@ -193,19 +242,19 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                 animate={{ opacity: 1, height: 'auto', y: 0 }}
                                 exit={{ opacity: 0, height: 0, y: -10 }}
                                 transition={{ duration: 0.3 }}
-                                className="form-section"
+                                className="overflow-hidden mt-5 flex flex-col gap-4"
                             >
                                 {/* First Name */}
-                                <div className='form-group'>
-                                    <label className={`form-label ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className='space-y-2'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         First Name
                                     </label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <i className={`ri-user-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className={`input-field ${theme === 'dark' ? 'input-field-dark' : 'input-field-light'}`}
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newFirstName}
                                             onChange={(e) => setNewFirstName(e.target.value)}
                                             placeholder="Enter first name"
@@ -214,16 +263,16 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                 </div>
 
                                 {/* Last Name */}
-                                <div className='form-group'>
-                                    <label className={`form-label ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className='space-y-2'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Last Name
                                     </label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <i className={`ri-user-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i className={`ri-user-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
-                                            className={`input-field ${theme === 'dark' ? 'input-field-dark' : 'input-field-light'}`}
+                                            className={`w-full pl-12 pr-4 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newLastName}
                                             onChange={(e) => setNewLastName(e.target.value)}
                                             placeholder="Enter last name"
@@ -238,20 +287,20 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     }}
                                     disabled={loading}
                                     whileTap={{ scale: 0.95 }}
-                                    className={`submit-button ${loading || !newFirstName || !newLastName
-                                        ? `${theme === 'dark' ? 'submit-button-disabled-dark' : 'submit-button-disabled-light'} disabled`
-                                        : `${theme === 'dark' ? 'submit-button-dark' : 'submit-button-light'}`
+                                    className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading
+                                        ? `${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
-                                        <div className="loading-spinner">
-                                            <div className={`spinner ${theme === 'dark' ? 'spinner-dark' : 'spinner-light'}`}></div>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-white/30 border-t-white' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Saving...</span>
                                         </div>
                                     ) : (
                                         <>
                                             <span>Save Changes</span>
-                                            <i className="ri-save-3-line"></i>
+                                            <i className="ri-save-3-line ml-2"></i>
                                         </>
                                     )}
                                 </motion.button>
@@ -261,26 +310,26 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                 </div>
 
                 {/* CHANGE PASSWORD */}
-                <div className={`edit-profile-card ${theme === 'dark' ? 'edit-profile-card-dark' : 'edit-profile-card-light'}`}>
+                <div className={`flex flex-col py-4 px-4 bg-gradient-to-b ${colors.cardBg} rounded-xl border ${colors.cardBorder} shadow-lg`}>
                     <div
                         onClick={() => setShowPasswordPanel(!showPasswordPanel)}
-                        className='card-header'
+                        className='flex flex-row items-center justify-between cursor-pointer group'
                     >
-                        <div className='card-header-group'>
-                            <div className={`icon-container ${theme === 'dark' ? 'icon-container-alt-dark' : 'icon-container-alt-light'}`}>
-                                <i className={`ri-lock-password-line text-[22px] ${theme === 'dark' ? 'icon-text-dark' : 'icon-text-light'}`}></i>
+                        <div className='flex gap-4 items-center'>
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${colors.iconBgAlt} flex items-center justify-center ${colors.iconHover} transition`}>
+                                <i className={`ri-lock-password-line text-[22px] ${colors.iconTextAlt}`}></i>
                             </div>
                             <div>
-                                <h3 className={`card-title ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <h3 className={`text-[17px] font-bold font-["Merriweather"] ${colors.textPrimary}`}>
                                     Change Your Password
                                 </h3>
-                                <p className={`card-subtitle ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}>
+                                <p className={`font-["Source_Sans_Pro"] ${colors.textSecondary} text-sm`}>
                                     Update your account password
                                 </p>
                             </div>
                         </div>
                         <i
-                            className={`arrow-icon ri-arrow-right-s-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'} ${showPasswordPanel ? 'arrow-rotated' : ''
+                            className={`ri-arrow-right-s-line text-2xl ${colors.textSecondary} transition-transform duration-300 ${showPasswordPanel ? 'rotate-90' : ''
                                 }`}
                         ></i>
                     </div>
@@ -292,20 +341,20 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                 animate={{ opacity: 1, height: 'auto', y: 0 }}
                                 exit={{ opacity: 0, height: 0, y: -10 }}
                                 transition={{ duration: 0.3 }}
-                                className="form-section"
+                                className="overflow-hidden mt-5 flex flex-col gap-4"
                             >
                                 {/* Old Password */}
-                                <div className='form-group'>
-                                    <label className={`form-label ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className='space-y-2'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Current Password
                                     </label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <i className={`ri-lock-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i className={`ri-lock-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showOldPassword ? "text" : "password"}
-                                            className={`input-field ${theme === 'dark' ? 'input-field-dark' : 'input-field-light'}`}
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={oldPassword}
                                             onChange={(e) => setOldPassword(e.target.value)}
                                             placeholder="Enter current password"
@@ -313,25 +362,25 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
-                                            className="password-toggle"
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showOldPassword ? 'eye-off-line' : 'eye-line'} ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                            <i className={`ri-${showOldPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* New Password */}
-                                <div className='form-group'>
-                                    <label className={`form-label ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className='space-y-2'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         New Password
                                     </label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <i className={`ri-lock-unlock-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i className={`ri-lock-unlock-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showNewPassword ? "text" : "password"}
-                                            className={`input-field ${theme === 'dark' ? 'input-field-dark' : 'input-field-light'}`}
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border ${colors.inputBorder} rounded-xl outline-none focus:ring-2 ${colors.inputFocusRing} focus:${colors.inputFocusBorder} transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder}`}
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="Enter new password"
@@ -339,27 +388,29 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowNewPassword(!showNewPassword)}
-                                            className="password-toggle"
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showNewPassword ? 'eye-off-line' : 'eye-line'} ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                            <i className={`ri-${showNewPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Confirm Password */}
-                                <div className='form-group'>
-                                    <label className={`form-label ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className='space-y-2'>
+                                    <label className={`font-["Source_Sans_Pro"] font-semibold ${colors.textPrimary} text-sm`}>
                                         Confirm New Password
                                     </label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <i className={`ri-check-double-line ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i className={`ri-check-double-line ${colors.textSecondary}`}></i>
                                         </div>
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
-                                            className={`input-field ${theme === 'dark' ? 'input-field-dark' : 'input-field-light'} ${confirmPassword && newPassword !== confirmPassword
-                                                ? `${theme === 'dark' ? 'input-error-dark' : 'input-error-light'}`
-                                                : ''
+                                            className={`w-full pl-12 pr-12 py-3 ${colors.inputBg} border rounded-xl outline-none focus:ring-2 transition-all font-['Source_Sans_Pro'] ${colors.textPrimary} ${colors.placeholder} ${confirmPassword && newPassword !== confirmPassword
+                                                ? theme === 'light'
+                                                    ? 'border-[#FFB6B6] focus:ring-[#FFB6B6]/50'
+                                                    : 'border-[#FF6B6B] focus:ring-[#FF6B6B]/50'
+                                                : `${colors.inputBorder} ${colors.inputFocusRing} focus:${colors.inputFocusBorder}`
                                                 }`}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -368,9 +419,9 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="password-toggle"
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2"
                                         >
-                                            <i className={`ri-${showConfirmPassword ? 'eye-off-line' : 'eye-line'} ${theme === 'dark' ? 'text-secondary-dark' : 'text-secondary-light'}`}></i>
+                                            <i className={`ri-${showConfirmPassword ? 'eye-off-line' : 'eye-line'} ${colors.textSecondary} hover:${colors.textPrimary}`}></i>
                                         </button>
                                     </div>
 
@@ -379,13 +430,13 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
-                                            className={`password-match ${newPassword === confirmPassword
-                                                ? `${theme === 'dark' ? 'password-match-success-dark' : 'password-match-success-light'}`
-                                                : 'password-match-error'
+                                            className={`flex items-center gap-2 mt-2 ${newPassword === confirmPassword
+                                                ? colors.textSecondary
+                                                : colors.errorText
                                                 }`}
                                         >
-                                            <i className={`password-match-icon ri-${newPassword === confirmPassword ? 'check-line' : 'close-line'}`}></i>
-                                            <span className={`password-match-text text-xs`}>
+                                            <i className={`ri-${newPassword === confirmPassword ? 'check-line' : 'close-line'} text-sm`}></i>
+                                            <span className={`font-['Source_Sans_Pro'] text-xs`}>
                                                 {newPassword === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
                                             </span>
                                         </motion.div>
@@ -399,38 +450,32 @@ const EditProfile = ({ user, setUser, setEditProfilePanel }) => {
                                     }}
                                     disabled={loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                                     whileTap={{ scale: 0.95 }}
-                                    className={`submit-button ${loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
-                                        ? `${theme === 'dark' ? 'submit-button-disabled-dark' : 'submit-button-disabled-light'} disabled`
-                                        : `${theme === 'dark' ? 'submit-button-dark' : 'submit-button-light'}`
+                                    className={`w-full py-3 rounded-xl font-['Source_Sans_Pro'] font-semibold transition-all ${loading || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword
+                                        ? `${colors.buttonDisabled} ${colors.buttonDisabledText} cursor-not-allowed`
+                                        : `${colors.buttonBg} ${colors.buttonText} hover:shadow-lg ${theme === 'light' ? 'hover:shadow-[#89A8B2]/20' : 'hover:shadow-[#124E66]/20'}`
                                         }`}
                                 >
                                     {loading ? (
-                                        <div className="loading-spinner">
-                                            <div className={`spinner ${theme === 'dark' ? 'spinner-dark' : 'spinner-light'}`}></div>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className={`w-4 h-4 border-2 ${theme === 'light' ? 'border-white/30 border-t-white' : 'border-[#D3D9D4]/30 border-t-[#D3D9D4]'} rounded-full animate-spin`}></div>
                                             <span>Updating...</span>
                                         </div>
                                     ) : (
                                         <>
                                             <span>Update Password</span>
-                                            <i className="ri-key-2-line"></i>
+                                            <i className="ri-key-2-line ml-2"></i>
                                         </>
                                     )}
                                 </motion.button>
 
                                 {/* Password Requirements */}
-                                <div className={`requirements-box ${theme === 'dark' ? 'requirements-box-dark' : 'requirements-box-light'}`}>
-                                    <p className={`requirements-title ${theme === 'dark' ? 'text-primary-dark' : 'text-primary-light'}`}>
+                                <div className={`p-3 ${theme === 'light' ? 'bg-[#E5E1DA]/50' : 'bg-[#212A31]/50'} rounded-xl border ${colors.cardBorder} mt-2`}>
+                                    <p className={`font-['Source_Sans_Pro'] text-sm ${colors.textPrimary} mb-2`}>
                                         Password Requirements:
                                     </p>
-                                    <div className="requirements-list">
-                                        <i className={`requirement-icon ri-${newPassword.length >= 6 ? 'check' : 'close'}-line ${newPassword.length >= 6
-                                            ? `${theme === 'dark' ? 'requirement-met-dark' : 'requirement-met-light'}`
-                                            : `${theme === 'dark' ? 'requirement-unmet-dark' : 'requirement-unmet-light'}`
-                                            }`}></i>
-                                        <span className={`requirement-text ${newPassword.length >= 6
-                                            ? `${theme === 'dark' ? 'requirement-met-dark' : 'requirement-met-light'}`
-                                            : `${theme === 'dark' ? 'requirement-unmet-dark' : 'requirement-unmet-light'}`
-                                            }`}>
+                                    <div className="flex items-center gap-2">
+                                        <i className={`ri-${newPassword.length >= 6 ? 'check' : 'close'}-line text-xs ${newPassword.length >= 6 ? colors.requirementMet : colors.requirementUnmet}`}></i>
+                                        <span className={`font-['Source_Sans_Pro'] text-xs ${newPassword.length >= 6 ? colors.requirementMet : colors.requirementUnmet}`}>
                                             At least 6 characters
                                         </span>
                                     </div>

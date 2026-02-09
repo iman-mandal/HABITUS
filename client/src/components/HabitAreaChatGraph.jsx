@@ -1,5 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import '../global.css';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -21,7 +20,70 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const [graphType, setGraphType] = useState('area');
   const [timeData, setTimeData] = useState([]);
   const [currentTheme, setCurrentTheme] = useState('dark');
+  const [colors, setColors] = useState({});
   const [isLight, setIsLight] = useState(false);
+
+  // Theme colors definition
+  const themeColors = {
+    light: {
+      primary: '#89A8B2',
+      secondary: '#B3C8CF',
+      accent: '#2E3944',
+      success: '#89A8B2',
+      error: '#FF6B6B',
+      warning: '#FFA726',
+      background: 'rgba(241, 240, 232, 0.9)',
+      grid: 'rgba(137, 168, 178, 0.1)',
+      textPrimary: '#2E3944',
+      textSecondary: '#89A8B2',
+      cardBg: 'from-[#F1F0E8] to-[#E5E1DA]',
+      cardBgSecondary: 'from-[#E5E1DA] to-[#F1F0E8]',
+      cardBorder: 'border-[#B3C8CF]/30',
+      buttonActive: 'from-[#89A8B2] to-[#B3C8CF]',
+      buttonInactive: 'bg-[#F1F0E8]',
+      buttonTextActive: '#F1F0E8',
+      buttonTextInactive: '#89A8B2',
+      buttonBorder: 'border-[#B3C8CF]/50',
+      iconBg: 'from-[#89A8B2] to-[#B3C8CF]',
+      iconText: '#F1F0E8',
+      iconBgAlt: 'from-[#F1F0E8] to-[#E5E1DA]',
+      iconTextAlt: '#2E3944',
+      divider: 'border-[#B3C8CF]/30',
+      barFill: '#89A8B2',
+      lineStroke: '#B3C8CF',
+      areaFill: 'rgba(137, 168, 178, 0.2)',
+      tooltipBg: '#F1F0E8'
+    },
+    dark: {
+      primary: '#124E66',
+      secondary: '#748D92',
+      accent: '#D3D9D4',
+      success: '#748D92',
+      error: '#FF6B6B',
+      warning: '#FFA726',
+      background: 'rgba(33, 42, 49, 0.9)',
+      grid: 'rgba(116, 141, 146, 0.1)',
+      textPrimary: '#D3D9D4',
+      textSecondary: '#748D92',
+      cardBg: 'from-[#2E3944] to-[#212A31]',
+      cardBgSecondary: 'from-[#212A31] to-[#2E3944]',
+      cardBorder: 'border-[#748D92]/30',
+      buttonActive: 'from-[#124E66] to-[#212A31]',
+      buttonInactive: 'bg-[#212A31]',
+      buttonTextActive: '#D3D9D4',
+      buttonTextInactive: '#748D92',
+      buttonBorder: 'border-[#2E3944]',
+      iconBg: 'from-[#124E66] to-[#212A31]',
+      iconText: '#D3D9D4',
+      iconBgAlt: 'from-[#2E3944] to-[#124E66]',
+      iconTextAlt: '#D3D9D4',
+      divider: 'border-[#748D92]/30',
+      barFill: '#124E66',
+      lineStroke: '#748D92',
+      areaFill: 'rgba(18, 78, 102, 0.2)',
+      tooltipBg: '#2E3944'
+    }
+  };
 
   // Initialize theme
   useEffect(() => {
@@ -31,10 +93,12 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
         const initialTheme = theme || savedTheme || 'dark';
         setCurrentTheme(initialTheme);
         setIsLight(initialTheme === 'light');
+        setColors(themeColors[initialTheme] || themeColors.dark);
       } catch (error) {
         console.error('Error initializing theme:', error);
         setCurrentTheme('dark');
         setIsLight(false);
+        setColors(themeColors.dark);
       }
     };
 
@@ -48,17 +112,22 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
         const newTheme = e.newValue || 'dark';
         setCurrentTheme(newTheme);
         setIsLight(newTheme === 'light');
+        setColors(themeColors[newTheme] || themeColors.dark);
       }
     };
 
+    // Listen for storage events (from other tabs/windows)
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom theme change events
     const handleThemeChange = (e) => {
       if (e.detail?.theme) {
         setCurrentTheme(e.detail.theme);
         setIsLight(e.detail.theme === 'light');
+        setColors(themeColors[e.detail.theme] || themeColors.dark);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('themeChange', handleThemeChange);
 
     return () => {
@@ -343,46 +412,52 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       if (!data) return null;
 
       return (
-        <div className={`chart-tooltip ${isLight ? 'chart-tooltip-light' : 'chart-tooltip-dark'}`}>
-          <p className={`tooltip-title ${isLight ? 'tooltip-title-light' : 'tooltip-title-dark'}`}>
+        <div
+          className="backdrop-blur-sm p-4 rounded-xl border shadow-lg min-w-[200px]"
+          style={{
+            backgroundColor: isLight ? '#F1F0E8' : '#2E3944',
+            borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)'
+          }}
+        >
+          <p className={`font-['Merriweather'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} mb-2`}>
             {label}
           </p>
-          <div className="tooltip-content">
-            <div className="tooltip-row">
-              <span className={`tooltip-label ${isLight ? 'tooltip-label-light' : 'tooltip-label-dark'}`}>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                 Completion:
               </span>
-              <span className={`tooltip-value ${isLight ? 'tooltip-value-light' : 'tooltip-value-dark'}`}>
+              <span className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                 {data.completionRate}%
               </span>
             </div>
-            <div className="tooltip-row">
-              <span className={`tooltip-label ${isLight ? 'tooltip-label-light' : 'tooltip-label-dark'}`}>
+            <div className="flex items-center justify-between">
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                 Completed:
               </span>
-              <span className="tooltip-value tooltip-value-success">
+              <span className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>
                 {data.completed}
               </span>
             </div>
-            <div className="tooltip-row">
-              <span className={`tooltip-label ${isLight ? 'tooltip-label-light' : 'tooltip-label-dark'}`}>
+            <div className="flex items-center justify-between">
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                 Missed:
               </span>
-              <span className="tooltip-value tooltip-value-error">
+              <span className={`font-['Montserrat'] font-bold text-[#FF6B6B]`}>
                 {data.missed}
               </span>
             </div>
             {data.trend !== undefined && (
-              <div className="tooltip-row">
-                <span className={`tooltip-label ${isLight ? 'tooltip-label-light' : 'tooltip-label-dark'}`}>
+              <div className="flex items-center justify-between">
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Trend:
                 </span>
-                <span 
-                  className="tooltip-value"
+                <span
+                  className={`font-['Montserrat'] font-bold`}
                   style={{
-                    color: data.trend > 0 ? (isLight ? '#89A8B2' : '#748D92') : 
-                           data.trend < 0 ? '#FF6B6B' : 
-                           (isLight ? '#89A8B2' : '#748D92')
+                    color: data.trend > 0 ? (isLight ? '#89A8B2' : '#748D92') :
+                      data.trend < 0 ? '#FF6B6B' :
+                        (isLight ? '#89A8B2' : '#748D92')
                   }}
                 >
                   {data.trend > 0 ? '↗' : data.trend < 0 ? '↘' : '→'} {data.trend > 0 ? '+' : ''}{data.trend || 0}%
@@ -396,18 +471,42 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
     return null;
   };
 
+  // Helper function to get gradient classes
+  const getGradientClass = (type) => {
+    switch (type) {
+      case 'cardBg':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#2E3944] to-[#212A31]';
+      case 'cardBgSecondary':
+        return isLight ? 'from-[#E5E1DA] to-[#F1F0E8]' : 'from-[#212A31] to-[#2E3944]';
+      case 'iconBg':
+        return isLight ? 'from-[#89A8B2] to-[#B3C8CF]' : 'from-[#124E66] to-[#212A31]';
+      case 'buttonActive':
+        return isLight ? 'from-[#89A8B2] to-[#B3C8CF]' : 'from-[#124E66] to-[#212A31]';
+      case 'iconBgAlt':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#2E3944] to-[#124E66]';
+      case 'iconBgLight':
+        return isLight ? 'from-[#F1F0E8] to-[#E5E1DA]' : 'from-[#D3D9D4] to-[#748D92]';
+      case 'iconBgMix':
+        return isLight ? 'from-[#E5E1DA] to-[#89A8B2]' : 'from-[#2E3944] to-[#124E66]';
+      case 'iconBgAlt2':
+        return isLight ? 'from-[#89A8B2] to-[#F1F0E8]' : 'from-[#124E66] to-[#212A31]';
+      default:
+        return '';
+    }
+  };
+
   // Render the appropriate chart based on graphType
   const renderChart = () => {
     if (timeData.length === 0) {
       return (
-        <div className="no-data-container">
-          <div className={`no-data-icon ${isLight ? 'no-data-icon-light' : 'no-data-icon-dark'}`}>
-            <span className={`no-data-icon-text ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>📈</span>
+        <div className="h-[300px] flex flex-col items-center justify-center">
+          <div className={`w-24 h-24 rounded-full bg-gradient-to-r ${getGradientClass('iconBgAlt')} flex items-center justify-center mb-4`}>
+            <span className={`text-4xl ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'}`}>📈</span>
           </div>
-          <h4 className={`no-data-title ${isLight ? 'no-data-text-light' : 'no-data-text-dark'}`}>
+          <h4 className={`font-['Merriweather'] ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-lg mb-2`}>
             No data yet
           </h4>
-          <p className={`no-data-subtitle ${isLight ? 'no-data-subtitle-light' : 'no-data-subtitle-dark'}`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-center max-w-md`}>
             Start tracking your habits to see your {filter} trends here
           </p>
         </div>
@@ -440,31 +539,31 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
             <stop offset="95%" stopColor={isLight ? '#89A8B2' : '#124E66'} stopOpacity={0.1} />
           </linearGradient>
         </defs>
-        <CartesianGrid 
-          strokeDasharray="3 3" 
-          vertical={false} 
-          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'}
         />
-        <XAxis 
-          dataKey="name" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
-        <YAxis 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
-          tickFormatter={value => `${value}%`} 
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
+          tickFormatter={value => `${value}%`}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Area 
-          type="monotone" 
-          dataKey="completionRate" 
-          stroke={isLight ? '#89A8B2' : '#124E66'} 
-          fill="url(#colorCompletion)" 
-          name="Completion Rate" 
+        <Area
+          type="monotone"
+          dataKey="completionRate"
+          stroke={isLight ? '#89A8B2' : '#124E66'}
+          fill="url(#colorCompletion)"
+          name="Completion Rate"
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -473,35 +572,35 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderBarChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid 
-          strokeDasharray="3 3" 
-          vertical={false} 
-          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'}
         />
-        <XAxis 
-          dataKey="name" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
-        <YAxis 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar 
-          dataKey="completed" 
-          fill={isLight ? '#89A8B2' : '#124E66'} 
-          name="Completed" 
-          radius={[4, 4, 0, 0]} 
+        <Bar
+          dataKey="completed"
+          fill={isLight ? '#89A8B2' : '#124E66'}
+          name="Completed"
+          radius={[4, 4, 0, 0]}
         />
-        <Bar 
-          dataKey="missed" 
-          fill="#FF6B6B" 
-          name="Missed" 
-          radius={[4, 4, 0, 0]} 
+        <Bar
+          dataKey="missed"
+          fill="#FF6B6B"
+          name="Missed"
+          radius={[4, 4, 0, 0]}
         />
       </BarChart>
     </ResponsiveContainer>
@@ -510,42 +609,42 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderLineChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid 
-          strokeDasharray="3 3" 
-          vertical={false} 
-          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'}
         />
-        <XAxis 
-          dataKey="name" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
-        <YAxis 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
-          tickFormatter={value => `${value}%`} 
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
+          tickFormatter={value => `${value}%`}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Line 
-          type="monotone" 
-          dataKey="completionRate" 
-          stroke={isLight ? '#89A8B2' : '#124E66'} 
-          strokeWidth={2} 
-          dot={{ r: 4 }} 
-          activeDot={{ r: 6 }} 
-          name="Completion Rate" 
+        <Line
+          type="monotone"
+          dataKey="completionRate"
+          stroke={isLight ? '#89A8B2' : '#124E66'}
+          strokeWidth={2}
+          dot={{ r: 4 }}
+          activeDot={{ r: 6 }}
+          name="Completion Rate"
         />
-        <Line 
-          type="monotone" 
-          dataKey="efficiency" 
-          stroke={isLight ? '#B3C8CF' : '#748D92'} 
-          strokeWidth={2} 
-          strokeDasharray="5 5" 
-          dot={{ r: 4 }} 
-          name="Efficiency" 
+        <Line
+          type="monotone"
+          dataKey="efficiency"
+          stroke={isLight ? '#B3C8CF' : '#748D92'}
+          strokeWidth={2}
+          strokeDasharray="5 5"
+          dot={{ r: 4 }}
+          name="Efficiency"
         />
       </LineChart>
     </ResponsiveContainer>
@@ -554,138 +653,145 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
   const renderComposedChart = () => (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart data={timeData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid 
-          strokeDasharray="3 3" 
-          vertical={false} 
-          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke={isLight ? 'rgba(137, 168, 178, 0.1)' : 'rgba(116, 141, 146, 0.1)'}
         />
-        <XAxis 
-          dataKey="name" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
-        <YAxis 
-          yAxisId="left" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <YAxis
+          yAxisId="left"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
-        <YAxis 
-          yAxisId="right" 
-          orientation="right" 
-          axisLine={false} 
-          tickLine={false} 
-          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }} 
+        <YAxis
+          yAxisId="right"
+          orientation="right"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: isLight ? '#89A8B2' : '#748D92', fontSize: 12 }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
-        <Bar 
-          yAxisId="left" 
-          dataKey="completed" 
-          fill={isLight ? '#89A8B2' : '#124E66'} 
-          name="Completed" 
-          radius={[4, 4, 0, 0]} 
+        <Bar
+          yAxisId="left"
+          dataKey="completed"
+          fill={isLight ? '#89A8B2' : '#124E66'}
+          name="Completed"
+          radius={[4, 4, 0, 0]}
         />
-        <Bar 
-          yAxisId="left" 
-          dataKey="missed" 
-          fill="#FF6B6B" 
-          name="Missed" 
-          radius={[4, 4, 0, 0]} 
+        <Bar
+          yAxisId="left"
+          dataKey="missed"
+          fill="#FF6B6B"
+          name="Missed"
+          radius={[4, 4, 0, 0]}
         />
-        <Line 
-          yAxisId="right" 
-          type="monotone" 
-          dataKey="completionRate" 
-          stroke={isLight ? '#2E3944' : '#D3D9D4'} 
-          strokeWidth={2} 
-          dot={{ r: 4 }} 
-          name="Completion Rate" 
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="completionRate"
+          stroke={isLight ? '#2E3944' : '#D3D9D4'}
+          strokeWidth={2}
+          dot={{ r: 4 }}
+          name="Completion Rate"
         />
       </ComposedChart>
     </ResponsiveContainer>
   );
 
   return (
-    <div className="habit-chart-container">
+    <div className="w-full">
       {/* TIME RANGE STATS OVERVIEW */}
-      <div className="stats-grid">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {/* Completion Rate */}
-        <div className={`stat-card ${isLight ? 'stat-card-light' : 'stat-card-dark'}`}>
-          <div className="stat-header">
-            <div className={`stat-icon ${isLight ? 'stat-icon-light' : 'stat-icon-dark'}`}>
-              <span className={`stat-icon-text ${isLight ? 'icon-text-light' : 'icon-text-dark'}`}>✓</span>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBg')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'}`}>✓</span>
             </div>
-            <p className={`stat-label ${isLight ? 'stat-label-light' : 'stat-label-dark'}`}>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
               Completion
             </p>
           </div>
-          <p className={`stat-value ${isLight ? 'stat-value-light' : 'stat-value-dark'}`}>
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl`}>
             {timeRangeStats.avgCompletion}%
           </p>
-          <p className={`stat-subtext ${isLight ? 'stat-subtext-light' : 'stat-subtext-dark'}`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.totalCompleted}/{timeRangeStats.totalCompleted + timeRangeStats.totalMissed} habits
           </p>
         </div>
 
         {/* Best Period */}
-        <div className={`stat-card ${isLight ? 'stat-card-light' : 'stat-card-dark'}`}>
-          <div className="stat-header">
-            <div className={`stat-icon ${isLight ? 'stat-icon-alt-light' : 'stat-icon-alt-dark'}`}>
-              <span className={`stat-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-alt-dark'}`}>🏆</span>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgLight')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#212A31]'}`}>🏆</span>
             </div>
-            <p className={`stat-label ${isLight ? 'stat-label-light' : 'stat-label-dark'}`}>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
               Best Period
             </p>
           </div>
-          <p className={`stat-value ${isLight ? 'stat-value-light' : 'stat-value-dark'}`}>
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl truncate`}>
             {timeRangeStats.bestPeriod}
           </p>
-          <p className={`stat-subtext ${isLight ? 'stat-subtext-light' : 'stat-subtext-dark'}`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.bestRate}% completion
           </p>
         </div>
 
         {/* Consistency */}
-        <div className={`stat-card ${isLight ? 'stat-card-light' : 'stat-card-dark'}`}>
-          <div className="stat-header">
-            <div className={`stat-icon ${isLight ? 'stat-icon-mix-light' : 'stat-icon-mix-dark'}`}>
-              <span className={`stat-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-dark'}`}>📊</span>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgMix')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📊</span>
             </div>
-            <p className={`stat-label ${isLight ? 'stat-label-light' : 'stat-label-dark'}`}>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
               Consistency
             </p>
           </div>
-          <p className={`stat-value ${
-            timeRangeStats.consistency > 80 ? (isLight ? 'consistency-excellent-light' : 'consistency-excellent-dark') : 
-            timeRangeStats.consistency > 60 ? 'consistency-good' : 
-            'consistency-needs-improvement'
-          }`}>
+          <p
+            className={`font-['Montserrat'] font-bold text-xl`}
+            style={{
+              color: timeRangeStats.consistency > 80 ? (isLight ? '#89A8B2' : '#748D92') :
+                timeRangeStats.consistency > 60 ? '#FFA726' :
+                  '#FF6B6B'
+            }}
+          >
             {timeRangeStats.consistency}%
           </p>
-          <p className={`stat-subtext ${isLight ? 'stat-subtext-light' : 'stat-subtext-dark'}`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeRangeStats.consistency > 80 ? 'Excellent' :
               timeRangeStats.consistency > 60 ? 'Good' : 'Needs improvement'}
           </p>
         </div>
 
         {/* Period Overview */}
-        <div className={`stat-card ${isLight ? 'stat-card-light' : 'stat-card-dark'}`}>
-          <div className="stat-header">
-            <div className={`stat-icon ${isLight ? 'stat-icon-alt2-light' : 'stat-icon-alt2-dark'}`}>
-              <span className={`stat-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-dark'}`}>
+        <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} rounded-xl p-4 border backdrop-blur-sm`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${getGradientClass('iconBgAlt2')} flex items-center justify-center`}>
+              <span className={`text-sm ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                 {filter === 'weekly' ? '📅' : filter === 'monthly' ? '🗓️' : filter === 'quarterly' ? '📊' : '🌱'}
               </span>
             </div>
-            <p className={`stat-label ${isLight ? 'stat-label-light' : 'stat-label-dark'}`}>
+            <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
               Period
             </p>
           </div>
-          <p className={`stat-value ${isLight ? 'stat-value-light' : 'stat-value-dark'}`}>
-            {filter.charAt(0).toUpperCase() + filter.slice(1)}
+          <p className={`font-['Montserrat'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-xl capitalize`}>
+            {filter}
           </p>
-          <p className={`stat-subtext ${isLight ? 'stat-subtext-light' : 'stat-subtext-dark'}`}>
+          <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-xs mt-1`}>
             {timeData.length} {filter === 'weekly' ? 'days' :
               filter === 'monthly' ? 'weeks' :
                 filter === 'quarterly' ? 'months' : 'months'}
@@ -694,19 +800,20 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
       </div>
 
       {/* MAIN GRAPH CARD */}
-      <div className={`main-graph-card ${isLight ? 'main-graph-card-light' : 'main-graph-card-dark'}`}>
+      <div className={`bg-gradient-to-br ${getGradientClass('cardBg')} backdrop-blur-sm rounded-2xl p-6 border shadow-lg`}
+        style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
         {/* HEADER WITH CONTROLS */}
-        <div className="graph-header">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
           <div>
-            <div className="graph-title-container">
-              <div className={`graph-title-icon ${isLight ? 'graph-title-icon-light' : 'graph-title-icon-dark'}`}>
-                <span className={isLight ? 'icon-text-light' : 'icon-text-dark'}>📊</span>
+            <div className="flex items-center gap-3 mb-2">
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${getGradientClass('iconBg')} flex items-center justify-center`}>
+                <span className={`text-lg ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'}`}>📊</span>
               </div>
               <div>
-                <h3 className={`graph-title-text ${isLight ? 'graph-title-text-light' : 'graph-title-text-dark'}`}>
+                <h3 className={`font-['Merriweather'] font-bold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-lg`}>
                   {filter.charAt(0).toUpperCase() + filter.slice(1)} Performance
                 </h3>
-                <p className={`graph-subtitle ${isLight ? 'graph-subtitle-light' : 'graph-subtitle-dark'}`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Track your habit completion across the {filter} period
                 </p>
               </div>
@@ -714,18 +821,17 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
           </div>
 
           {/* CONTROLS */}
-          <div className="controls-container">
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             {/* Graph Type Selector */}
-            <div className="graph-type-selector">
+            <div className="flex flex-wrap gap-2">
               {graphTypeOptions.map(g => (
                 <button
                   key={g.value}
                   onClick={() => setGraphType(g.value)}
-                  className={`graph-type-button ${
-                    graphType === g.value
-                      ? (isLight ? 'graph-type-button-active-light' : 'graph-type-button-active-dark')
-                      : (isLight ? 'graph-type-button-inactive-light' : 'graph-type-button-inactive-dark')
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-['Source_Sans_Pro'] font-semibold transition-all ${graphType === g.value
+                    ? `bg-gradient-to-r ${getGradientClass('buttonActive')} ${isLight ? 'text-[#F1F0E8]' : 'text-[#D3D9D4]'} shadow-lg ${isLight ? 'shadow-[#89A8B2]/20' : 'shadow-[#124E66]/20'}`
+                    : `${isLight ? 'bg-[#F1F0E8]' : 'bg-[#212A31]'} ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} border ${isLight ? 'border-[#B3C8CF]/50 hover:border-[#89A8B2]' : 'border-[#2E3944] hover:border-[#124E66]'}`
+                    }`}
                 >
                   <span className="text-sm">{g.icon}</span>
                   <span className="hidden sm:inline">{g.label}</span>
@@ -736,75 +842,85 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
         </div>
 
         {/* CHART */}
-        <div className="chart-container">
+        <div className="h-[300px] w-full">
           {renderChart()}
         </div>
 
         {/* CHART FOOTER */}
-        <div className={`chart-footer ${isLight ? 'chart-footer-light' : 'chart-footer-dark'}`}>
-          <div className="chart-legend">
-            <div className="legend-item">
-              <div className={`legend-dot ${isLight ? 'legend-dot-primary-light' : 'legend-dot-primary-dark'}`}></div>
-              <span className={`legend-text ${isLight ? 'legend-text-light' : 'legend-text-dark'}`}>
-                Completion Rate
+        <div className={`mt-6 pt-6 border-t`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ background: isLight ? 'linear-gradient(to right, #89A8B2, #B3C8CF)' : 'linear-gradient(to right, #124E66, #748D92)' }}
+                ></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Completion Rate
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: isLight ? '#89A8B2' : '#124E66' }}
+                ></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Completed Habits
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-[#FF6B6B]"></div>
+                <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                  Missed Habits
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
+                Viewing:
+              </span>
+              <span className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} text-sm capitalize`}>
+                {filter} • {graphTypeOptions.find(g => g.value === graphType)?.label || 'Area Chart'}
               </span>
             </div>
-            <div className="legend-item">
-              <div className={`legend-dot ${isLight ? 'legend-dot-completed-light' : 'legend-dot-completed-dark'}`}></div>
-              <span className={`legend-text ${isLight ? 'legend-text-light' : 'legend-text-dark'}`}>
-                Completed Habits
-              </span>
-            </div>
-            <div className="legend-item">
-              <div className="legend-dot legend-dot-missed"></div>
-              <span className={`legend-text ${isLight ? 'legend-text-light' : 'legend-text-dark'}`}>
-                Missed Habits
-              </span>
-            </div>
-          </div>
-          <div className="view-info">
-            <span className={`view-label ${isLight ? 'view-label-light' : 'view-label-dark'}`}>
-              Viewing:
-            </span>
-            <span className={`view-value ${isLight ? 'view-value-light' : 'view-value-dark'}`}>
-              {filter} • {graphTypeOptions.find(g => g.value === graphType)?.label || 'Area Chart'}
-            </span>
           </div>
         </div>
       </div>
 
       {/* TIME RANGE INSIGHTS */}
       {timeData.length > 0 && (
-        <div className={`insights-card ${isLight ? 'insights-card-light' : 'insights-card-dark'}`}>
-          <h4 className={`insights-title ${isLight ? 'insights-title-light' : 'insights-title-dark'}`}>
+        <div className={`mt-6 bg-gradient-to-r ${getGradientClass('cardBgSecondary')} rounded-2xl p-6 border`}
+          style={{ borderColor: isLight ? 'rgba(179, 200, 207, 0.3)' : 'rgba(116, 141, 146, 0.3)' }}>
+          <h4 className={`font-['Merriweather'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'} mb-4`}>
             {filter.charAt(0).toUpperCase() + filter.slice(1)} Insights
           </h4>
-          <div className="insights-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Performance Summary */}
-            <div className="insight-item">
-              <div className={`insight-icon ${isLight ? 'insight-icon-perf-light' : 'insight-icon-perf-dark'}`}>
-                <span className={`insight-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-dark'}`}>📈</span>
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${isLight ? 'from-[#B3C8CF] to-[#89A8B2]' : 'from-[#748D92] to-[#124E66]'} flex items-center justify-center flex-shrink-0`}>
+                <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>📈</span>
               </div>
-              <div className="insight-content">
-                <p className={`insight-title ${isLight ? 'insight-title-light' : 'insight-title-dark'}`}>
+              <div>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Performance Summary
                 </p>
-                <p className={`insight-text ${isLight ? 'insight-text-light' : 'insight-text-dark'}`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Your average completion rate is {timeRangeStats.avgCompletion}% with {timeRangeStats.consistency}% consistency across {timeData.length} {filter === 'weekly' ? 'days' : filter === 'monthly' ? 'weeks' : 'months'}.
                 </p>
               </div>
             </div>
 
             {/* Peak Performance */}
-            <div className="insight-item">
-              <div className={`insight-icon ${isLight ? 'insight-icon-peak-light' : 'insight-icon-peak-dark'}`}>
-                <span className={`insight-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-alt-dark'}`}>🏆</span>
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-full ${isLight ? 'bg-gradient-to-r from-[#F1F0E8] to-[#E5E1DA]' : 'bg-gradient-to-r from-[#D3D9D4] to-[#748D92]'} flex items-center justify-center flex-shrink-0`}>
+                <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#212A31]'}`}>🏆</span>
               </div>
-              <div className="insight-content">
-                <p className={`insight-title ${isLight ? 'insight-title-light' : 'insight-title-dark'}`}>
+              <div>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Peak Performance
                 </p>
-                <p className={`insight-text ${isLight ? 'insight-text-light' : 'insight-text-dark'}`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   {timeRangeStats.bestPeriod} was your strongest with {timeRangeStats.bestRate}% completion.
                   {timeRangeStats.worstPeriod && ` ${timeRangeStats.worstPeriod} needs attention with ${timeRangeStats.worstRate}%.`}
                 </p>
@@ -812,15 +928,15 @@ const HabitAreaChartGraph = ({ habits, timeRange = 'monthly', theme }) => {
             </div>
 
             {/* Improvement Areas */}
-            <div className="insight-item">
-              <div className={`insight-icon ${isLight ? 'insight-icon-improve-light' : 'insight-icon-improve-dark'}`}>
-                <span className={`insight-icon-text ${isLight ? 'icon-text-alt-light' : 'icon-text-dark'}`}>🎯</span>
+            <div className="flex items-start gap-3">
+              <div className={`w-10 h-10 rounded-full ${isLight ? 'bg-gradient-to-r from-[#E5E1DA] to-[#89A8B2]' : 'bg-gradient-to-r from-[#2E3944] to-[#124E66]'} flex items-center justify-center flex-shrink-0`}>
+                <span className={`text-lg ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>🎯</span>
               </div>
-              <div className="insight-content">
-                <p className={`insight-title ${isLight ? 'insight-title-light' : 'insight-title-dark'}`}>
+              <div>
+                <p className={`font-['Source_Sans_Pro'] font-semibold ${isLight ? 'text-[#2E3944]' : 'text-[#D3D9D4]'}`}>
                   Improvement Areas
                 </p>
-                <p className={`insight-text ${isLight ? 'insight-text-light' : 'insight-text-dark'}`}>
+                <p className={`font-['Source_Sans_Pro'] ${isLight ? 'text-[#89A8B2]' : 'text-[#748D92]'} text-sm`}>
                   Aim for {Math.min(100, timeRangeStats.avgCompletion + 15)}% average next {filter}. Focus on consistency during weaker periods.
                 </p>
               </div>
