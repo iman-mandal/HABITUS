@@ -7,7 +7,7 @@ module.exports.registerUser = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(404).json({ errors: errors.array() })
+      return res.status(400).json({ errors: errors.array() })
     }
     const { fullname, email, password } = req.body;
     const userAlreadyExsist = await userModel.findOne({ email });

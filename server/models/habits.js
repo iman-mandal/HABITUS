@@ -26,7 +26,7 @@ const HabitSchema = new mongoose.Schema({
     },
     startDate: { type: String, default: Date.now },
     history: [{
-        date: { type: String },
+        date: { type: String, required: true },
         completed: { type: Boolean, default: false }
     }],
     streak: { type: Number, default: 0 },
@@ -34,20 +34,7 @@ const HabitSchema = new mongoose.Schema({
     active: { type: Boolean, default: true }
 }, { timestamps: true });
 
-HabitSchema.pre('save', async function () {
 
-  if (this.isNew && this.history.length === 0) {
-
-    const today = new Date().toISOString().slice(0, 10);
-
-    this.history.push({
-      date: today,
-      completed: false
-    });
-
-  }
-
-});
 
 
 module.exports = mongoose.model('Habits', HabitSchema);

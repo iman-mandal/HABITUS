@@ -7,7 +7,7 @@ const app = express();
 const cors = require('cors');
 const cookieParser = require("cookie-parser");
 
-// ✅ CORS MUST come before routes
+//  CORS MUST come before routes
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
