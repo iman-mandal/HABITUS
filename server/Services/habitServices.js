@@ -100,10 +100,14 @@ exports.toggleHabit = async (userId, habitId, date) => {
   const index = habit.history.findIndex(h => h.date === day);
 
   if (index >= 0) {
+    // toggle existing value
     habit.history[index].completed = !habit.history[index].completed;
   } else {
-    // first time toggle → mark completed
-    habit.history.push({ date: day, completed: true });
+    // first time → start from false, then toggle to true
+    habit.history.push({ date: day, completed: false });
+
+    // now toggle it
+    habit.history[habit.history.length - 1].completed = true;
   }
 
   //  Sort history by date
@@ -121,7 +125,7 @@ exports.toggleHabit = async (userId, habitId, date) => {
     if (
       i === 0 ||
       new Date(sortedHistory[i]) - new Date(sortedHistory[i - 1]) ===
-        24 * 60 * 60 * 1000
+      24 * 60 * 60 * 1000
     ) {
       tempStreak++;
     } else {
