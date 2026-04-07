@@ -1,5 +1,6 @@
 const userModel = require('../models/user');
 const userService = require('../Services/UserServices');
+const habitService = require('../Services/habitServices');
 const { validationResult } = require('express-validator');
 
 // Signup controller
@@ -51,6 +52,7 @@ module.exports.loginUser = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid Password or Email" });
     }
+    await habitService.fillMissingDaysForUserHabits(user._id);
     const token = user.genarateAuthToken();
     console.log('Login Sucessfully');
     res.cookie('token', token);

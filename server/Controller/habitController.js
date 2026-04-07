@@ -30,6 +30,7 @@ exports.createHabit = async (req, res) => {
 
 exports.getHabits = async (req, res) => {
   try {
+    await habitService.fillMissingDaysForUserHabits(req.userId);
     const habits = await habitService.getHabits(req.userId);
     console.log('Here is the Habit List')
     res.status(200).json(habits);

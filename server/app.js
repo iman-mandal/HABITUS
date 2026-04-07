@@ -18,7 +18,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const connectToDB = require('./db');
-connectToDB();
+const habitService = require('./Services/habitServices');
+
+connectToDB()
+  .then(async () => {
+    try {
+      await habitService.fillMissingDaysForAllHabits();
+      console.log('Habit history migration complete');
+    } catch (migrationError) {
+      console.error('Habit history migration failed', migrationError);
+    }
+  })
+  .catch((dbError) => {
+    console.error('Database connection failed', dbError);
+  });
 
 // routes
 const userRoutes = require('./routes/userRoutes');

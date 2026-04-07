@@ -24,7 +24,14 @@ const HabitSchema = new mongoose.Schema({
         type: Number,
         default: 7
     },
-    startDate: { type: String, default: Date.now },
+    startDate: {
+        type: String,
+        default: () => new Date().toISOString().slice(0, 10)
+    },
+    lastUpdated: {
+        type: String,
+        default: () => new Date().toISOString().slice(0, 10)
+    },
     history: [{
         date: { type: String, required: true },
         completed: { type: Boolean, default: false }
